@@ -1,0 +1,15 @@
+# Visual studio code
+/.vscode
+
+# IstambulJS coverage reports
+/.nyc_output
+/coverage
+
+# Compiled files
+/dist
+
+# npm dependencies
+/node_modules
+
+# coveralls config
+.coveralls.yml
