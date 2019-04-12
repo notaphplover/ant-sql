@@ -8,5 +8,6 @@ export class AllTest implements ITest {
   public performTests(): void {
     const flushRedisPromise: Promise<any> = new RedisWrapper().redis.flushall();
     const deleteAllTables = new DBTestManager().deleteAllTables();
+    new AntSqlModelTest().performTests();
   }
 }
