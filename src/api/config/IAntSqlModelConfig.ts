@@ -1,9 +1,9 @@
 import { IAntModelConfig } from '@antjs/ant-js/src/api/config/IAntModelConfig';
-import { QueryBuilder } from 'knex';
+import * as Knex from 'knex';
 
 export interface IAntSqlModelConfig extends IAntModelConfig {
   /**
-   * SQL Builder.
+   * Knex instance.
    */
-  sqlBuilder: QueryBuilder;
+  knex: Knex;
 }

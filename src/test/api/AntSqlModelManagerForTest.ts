@@ -1,28 +1,23 @@
-import { AntModelManager } from '@antjs/ant-js/src/api/AntModelManager';
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IModelManager } from '@antjs/ant-js/src/persistence/primary/IModelManager';
 import { IPrimaryEntityManager } from '@antjs/ant-js/src/persistence/primary/IPrimaryEntityManager';
-import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
-import { PrimaryEntityManager } from '@antjs/ant-js/src/persistence/primary/PrimaryEntityManager';
 import { ISecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/ISecondaryEntityManager';
-import { IAntSqlModel } from '../model/IAntSqlModel';
-import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSecondaryEntityManager';
-import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { AntSqlModelManager } from '../../api/AntSqlModelManager';
+import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
+import { IAntSqlModel } from '../../model/IAntSqlModel';
 
-export class AntSqlModelManager<TEntity extends IEntity>
-  extends AntModelManager<TEntity, IAntSqlModelConfig, IAntSqlModel> {
-
+export class AntSqlModelManagerForTest<TEntity extends IEntity> extends AntSqlModelManager<TEntity> {
   /**
    * Generates a model manager.
    * @param model Model to manage.
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(
+  public generateModelManager(
     model: IAntSqlModel,
     config: IAntSqlModelConfig,
   ): IModelManager<TEntity> {
-    return new ModelManager<TEntity>(this._generatePrimaryEntityManager(model, config));
+    return this._generateModelManager(model, config);
   }
 
   /**
@@ -31,15 +26,11 @@ export class AntSqlModelManager<TEntity extends IEntity>
    * @param config AntSQL model config.
    * @returns Primary entity manager generated.
    */
-  protected _generatePrimaryEntityManager(
+  public generatePrimaryEntityManager(
     model: IAntSqlModel,
     config: IAntSqlModelConfig,
   ): IPrimaryEntityManager<TEntity> {
-    return new PrimaryEntityManager<TEntity>(
-      model,
-      config.redis,
-      this._generateSecondaryEntityManager(model, config),
-    );
+    return this._generatePrimaryEntityManager(model, config);
   }
 
   /**
@@ -48,13 +39,10 @@ export class AntSqlModelManager<TEntity extends IEntity>
    * @param config AntSQL model config.
    * @returns Secondary model manager generated.
    */
-  protected _generateSecondaryEntityManager(
+  public generateSecondaryEntityManager(
     model: IAntSqlModel,
     config: IAntSqlModelConfig,
   ): ISecondaryEntityManager<TEntity> {
-    return new AntSqlSecondaryEntityManager(
-      model,
-      config.knex,
-    );
+    return this._generateSecondaryEntityManager(model, config);
   }
 }
