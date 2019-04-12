@@ -44,7 +44,6 @@ export class DBTestManager {
           addColumn(columnName, otherColumns[columnName]);
         }
       }
-      table.primary([primaryKeyColumn.name]);
     });
   }
 
