@@ -1,6 +1,6 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "SQL extension for AntJS",
   "main": "src/ant.js",
   "scripts": {
