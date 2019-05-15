@@ -22,7 +22,11 @@ export class AntSqlModelManager<TEntity extends IEntity>
     model: IAntSqlModel,
     config: IAntSqlModelConfig,
   ): IModelManager<TEntity> {
-    return new ModelManager<TEntity>(this._generatePrimaryEntityManager(model, config));
+    return new ModelManager<TEntity>(
+      model,
+      config.redis,
+      this._generatePrimaryEntityManager(model, config),
+    );
   }
 
   /**
