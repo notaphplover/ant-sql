@@ -26,6 +26,7 @@ export class AntSqlModelManager<TEntity extends IEntity>
       model,
       config.redis,
       this._generateSecondaryEntityManager(model, config),
+      config.negativeCache,
     );
   }
 
