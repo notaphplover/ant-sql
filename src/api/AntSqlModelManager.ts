@@ -25,23 +25,6 @@ export class AntSqlModelManager<TEntity extends IEntity>
     return new ModelManager<TEntity>(
       model,
       config.redis,
-      this._generatePrimaryEntityManager(model, config),
-    );
-  }
-
-  /**
-   * Generates a primary entity manager.
-   * @param model Model to manage.
-   * @param config AntSQL model config.
-   * @returns Primary entity manager generated.
-   */
-  protected _generatePrimaryEntityManager(
-    model: IAntSqlModel,
-    config: IAntSqlModelConfig,
-  ): IPrimaryEntityManager<TEntity> {
-    return new PrimaryEntityManager<TEntity>(
-      model,
-      config.redis,
       this._generateSecondaryEntityManager(model, config),
     );
   }

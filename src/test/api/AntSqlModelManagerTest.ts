@@ -42,7 +42,6 @@ export class AntSqlModelManagerTest implements ITest {
   public performTests(): void {
     describe(this._declareName, () => {
       this._itMustGenerateAModelManager();
-      this._itMustGenerateAPrimaryEntityManager();
       this._itMustGenerateASecondaryEntityManager();
     });
   }
@@ -59,22 +58,6 @@ export class AntSqlModelManagerTest implements ITest {
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
       const modelManager = antModelManager.generateModelManager(model, config);
       expect(modelManager instanceof ModelManager).toBe(true);
-      done();
-    }, MAX_SAFE_TIMEOUT);
-  }
-
-  private _itMustGenerateAPrimaryEntityManager(): void {
-    const itsName = 'mustGenerateAPrimaryEntitylManager';
-    const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const config: IAntSqlModelConfig = {
-        knex: this._dbConnectionWrapper.dbConnection,
-        redis: this._redisWrapper.redis,
-      };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
-      const primaryEntityManager = antModelManager.generatePrimaryEntityManager(model, config);
-      expect(primaryEntityManager instanceof PrimaryEntityManager).toBe(true);
       done();
     }, MAX_SAFE_TIMEOUT);
   }

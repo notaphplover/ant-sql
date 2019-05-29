@@ -71,4 +71,22 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
         .catch(reject);
     });
   }
+
+  /**
+   * Gets a collection of models by its ids ordered by id asc.
+   * @param ids Model ids.
+   * @returns Models found.
+   */
+  public getByIdsOrderedAsc(ids: number[]| string[]): Promise<TEntity[]> {
+    const ascOrder = 'ASC';
+    return new Promise<TEntity[]>((resolve, reject) => {
+      this
+        ._dbConnection
+        .from(this.model.tableName)
+        .whereIn(this.model.id, ids)
+        .orderBy(this.model.id, ascOrder)
+        .then(resolve)
+        .catch(reject);
+    });
+  }
 }

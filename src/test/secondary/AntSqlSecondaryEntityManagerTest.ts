@@ -43,6 +43,7 @@ export class AntSqlSecondaryEntityManagerTest implements ITest {
       this._itMustGetAnElementById();
       this._itMustGetAnUnexistingElementById();
       this._itMustGetMultipleElementsByIds();
+      this._itMustGetMultipleElementsByIdsOrderedAsc();
     });
   }
 
@@ -138,6 +139,36 @@ export class AntSqlSecondaryEntityManagerTest implements ITest {
       ]);
       expect(entitiesFound).toContain(entity1);
       expect(entitiesFound).toContain(entity2);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustGetMultipleElementsByIdsOrderedAsc(): void {
+    const itsName = 'mustGetMultipleElementsByIdsOrderedAsc';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = modelTestGen(prefix);
+      await this._dbTestManager.createTable(
+        model.tableName,
+        { name: 'id', type: 'number' },
+      );
+      const entity1 = { id: 1 };
+      const entity2 = { id: 2 };
+      await this._dbTestManager.insert(model.tableName, entity1);
+      await this._dbTestManager.insert(model.tableName, entity2);
+      const manager = new AntSqlSecondaryEntityManager(
+        model,
+        this._dbConnectionWrapper.dbConnection,
+      );
+
+      const entitiesFound = await manager.getByIdsOrderedAsc([
+        entity1.id,
+        entity2.id,
+      ]);
+      expect(entitiesFound).toEqual([entity1, entity2]);
 
       done();
     }, MAX_SAFE_TIMEOUT);
