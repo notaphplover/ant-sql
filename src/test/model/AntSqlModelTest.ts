@@ -29,6 +29,10 @@ export class AntSqlModelTest implements ITest {
         new AntSqlModel(
           'id',
           { prefix: 'somePrefix', suffix: 'someSuffix'},
+          [{
+            entityAlias: 'id',
+            sqlName: 'id',
+          }],
           'ModelSqlTableName',
         );
       }).not.toThrowError();
@@ -43,6 +47,10 @@ export class AntSqlModelTest implements ITest {
       const model = new AntSqlModel(
         'id',
         { prefix: 'somePrefix', suffix: 'someSuffix'},
+        [{
+          entityAlias: 'id',
+          sqlName: 'id',
+        }],
         tableName,
       );
       expect(model.tableName).toBe(tableName);

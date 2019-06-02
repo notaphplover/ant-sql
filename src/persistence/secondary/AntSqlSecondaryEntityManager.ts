@@ -1,10 +1,10 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { ISecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/ISecondaryEntityManager';
 import * as Knex from 'knex';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { ISqlSecondaryEntityManager } from './ISqlSecondaryEntityManager';
 
 export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
-  implements ISecondaryEntityManager<TEntity> {
+  implements ISqlSecondaryEntityManager<TEntity> {
 
   /**
    * Model to manage.
@@ -34,6 +34,18 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
    */
   public get model(): IAntSqlModel {
     return this._model;
+  }
+
+  /**
+   * Deletes an entity from its id.
+   * @param id Id of the entity to delete.
+   * @returns Promise of entity deleted.
+   */
+  public delete(id: string | number): Promise<any> {
+    return this
+        ._dbConnection
+        .where(this.model.id, id)
+        .del();
   }
 
   /**
@@ -88,5 +100,97 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
         .then(resolve)
         .catch(reject);
     });
+  }
+
+  /**
+   * Inserts an entity.
+   * @param entity Entity to be inserted.
+   * @returns Promise of entity inserted.
+   */
+  public insert(entity: TEntity): Promise<any> {
+    return this
+        ._dbConnection
+        .insert([this._buildKnexObject(this.model, entity)])
+        .into((this.model.tableName));
+  }
+
+  /**
+   * Deletes entitis from their ids.
+   * @param ids Id of the entity to delete.
+   * @returns Promise of entities deleted.
+   */
+  public mDelete(ids: string[] | number[]): Promise<any> {
+    return this
+        ._dbConnection
+        .from(this.model.tableName)
+        .whereIn(this.model.id, ids)
+        .del();
+  }
+
+  /**
+   * Inserts multiple entities.
+   * @param entities Entities to be inserted.
+   * @returns Promise of entities inserted.
+   */
+  public mInsert(entities: TEntity[]): Promise<any> {
+    return this
+        ._dbConnection
+        .insert(entities.map(
+          (entity) => this._buildKnexObject(this.model, entity),
+        ))
+        .into((this.model.tableName));
+  }
+
+  /**
+   * Updates multiple entities.
+   * @param entities Entities to be updated.
+   * @returns Promise of entities updated.
+   */
+  public mUpdate(entities: TEntity[]): Promise<any> {
+    return this
+      ._dbConnection
+      .transaction((transaction) => {
+        const queries = new Array<Knex.QueryBuilder>();
+        for (const entity of entities) {
+          queries.push(
+            this
+              ._dbConnection(this.model.tableName)
+              .where(this.model.id, entity)
+              .update(this._buildKnexObject(this.model, entity))
+              .transacting(transaction),
+          );
+        }
+        Promise.all(queries)
+          .then(transaction.commit)
+          .catch(transaction.rollback);
+      });
+  }
+
+  /**
+   * Updates an entity.
+   * @param entity Entity to be updated.
+   * @returns Promise of entity deleted.
+   */
+  public update(entity: TEntity): Promise<any> {
+    return this
+      ._dbConnection(this.model.tableName)
+      .where(this.model.id, entity)
+      .update(this._buildKnexObject(this.model, entity));
+  }
+
+  /**
+   * Builds a Knex object that is equivalent of an entity.
+   * @param model Model of the entity to process.
+   * @param entity Entity to use in the build.
+   */
+  private _buildKnexObject(model: IAntSqlModel, entity: TEntity): {[key: string]: any} {
+    const updateObject: {[key: string]: any} = {};
+    for (const [, columnData] of this.model.columns) {
+      const entityValue = entity[columnData.entityAlias];
+      if (undefined !== entityValue) {
+        updateObject[columnData.sqlName] = entityValue;
+      }
+    }
+    return updateObject;
   }
 }

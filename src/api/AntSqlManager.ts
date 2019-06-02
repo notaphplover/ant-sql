@@ -5,8 +5,13 @@ import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { AntSqlModelManager } from '../api/AntSqlModelManager';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { IAntSqlModelManager } from './IAntSqlModelManager';
 
-export class AntSqlManager extends AntManager<IAntSqlModelConfig, IAntSqlModel> {
+export class AntSqlManager extends AntManager<
+  IAntSqlModelConfig,
+  IAntSqlModel,
+  IAntSqlModelManager<IEntity>
+> {
 
   /**
    * Queries map.
@@ -28,7 +33,7 @@ export class AntSqlManager extends AntManager<IAntSqlModelConfig, IAntSqlModel> 
    */
   protected _createModelManager<TEntity extends IEntity>(
     model: IAntSqlModel,
-  ): IAntModelManager<TEntity, IAntSqlModelConfig> {
+  ): IAntSqlModelManager<TEntity> {
     return new AntSqlModelManager<TEntity>(
       model,
       this._queriesMap as QueryMapType<TEntity, IAntSqlModel>,
