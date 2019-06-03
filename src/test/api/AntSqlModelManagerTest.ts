@@ -1,7 +1,7 @@
 import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
-import { PrimaryEntityManager } from '@antjs/ant-js/src/persistence/primary/PrimaryEntityManager';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { AntSqlModel } from '../../model/AntSqlModel';
+import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ITest } from '../ITest';
 import { RedisWrapper } from '../primary/RedisWrapper';
@@ -45,9 +45,55 @@ export class AntSqlModelManagerTest implements ITest {
 
   public performTests(): void {
     describe(this._declareName, () => {
+      this._itMustCallModelManagerMethods();
       this._itMustGenerateAModelManager();
       this._itMustGenerateASecondaryEntityManager();
     });
+  }
+
+  private _itMustCallModelManagerMethods(): void {
+    const itsName = 'mustCallModelManagerMethods';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      const model = modelTestGen(prefix);
+      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      antModelManager.config({
+        knex: this._dbConnectionWrapper.dbConnection,
+        redis: this._redisWrapper.redis,
+      });
+      const modelManager = antModelManager.modelManager;
+
+      const methodsToTest = [
+        'insert',
+        'mInsert',
+      ] as Array<keyof ISqlModelManager<any>>;
+
+      for (const methodToTest of methodsToTest) {
+        spyOn(modelManager, methodToTest as any).and.returnValue(methodToTest as any);
+      }
+
+      const entity = { id: 0 };
+
+      const [
+        insertResult,
+        mInsertResult,
+      ] = await Promise.all([
+        antModelManager.insert(entity),
+        antModelManager.mInsert([entity]),
+      ]);
+
+      const results: {[key: string]: any} = {
+        insert: insertResult,
+        mInsert: mInsertResult,
+      };
+
+      for (const methodToTest of methodsToTest) {
+        expect(modelManager[methodToTest]).toHaveBeenCalled();
+        expect(results[methodToTest]).toBe(methodToTest);
+      }
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
   }
 
   private _itMustGenerateAModelManager(): void {

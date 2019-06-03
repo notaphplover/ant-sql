@@ -44,6 +44,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
   public delete(id: string | number): Promise<any> {
     return this
         ._dbConnection
+        .from(this.model.tableName)
         .where(this.model.id, id)
         .del();
   }
@@ -120,6 +121,9 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
    * @returns Promise of entities deleted.
    */
   public mDelete(ids: string[] | number[]): Promise<any> {
+    if (0 === ids.length) {
+      return new Promise((resolve) => resolve());
+    }
     return this
         ._dbConnection
         .from(this.model.tableName)
@@ -147,6 +151,9 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
    * @returns Promise of entities updated.
    */
   public mUpdate(entities: TEntity[]): Promise<any> {
+    if (0 === entities.length) {
+      return new Promise((resolve) => resolve());
+    }
     return this
       ._dbConnection
       .transaction((transaction) => {
@@ -155,7 +162,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
           queries.push(
             this
               ._dbConnection(this.model.tableName)
-              .where(this.model.id, entity)
+              .where(this.model.id, entity[this.model.id])
               .update(this._buildKnexObject(this.model, entity))
               .transacting(transaction),
           );
@@ -174,7 +181,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
   public update(entity: TEntity): Promise<any> {
     return this
       ._dbConnection(this.model.tableName)
-      .where(this.model.id, entity)
+      .where(this.model.id, entity[this.model.id])
       .update(this._buildKnexObject(this.model, entity));
   }
 
@@ -185,7 +192,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
    */
   private _buildKnexObject(model: IAntSqlModel, entity: TEntity): {[key: string]: any} {
     const updateObject: {[key: string]: any} = {};
-    for (const [, columnData] of this.model.columns) {
+    for (const [, columnData] of model.columns) {
       const entityValue = entity[columnData.entityAlias];
       if (undefined !== entityValue) {
         updateObject[columnData.sqlName] = entityValue;
