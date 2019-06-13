@@ -1,11 +1,11 @@
 import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
+import * as Knex from 'knex';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { AntSqlModel } from '../../model/AntSqlModel';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ITest } from '../ITest';
 import { RedisWrapper } from '../primary/RedisWrapper';
-import { DBConnectionWrapper } from '../secondary/DBConnectionWrapper';
 import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
@@ -24,7 +24,7 @@ export class AntSqlModelManagerTest implements ITest {
   /**
    * Database connection wrapper.
    */
-  protected _dbConnectionWrapper: DBConnectionWrapper;
+  protected _dbConnection: Knex;
   /**
    * Declare name for the test
    */
@@ -36,10 +36,11 @@ export class AntSqlModelManagerTest implements ITest {
 
   /**
    * Creates a new test instance for AntSqlModelManager.
+   * @param dbConnection Knex DB connection.
    */
-  public constructor() {
-    this._dbConnectionWrapper = new DBConnectionWrapper();
-    this._declareName = 'AntSqlModelManagerTest';
+  public constructor(dbConnection: Knex, dbAlias: string) {
+    this._dbConnection = dbConnection;
+    this._declareName = AntSqlModelManagerTest.name + '/' + dbAlias;
     this._redisWrapper = new RedisWrapper();
   }
 
@@ -58,7 +59,7 @@ export class AntSqlModelManagerTest implements ITest {
       const model = modelTestGen(prefix);
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
       antModelManager.config({
-        knex: this._dbConnectionWrapper.dbConnection,
+        knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       });
       const modelManager = antModelManager.modelManager;
@@ -102,7 +103,7 @@ export class AntSqlModelManagerTest implements ITest {
     it(itsName, async (done) => {
       const model = modelTestGen(prefix);
       const config: IAntSqlModelConfig = {
-        knex: this._dbConnectionWrapper.dbConnection,
+        knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
@@ -118,7 +119,7 @@ export class AntSqlModelManagerTest implements ITest {
     it(itsName, async (done) => {
       const model = modelTestGen(prefix);
       const config: IAntSqlModelConfig = {
-        knex: this._dbConnectionWrapper.dbConnection,
+        knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());

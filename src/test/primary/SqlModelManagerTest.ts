@@ -1,18 +1,24 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
+import * as crypto from 'crypto';
+import * as Knex from 'knex';
 import { AntSqlModel } from '../../model/AntSqlModel';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
 import { SqlModelManager } from '../../persistence/primary/SqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../../persistence/secondary/ISqlSecondaryEntityManager';
 import { ITest } from '../ITest';
-import { DBConnectionWrapper } from '../secondary/DBConnectionWrapper';
-import { DBTestManager } from '../secondary/DBTestManager';
 import { RedisWrapper } from './RedisWrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
-const tableNameGenerator = (baseAlias: string) => baseAlias.replace(/\//g, '_');
+const tableNameGenerator = (baseAlias: string) =>
+  't_'
+  + crypto
+    .createHash('md5')
+    .update(baseAlias)
+    .digest('hex');
+
 const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
   return new AntSqlModel(
     'id',
@@ -24,9 +30,6 @@ const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
   );
 };
 
-const tableGeneratorColumnId: { name: string, type: 'number'|'string' }
-  = { name: 'id', type: 'number' };
-
 type EntityTest = { id: number } & IEntity;
 
 export class SqlModelManagerTest implements ITest {
@@ -34,7 +37,7 @@ export class SqlModelManagerTest implements ITest {
   /**
    * Database connection wrapper.
    */
-  protected _dbConnectionWrapper: DBConnectionWrapper;
+  protected _dbConnection: Knex;
   /**
    * Declare name for the test
    */
@@ -44,9 +47,9 @@ export class SqlModelManagerTest implements ITest {
    */
   protected _redis: RedisWrapper;
 
-  public constructor() {
-    this._dbConnectionWrapper = new DBConnectionWrapper();
-    this._declareName = SqlModelManagerTest.name;
+  public constructor(dbConnection: Knex, dbAlias: string) {
+    this._dbConnection = dbConnection;
+    this._declareName = SqlModelManagerTest.name + '/' + dbAlias;
     this._redis = new RedisWrapper();
   }
 
@@ -64,7 +67,7 @@ export class SqlModelManagerTest implements ITest {
       const model = modelGenerator({ prefix: prefix });
       const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
         model,
-        this._dbConnectionWrapper.dbConnection,
+        this._dbConnection,
       );
       expect(() => {
         // tslint:disable-next-line:no-unused-expression
@@ -85,7 +88,7 @@ export class SqlModelManagerTest implements ITest {
       const model = modelGenerator({ prefix: prefix });
       const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
         model,
-        this._dbConnectionWrapper.dbConnection,
+        this._dbConnection,
       );
       const sqlModelManager = new SqlModelManager(
         model,

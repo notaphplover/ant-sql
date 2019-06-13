@@ -16,3 +16,6 @@
 
 # coveralls config
 .coveralls.yml
+
+# docker test volumes
+/docker/mysql/data
