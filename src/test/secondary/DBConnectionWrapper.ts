@@ -22,7 +22,17 @@ const msSqlConnectionTestConfig: IDbTestConnection = {
       user: process.env.MS_SA_USER,
     },
   }),
-  dbToCreate: process.env.MS_DB,
+  dbCreationOptions: {
+    connection: Knex({
+      client: 'mssql',
+      connection: {
+        host: 'ant_db_mssql',
+        password: process.env.MS_SA_PASSWORD,
+        user: process.env.MS_SA_USER,
+      },
+    }),
+    name: process.env.MS_DB,
+  },
 };
 
 const mySqlDbConnectionTestConfig: IDbTestConnection = {

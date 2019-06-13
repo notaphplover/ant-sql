@@ -169,22 +169,4 @@ END`;
     }
     return knexQuery;
   }
-
-  /**
-   * Selects a database to use.
-   * @param knex Knex connection.
-   * @param dbName DB Name.
-   * @returns Promise of db selected.
-   */
-  public useDatabase(knex: Knex, dbName: string): Bluebird<any> {
-    let query: string;
-    switch (knex.client.driverName) {
-      case 'mssql':
-        query = `USE [${dbName}]`;
-        break;
-      default:
-        throw new Error(`Driver "${ knex.client.driverName }" not supported`);
-    }
-    return knex.raw(query);
-  }
 }

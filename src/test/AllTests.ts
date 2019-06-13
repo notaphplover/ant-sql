@@ -29,14 +29,17 @@ export class AllTest implements ITest {
 
     for (const config of dBConnectionWrapper.config) {
       const connection = config.connection;
-      let deleteAllTablesPromise =
-        dbServerAwaiter
+      let deleteAllTablesPromise;
+      if (config.dbCreationOptions) {
+        deleteAllTablesPromise = dbServerAwaiter
+          .awaitServer(config.dbCreationOptions.connection)
+          .then(() => testManager.createDatabaseIfNotExists(
+            config.dbCreationOptions.connection,
+            config.dbCreationOptions.name,
+          ));
+      } else {
+        deleteAllTablesPromise = dbServerAwaiter
           .awaitServer(connection);
-
-      if (config.dbToCreate) {
-        deleteAllTablesPromise = deleteAllTablesPromise
-            .then(() => testManager.createDatabaseIfNotExists(connection, config.dbToCreate))
-            .then(() => testManager.useDatabase(connection, config.dbToCreate));
       }
 
       deleteAllTablesPromise = deleteAllTablesPromise
