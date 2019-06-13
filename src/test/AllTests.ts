@@ -8,6 +8,7 @@ import { SqlModelManagerTest } from './primary/SqlModelManagerTest';
 import { AntSqlSecondaryEntityManagerTest } from './secondary/AntSqlSecondaryEntityManagerTest';
 import { DBConnectionWrapper } from './secondary/DBConnectionWrapper';
 import { DBTestManager } from './secondary/DBTestManager';
+import { IDbTestConnection } from './secondary/IDbTestConnection';
 
 const millisPerRequest = 1000;
 
@@ -29,20 +30,8 @@ export class AllTest implements ITest {
 
     for (const config of dBConnectionWrapper.config) {
       const connection = config.connection;
-      let deleteAllTablesPromise;
-      if (config.dbCreationOptions) {
-        deleteAllTablesPromise = dbServerAwaiter
-          .awaitServer(config.dbCreationOptions.connection)
-          .then(() => testManager.createDatabaseIfNotExists(
-            config.dbCreationOptions.connection,
-            config.dbCreationOptions.name,
-          ));
-      } else {
-        deleteAllTablesPromise = dbServerAwaiter
-          .awaitServer(connection);
-      }
-
-      deleteAllTablesPromise = deleteAllTablesPromise
+      const dbReadyPromise = this._createDBReadyPromise(config, dbServerAwaiter, testManager);
+      const deleteAllTablesPromise = dbReadyPromise
         .then(() => testManager.deleteAllTables(connection));
 
       new AntSqlSecondaryEntityManagerTest(
@@ -50,6 +39,32 @@ export class AllTest implements ITest {
         connection,
         connection.client.driverName,
       ).performTests();
+    }
+  }
+
+  /**
+   * Creates a promise of DB ready for connections.
+   * @param config Test database config.
+   * @param dbServerAwaiter Server awaiter.
+   * @param testManager Test manager.
+   * @returns Promise of db ready for connections with the target database created.
+   */
+  private _createDBReadyPromise(
+    config: IDbTestConnection,
+    dbServerAwaiter: DbServerAwaiter,
+    testManager: DBTestManager,
+  ): Promise<any> {
+    if (config.dbCreationOptions) {
+      return dbServerAwaiter
+        .awaitServer(config.dbCreationOptions.connection)
+        .then(() => testManager.createDatabaseIfNotExists(
+          config.dbCreationOptions.connection,
+          config.dbCreationOptions.name,
+        ));
+    } else {
+      const connection = config.connection;
+      return dbServerAwaiter
+        .awaitServer(connection);
     }
   }
 }
