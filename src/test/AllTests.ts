@@ -1,4 +1,3 @@
-import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSecondaryEntityManager';
 import { AntTest } from './AntTest';
 import { AntSqlManagerTest } from './api/AntSqlManagerTest';
 import { AntSqlModelManagerTest } from './api/AntSqlModelManagerTest';
@@ -39,7 +38,7 @@ export class AllTest implements ITest {
         deleteAllTablesPromise,
         connection,
         connection.client.driverName,
-        (model, knex) => new AntSqlSecondaryEntityManager(model, knex),
+        testManager.getSecondaryEntityManagerGenerator(config.connection),
       ).performTests();
     }
   }

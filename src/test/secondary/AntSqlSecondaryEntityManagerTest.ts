@@ -116,6 +116,7 @@ export class AntSqlSecondaryEntityManagerTest implements ITest {
       this._itMustInsertAnEntity();
       this._itMustInsertAnEntityWithAutoIncrementStrategy();
       this._itMustInsertMultieplEntities();
+      this._itMustInsertMultipleEntitiesWithAutoIncrementStrategy();
       this._itMustInsertZeroEntities();
       this._itMustUpdateAnEntity();
       this._itMustUpdateMultipleEntities();
@@ -404,6 +405,39 @@ export class AntSqlSecondaryEntityManagerTest implements ITest {
       await secondaryEntityManager.mInsert([entity]);
       const insertedEntity = await secondaryEntityManager.getById(entity.id);
       expect({...insertedEntity}).toEqual(entity);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustInsertMultipleEntitiesWithAutoIncrementStrategy(): void {
+    const itsName = 'mustInsertMultipleEntitiesWithAutoIncrementStrategy';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix }, true);
+      const entity: NamedEntityTest = { id: undefined, name: 'name' };
+      const entity2: NamedEntityTest = { id: undefined, name: 'name2' };
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        { name: 'id', type: 'increments' },
+        tableGeneratorOtherColumns,
+      );
+      const secondaryEntityManager = this._secondaryEntityManagerGenerator<NamedEntityTest>(
+        model,
+        this._dbConnection,
+      );
+      await secondaryEntityManager.mInsert([entity, entity2]);
+      const entityFound = await secondaryEntityManager.getById(entity.id);
+      const entityFound2 = await secondaryEntityManager.getById(entity2.id);
+      expect(entityFound.id).not.toBeUndefined();
+      expect(entityFound.id).not.toBeNull();
+      expect(entityFound.name).toBe(entity.name);
+      expect(entityFound2.id).not.toBeUndefined();
+      expect(entityFound2.id).not.toBeNull();
+      expect(entityFound2.name).toBe(entity2.name);
 
       done();
     }, MAX_SAFE_TIMEOUT);

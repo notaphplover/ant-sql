@@ -1,5 +1,10 @@
+import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
+import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { AntMySqlSecondaryEntityManager } from '../../persistence/secondary/AntMySqlSecondaryEntityManager';
+import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { ISqlSecondaryEntityManager } from '../../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from './KnexDriver';
 
 export class DBTestManager {
@@ -80,6 +85,22 @@ END`;
         throw new Error(`Driver "${ knex.client.driverName }" not supported`);
     }
     return knex.raw(query);
+  }
+
+  /**
+   * Gets the secondary entity manager generator for a DB connection.
+   * @param knex Knex instance.
+   * @returns Secondary entity manager generator.
+   */
+  public getSecondaryEntityManagerGenerator<TEntity extends IEntity>(knex: Knex)
+    : (model: IAntSqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
+    switch (knex.client.driverName) {
+      case KnexDriver.MYSQL:
+      case KnexDriver.MYSQL2:
+        return (model, knex) => new AntMySqlSecondaryEntityManager(model, knex);
+      default:
+        return (model, knex) => new AntSqlSecondaryEntityManager(model, knex);
+    }
   }
 
   /**

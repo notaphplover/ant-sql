@@ -4,8 +4,10 @@ import { ICacheOptions } from '@antjs/ant-js/src/persistence/primary/options/ICa
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { SqlModelManager } from '../persistence/primary/SqlModelManager';
+import { AntMySqlSecondaryEntityManager } from '../persistence/secondary/AntMySqlSecondaryEntityManager';
 import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
+import { KnexDriver } from '../test/secondary/KnexDriver';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 
 export class AntSqlModelManager<TEntity extends IEntity>
@@ -62,9 +64,14 @@ export class AntSqlModelManager<TEntity extends IEntity>
     model: IAntSqlModel,
     config: IAntSqlModelConfig,
   ): ISqlSecondaryEntityManager<TEntity> {
-    return new AntSqlSecondaryEntityManager(
-      model,
-      config.knex,
-    );
+    const knex = config.knex;
+
+    switch (knex.client.driverName) {
+      case KnexDriver.MYSQL:
+      case KnexDriver.MYSQL2:
+        return new AntMySqlSecondaryEntityManager(model, knex);
+      default:
+        return new AntSqlSecondaryEntityManager(model, knex);
+    }
   }
 }
