@@ -1,8 +1,9 @@
 import * as Knex from 'knex';
 import { IDbTestConnection } from './IDbTestConnection';
+import { KnexDriver } from './KnexDriver';
 
 const fakeConnection = Knex({
-  client: 'pg',
+  client: KnexDriver.PG,
   connection: {
     database: 'fakedatabase',
     host: 'fake_host',
@@ -14,7 +15,7 @@ const fakeConnection = Knex({
 
 const msSqlConnectionTestConfig: IDbTestConnection = {
   connection: Knex({
-    client: 'mssql',
+    client: KnexDriver.MSSQL,
     connection: {
       database: process.env.MS_DB,
       host: 'ant_db_mssql',
@@ -24,7 +25,7 @@ const msSqlConnectionTestConfig: IDbTestConnection = {
   }),
   dbCreationOptions: {
     connection: Knex({
-      client: 'mssql',
+      client: KnexDriver.MSSQL,
       connection: {
         host: 'ant_db_mssql',
         password: process.env.MS_SA_PASSWORD,
@@ -37,7 +38,7 @@ const msSqlConnectionTestConfig: IDbTestConnection = {
 
 const mySqlDbConnectionTestConfig: IDbTestConnection = {
   connection: Knex({
-    client: 'mysql',
+    client: KnexDriver.MYSQL,
     connection: {
       database: process.env.MYSQL_DB,
       host: 'ant_db_mysql',
@@ -50,7 +51,7 @@ const mySqlDbConnectionTestConfig: IDbTestConnection = {
 
 const mySql2DbConnectionTestConfig: IDbTestConnection = {
   connection: Knex({
-    client: 'mysql2',
+    client: KnexDriver.MYSQL2,
     connection: {
       database: process.env.MYSQL_2_DB,
       host: 'ant_db_mysql',
@@ -63,7 +64,7 @@ const mySql2DbConnectionTestConfig: IDbTestConnection = {
 
 const postgreDbConnectionTestConfig: IDbTestConnection = {
   connection: Knex({
-    client: 'pg',
+    client: KnexDriver.PG,
     connection: {
       database: process.env.PG_DB,
       host: 'ant_db_postgres',

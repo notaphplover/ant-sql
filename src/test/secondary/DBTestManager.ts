@@ -1,5 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
+import { KnexDriver } from './KnexDriver';
 
 export class DBTestManager {
 
@@ -68,7 +69,7 @@ export class DBTestManager {
   ): Bluebird<any> {
     let query: string;
     switch (knex.client.driverName) {
-      case 'mssql':
+      case KnexDriver.MSSQL:
         query =
 `IF  NOT EXISTS (SELECT * FROM sys.databases WHERE name = N'${dbName}')
 BEGIN
@@ -91,30 +92,30 @@ END`;
   public listTables(knex: Knex): Bluebird<string[]> {
     let knexQuery: Bluebird<any[]>;
     switch (knex.client.driverName) {
-      case 'mssql':
+      case KnexDriver.MSSQL:
         knexQuery = knex('information_schema.tables')
           .select('table_name')
           .where('TABLE_TYPE', 'BASE TABLE')
           .andWhere('table_catalog', knex.client.database());
         break;
-      case 'mysql':
-      case 'mysql2':
+      case KnexDriver.MYSQL:
+      case KnexDriver.MYSQL2:
         knexQuery = knex('information_schema.tables')
           .select('TABLE_NAME as table_name')
           .where('table_schema', knex.client.database());
         break;
-      case 'oracle':
-      case 'oracledb':
+      case KnexDriver.ORACLE:
+      case KnexDriver.ORACLEDB:
         knexQuery = knex('user_tables')
           .select('table_name');
         break;
-      case 'pg':
+      case KnexDriver.PG:
         knexQuery = knex('information_schema.tables')
           .select('table_name')
           .where('table_schema', knex.raw('current_schema()'))
           .andWhere('table_catalog', knex.client.database());
         break;
-      case 'sqlite3':
+      case KnexDriver.SQLITE3:
         knexQuery = knex('sqlite_master')
           .select('name as table_name')
           .where('type', 'table');
@@ -136,30 +137,30 @@ END`;
     let knexQuery: Bluebird<any>;
     const limitResultsSize = 1;
     switch (knex.client.driverName) {
-      case 'mssql':
+      case KnexDriver.MSSQL:
         knexQuery = knex('information_schema.tables')
           .select('table_name')
           .where('table_schema', 'public')
           .limit(limitResultsSize);
         break;
-      case 'mysql':
-      case 'mysql2':
+      case KnexDriver.MYSQL:
+      case KnexDriver.MYSQL2:
         knexQuery = knex('information_schema.tables')
           .select('TABLE_NAME as table_name')
           .limit(limitResultsSize);
         break;
-      case 'oracle':
-      case 'oracledb':
+      case KnexDriver.ORACLE:
+      case KnexDriver.ORACLEDB:
         knexQuery = knex('user_tables')
           .select('table_name')
           .limit(limitResultsSize);
         break;
-      case 'pg':
+      case KnexDriver.PG:
         knexQuery = knex('information_schema.tables')
           .select('table_name')
           .limit(limitResultsSize);
         break;
-      case 'sqlite3':
+      case KnexDriver.SQLITE3:
         knexQuery = knex('sqlite_master')
           .select('name as table_name')
           .limit(limitResultsSize);
