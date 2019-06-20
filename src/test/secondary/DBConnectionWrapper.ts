@@ -79,7 +79,7 @@ const sqliteDbConnectionTestConfig: IDbTestConnection = {
   connection: Knex({
     client: KnexDriver.SQLITE3,
     connection: {
-      filename: __dirname + '/../../../docker/sqlite/test.sqlite3',
+      filename: ':memory:',
     },
   }),
 };
