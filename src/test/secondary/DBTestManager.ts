@@ -3,6 +3,7 @@ import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
 import { AntMySqlSecondaryEntityManager } from '../../persistence/secondary/AntMySqlSecondaryEntityManager';
+import { AntSQLiteSecondaryEntityManager } from '../../persistence/secondary/AntSQLiteSecondaryEntityManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from './KnexDriver';
@@ -98,6 +99,8 @@ END`;
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
         return (model, knex) => new AntMySqlSecondaryEntityManager(model, knex);
+      case KnexDriver.SQLITE3:
+        return (model, knex) => new AntSQLiteSecondaryEntityManager(model, knex);
       default:
         return (model, knex) => new AntSqlSecondaryEntityManager(model, knex);
     }
@@ -139,7 +142,8 @@ END`;
       case KnexDriver.SQLITE3:
         knexQuery = knex('sqlite_master')
           .select('name as table_name')
-          .where('type', 'table');
+          .where('type', 'table')
+          .andWhereNot('table_name', 'like', 'sqlite_%');
         break;
       default:
         throw new Error(`Driver "${ knex.client.driverName }" not supported`);

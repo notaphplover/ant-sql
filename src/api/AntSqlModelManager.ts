@@ -5,6 +5,7 @@ import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { SqlModelManager } from '../persistence/primary/SqlModelManager';
 import { AntMySqlSecondaryEntityManager } from '../persistence/secondary/AntMySqlSecondaryEntityManager';
+import { AntSQLiteSecondaryEntityManager } from '../persistence/secondary/AntSQLiteSecondaryEntityManager';
 import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../test/secondary/KnexDriver';
@@ -70,6 +71,8 @@ export class AntSqlModelManager<TEntity extends IEntity>
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
         return new AntMySqlSecondaryEntityManager(model, knex);
+      case KnexDriver.SQLITE3:
+        return new AntSQLiteSecondaryEntityManager(model, knex);
       default:
         return new AntSqlSecondaryEntityManager(model, knex);
     }

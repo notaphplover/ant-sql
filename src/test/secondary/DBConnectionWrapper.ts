@@ -75,6 +75,15 @@ const postgreDbConnectionTestConfig: IDbTestConnection = {
   }),
 };
 
+const sqliteDbConnectionTestConfig: IDbTestConnection = {
+  connection: Knex({
+    client: KnexDriver.SQLITE3,
+    connection: {
+      filename: __dirname + '/../../../docker/mysql/test.sqlite3',
+    },
+  }),
+};
+
 export class DBConnectionWrapper {
   /**
    * Fake connection.
@@ -96,6 +105,10 @@ export class DBConnectionWrapper {
    * PostgreSQL DB connection.
    */
   protected _postgreDbConnectionConfig: IDbTestConnection;
+  /**
+   * SQLite DB Connection.
+   */
+  protected _sqliteDbConnectionTestConfig: IDbTestConnection;
 
   /**
    * Creates a new database connection wrapper.
@@ -106,6 +119,7 @@ export class DBConnectionWrapper {
     this._mysqlDbConnectionConfig = mySqlDbConnectionTestConfig;
     this._mysql2DbConnectionConfig = mySql2DbConnectionTestConfig;
     this._postgreDbConnectionConfig = postgreDbConnectionTestConfig;
+    this._sqliteDbConnectionTestConfig = sqliteDbConnectionTestConfig;
   }
 
   /**
@@ -118,6 +132,7 @@ export class DBConnectionWrapper {
       this._mysqlDbConnectionConfig,
       this._mysql2DbConnectionConfig,
       this._postgreDbConnectionConfig,
+      this._sqliteDbConnectionTestConfig,
     ];
   }
 

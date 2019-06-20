@@ -432,11 +432,9 @@ export class AntSqlSecondaryEntityManagerTest implements ITest {
       await secondaryEntityManager.mInsert([entity, entity2]);
       const entityFound = await secondaryEntityManager.getById(entity.id);
       const entityFound2 = await secondaryEntityManager.getById(entity2.id);
-      expect(entityFound.id).not.toBeUndefined();
-      expect(entityFound.id).not.toBeNull();
+      expect(typeof entityFound.id).toBe('number');
       expect(entityFound.name).toBe(entity.name);
-      expect(entityFound2.id).not.toBeUndefined();
-      expect(entityFound2.id).not.toBeNull();
+      expect(typeof entityFound2.id).toBe('number');
       expect(entityFound2.name).toBe(entity2.name);
 
       done();
