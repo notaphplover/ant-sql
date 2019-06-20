@@ -45,7 +45,7 @@ services:
       PG_DB: ${PG_DB}
     volumes:
       - .:/app
-      - app/node_modules/
+      - /app/node_modules/
     depends_on:
       - ant_db_mssql
       - ant_db_mysql
