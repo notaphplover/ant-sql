@@ -19,3 +19,4 @@
 
 # docker test volumes
 /docker/mysql/data
+/docker/sqlite
