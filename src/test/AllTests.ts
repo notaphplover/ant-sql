@@ -9,6 +9,7 @@ import { AntSqlSecondaryEntityManagerTest } from './persistence/secondary/AntSql
 import { DBConnectionWrapper } from './persistence/secondary/DBConnectionWrapper';
 import { DBTestManager } from './persistence/secondary/DBTestManager';
 import { IDbTestConnection } from './persistence/secondary/IDbTestConnection';
+import { SecondaryEntityManagerHelperTest } from './persistence/secondary/SecondaryEntityManagerHelperTest';
 
 const millisPerRequest = 1000;
 
@@ -18,11 +19,12 @@ export class AllTest implements ITest {
     new AntSqlModelTest().performTests();
     new AntTest().performTests();
 
+    new SecondaryEntityManagerHelperTest().performTests();
+
     const dBConnectionWrapper = new DBConnectionWrapper();
     const dbServerAwaiter = new DbServerAwaiter(millisPerRequest);
 
     const fakeConnection = dBConnectionWrapper.fakeConnection;
-
     new SqlModelManagerTest(fakeConnection, 'fake').performTests();
 
     const testManager = new DBTestManager();
