@@ -12,6 +12,10 @@ export class DbServerAwaiter {
     this._millisPerRequest = millisPerRequest;
   }
 
+  /**
+   * Awaits a db server until it's ready to handle connections.
+   * @param connection Connection to the db server to await
+   */
   public awaitServer(connection: Knex): Promise<any> {
     const innerAwait = (connection: Knex, resolve: (value?: unknown) => void) => {
       this._dbTestManager.ping(connection)

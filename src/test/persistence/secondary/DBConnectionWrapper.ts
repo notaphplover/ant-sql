@@ -96,11 +96,11 @@ export class DBConnectionWrapper {
   /**
    * MySQL DB connection.
    */
-  protected _mysqlDbConnectionConfig: IDbTestConnection;
+  protected _mySqlDbConnectionConfig: IDbTestConnection;
   /**
    * MySQL DB connection.
    */
-  protected _mysql2DbConnectionConfig: IDbTestConnection;
+  protected _mySql2DbConnectionConfig: IDbTestConnection;
   /**
    * PostgreSQL DB connection.
    */
@@ -116,8 +116,8 @@ export class DBConnectionWrapper {
   public constructor() {
     this._fakeConnection = fakeConnection;
     this._msSqlDbConnectionConfig = msSqlConnectionTestConfig;
-    this._mysqlDbConnectionConfig = mySqlDbConnectionTestConfig;
-    this._mysql2DbConnectionConfig = mySql2DbConnectionTestConfig;
+    this._mySqlDbConnectionConfig = mySqlDbConnectionTestConfig;
+    this._mySql2DbConnectionConfig = mySql2DbConnectionTestConfig;
     this._postgreDbConnectionConfig = postgreDbConnectionTestConfig;
     this._sqliteDbConnectionTestConfig = sqliteDbConnectionTestConfig;
   }
@@ -129,8 +129,8 @@ export class DBConnectionWrapper {
   public get config(): IDbTestConnection[] {
     return [
       this._msSqlDbConnectionConfig,
-      this._mysqlDbConnectionConfig,
-      this._mysql2DbConnectionConfig,
+      this._mySqlDbConnectionConfig,
+      this._mySql2DbConnectionConfig,
       this._postgreDbConnectionConfig,
       this._sqliteDbConnectionTestConfig,
     ];
@@ -141,5 +141,40 @@ export class DBConnectionWrapper {
    */
   public get fakeConnection(): Knex {
     return this._fakeConnection;
+  }
+
+  /**
+   * mssql test connection config
+   */
+  public get msConfig(): IDbTestConnection {
+    return this._msSqlDbConnectionConfig;
+  }
+
+  /**
+   * mysql test connection config
+   */
+  public get mySqlConfig(): IDbTestConnection {
+    return this._mySqlDbConnectionConfig;
+  }
+
+  /**
+   * mysql2 test connection config
+   */
+  public get mySql2Config(): IDbTestConnection {
+    return this._mySql2DbConnectionConfig;
+  }
+
+  /**
+   * pg test connection config
+   */
+  public get pgConfig(): IDbTestConnection {
+    return this._postgreDbConnectionConfig;
+  }
+
+  /**
+   * sqlite3 test connection config
+   */
+  public get sqliteConfig(): IDbTestConnection {
+    return this._sqliteDbConnectionTestConfig;
   }
 }
