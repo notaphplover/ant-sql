@@ -4,11 +4,11 @@ import { AntSqlModelManagerTest } from './api/AntSqlModelManagerTest';
 import { DbServerAwaiter } from './await/DbServerAwaiter';
 import { ITest } from './ITest';
 import { AntSqlModelTest } from './model/AntSqlModelTest';
-import { SqlModelManagerTest } from './primary/SqlModelManagerTest';
-import { AntSqlSecondaryEntityManagerTest } from './secondary/AntSqlSecondaryEntityManagerTest';
-import { DBConnectionWrapper } from './secondary/DBConnectionWrapper';
-import { DBTestManager } from './secondary/DBTestManager';
-import { IDbTestConnection } from './secondary/IDbTestConnection';
+import { SqlModelManagerTest } from './persistence/primary/SqlModelManagerTest';
+import { AntSqlSecondaryEntityManagerTest } from './persistence/secondary/AntSqlSecondaryEntityManagerTest';
+import { DBConnectionWrapper } from './persistence/secondary/DBConnectionWrapper';
+import { DBTestManager } from './persistence/secondary/DBTestManager';
+import { IDbTestConnection } from './persistence/secondary/IDbTestConnection';
 
 const millisPerRequest = 1000;
 
@@ -23,7 +23,6 @@ export class AllTest implements ITest {
 
     const fakeConnection = dBConnectionWrapper.fakeConnection;
 
-    new AntSqlModelManagerTest(fakeConnection, 'fake').performTests();
     new SqlModelManagerTest(fakeConnection, 'fake').performTests();
 
     const testManager = new DBTestManager();
@@ -33,6 +32,11 @@ export class AllTest implements ITest {
       const dbReadyPromise = this._createDBReadyPromise(config, dbServerAwaiter, testManager);
       const deleteAllTablesPromise = dbReadyPromise
         .then(() => testManager.deleteAllTables(connection));
+
+      new AntSqlModelManagerTest(
+        connection,
+        connection.client.driverName,
+      ).performTests();
 
       new AntSqlSecondaryEntityManagerTest(
         deleteAllTablesPromise,

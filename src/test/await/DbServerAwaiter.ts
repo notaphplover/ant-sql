@@ -1,5 +1,5 @@
 import * as Knex from 'knex';
-import { DBTestManager } from '../secondary/DBTestManager';
+import { DBTestManager } from '../persistence/secondary/DBTestManager';
 
 export class DbServerAwaiter {
 

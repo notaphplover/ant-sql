@@ -2,12 +2,12 @@ import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
-import { AntSqlModel } from '../../model/AntSqlModel';
-import { IAntSqlModel } from '../../model/IAntSqlModel';
-import { SqlModelManager } from '../../persistence/primary/SqlModelManager';
-import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
-import { ISqlSecondaryEntityManager } from '../../persistence/secondary/ISqlSecondaryEntityManager';
-import { ITest } from '../ITest';
+import { AntSqlModel } from '../../../model/AntSqlModel';
+import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { SqlModelManager } from '../../../persistence/primary/SqlModelManager';
+import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
+import { ITest } from '../../ITest';
 import { RedisWrapper } from './RedisWrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;

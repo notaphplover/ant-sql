@@ -5,7 +5,7 @@ import { AntSqlModel } from '../../model/AntSqlModel';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ITest } from '../ITest';
-import { RedisWrapper } from '../primary/RedisWrapper';
+import { RedisWrapper } from '../persistence/primary/RedisWrapper';
 import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;

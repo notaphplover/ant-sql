@@ -1,12 +1,12 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import * as Bluebird from 'bluebird';
 import * as Knex from 'knex';
-import { IAntSqlModel } from '../../model/IAntSqlModel';
-import { AntMySqlSecondaryEntityManager } from '../../persistence/secondary/AntMySqlSecondaryEntityManager';
-import { AntSQLiteSecondaryEntityManager } from '../../persistence/secondary/AntSQLiteSecondaryEntityManager';
-import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
-import { ISqlSecondaryEntityManager } from '../../persistence/secondary/ISqlSecondaryEntityManager';
-import { KnexDriver } from './KnexDriver';
+import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
+import { AntSQLiteSecondaryEntityManager } from '../../../persistence/secondary/AntSQLiteSecondaryEntityManager';
+import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
+import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 
 export class DBTestManager {
 

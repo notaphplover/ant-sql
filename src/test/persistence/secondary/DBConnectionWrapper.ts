@@ -1,6 +1,6 @@
 import * as Knex from 'knex';
+import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 import { IDbTestConnection } from './IDbTestConnection';
-import { KnexDriver } from './KnexDriver';
 
 const fakeConnection = Knex({
   client: KnexDriver.PG,
