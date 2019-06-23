@@ -1,6 +1,6 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "SQL extension for AntJS",
   "main": "src/ant.js",
   "scripts": {
@@ -10,6 +10,8 @@
     "build-and-test-debug": "npm run build && npm run test-debug-only",
     "clear-js": "node ./scripts/clear-compiled.js",
     "linter": "./node_modules/tslint/bin/tslint -c ./tslint.json -p ./src.tsconfig.commonjs.json",
+    "publish-npm": "npm run clear-js && npm run test && npm publish --access public",
+    "publish-npm-beta": "npm run clear-js && npm run test && npm publish --access public --tag beta",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "test": "npm run test-docker",
     "test-coverage": "npm run test-docker-coverage",
@@ -27,19 +29,23 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "0.2.2",
-    "knex": "^0.16.3"
+    "@antjs/ant-js": "^0.5.2",
+    "knex": "^0.16.5"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.26",
-    "@types/ioredis": "^4.0.10",
-    "@types/jasmine": "^3.3.12",
-    "@types/node": "^11.13.2",
+    "@types/bluebird": "^3.5.27",
+    "@types/ioredis": "^4.0.11",
+    "@types/jasmine": "^3.3.13",
+    "@types/node": "^11.13.12",
     "coveralls": "^3.0.3",
     "jasmine": "^3.4.0",
-    "nyc": "^13.3.0",
-    "pg": "^7.9.0",
-    "tslint": "^5.15.0",
-    "typescript": "^3.4.2"
+    "mssql": "^5.1.0",
+    "mysql": "^2.17.1",
+    "mysql2": "^1.6.5",
+    "nyc": "^14.1.1",
+    "pg": "^7.11.0",
+    "sqlite3": "^4.0.9",
+    "tslint": "^5.16.0",
+    "typescript": "^3.5.1"
   }
 }

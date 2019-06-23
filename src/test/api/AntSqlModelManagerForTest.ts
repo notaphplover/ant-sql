@@ -1,12 +1,20 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IModelManager } from '@antjs/ant-js/src/persistence/primary/IModelManager';
-import { IPrimaryEntityManager } from '@antjs/ant-js/src/persistence/primary/IPrimaryEntityManager';
 import { ISecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/ISecondaryEntityManager';
 import { AntSqlModelManager } from '../../api/AntSqlModelManager';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 
 export class AntSqlModelManagerForTest<TEntity extends IEntity> extends AntSqlModelManager<TEntity> {
+
+  /**
+   * Gets the inner model manager.
+   */
+  public get modelManager(): ISqlModelManager<TEntity> {
+    return super.modelManager;
+  }
+
   /**
    * Generates a model manager.
    * @param model Model to manage.
@@ -18,19 +26,6 @@ export class AntSqlModelManagerForTest<TEntity extends IEntity> extends AntSqlMo
     config: IAntSqlModelConfig,
   ): IModelManager<TEntity> {
     return this._generateModelManager(model, config);
-  }
-
-  /**
-   * Generates a primary entity manager.
-   * @param model Model to manage.
-   * @param config AntSQL model config.
-   * @returns Primary entity manager generated.
-   */
-  public generatePrimaryEntityManager(
-    model: IAntSqlModel,
-    config: IAntSqlModelConfig,
-  ): IPrimaryEntityManager<TEntity> {
-    return this._generatePrimaryEntityManager(model, config);
   }
 
   /**

@@ -8,6 +8,10 @@ const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 const modelTestGen = (prefix: string) => new AntSqlModel(
   'id',
   { prefix: prefix },
+  [{
+    entityAlias: 'id',
+    sqlName: 'id',
+  }],
   prefix.replace(/\//g, '_'),
 );
 
