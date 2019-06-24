@@ -54,11 +54,12 @@ import * as Knex from 'knex';
 const knex = Knex({
   client: 'pg',
   connection: {
-    host : '127.0.0.1',
-    user : 'your_database_user',
-    password : 'your_database_password',
-    database : 'your_database_name'
-  }
+    database : 'antsqltest',
+    host : 'ant_db',
+    password : 'antpassword',
+    user : 'antuser',
+  },
+  version: '11.2',
 });
 
 export { knex };
@@ -92,6 +93,7 @@ The code could be the following one:
 __src/provider/AntSqlProvider.ts__
 ```typescript
 import { AntSqlManager } from '@antjs/ant-sql';
+import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
 import { IUser } from '../entity/IUser';
 import { knex } from './DBProvider';
 import { userModel } from './ModelProvider';
@@ -105,7 +107,7 @@ manager.config({
   },
 });
 
-const userManager = manager.get<IUser>(userModel);
+const userManager = manager.get(userModel) as IAntSqlModelManager<IUser>;
 
 export {
   manager,
