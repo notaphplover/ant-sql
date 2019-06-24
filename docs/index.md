@@ -1,4 +1,4 @@
-# AntJS Tutorials
+# AntSQL Tutorials
 
 Welcome to the tutorial pages. This pages pretends to explain how to use this library in a practical way.
 
