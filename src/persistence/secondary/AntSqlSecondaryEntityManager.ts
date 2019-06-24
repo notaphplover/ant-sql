@@ -192,7 +192,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends IEntity>
     return this
       ._dbConnection
       .transaction((transaction) => {
-        const queries = new Array<Knex.QueryBuilder>();
+        const queries = new Array<Knex.QueryBuilder<any, number>>();
         for (const entity of entities) {
           queries.push(
             this

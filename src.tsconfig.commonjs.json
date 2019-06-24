@@ -13,12 +13,6 @@
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/knex/types"
-    ],
-    "types": [
-      "ioredis",
-      "jasmine",
-      "knex",
-      "node"
     ]
   },
   "exclude" : [
