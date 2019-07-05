@@ -1,17 +1,17 @@
 import { AntManager } from '@antjs/ant-js/src/api/AntManager';
 import { QueryMapType } from '@antjs/ant-js/src/api/AntModelManager';
-import { IAntModelManager } from '@antjs/ant-js/src/api/IAntModelManager';
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { AntSqlModelManager } from '../api/AntSqlModelManager';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { IAntSqlManager } from './IAntSqlManager';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
 export class AntSqlManager extends AntManager<
   IAntSqlModelConfig,
   IAntSqlModel,
   IAntSqlModelManager<IEntity>
-> {
+> implements IAntSqlManager {
 
   /**
    * Queries map.
@@ -24,6 +24,15 @@ export class AntSqlManager extends AntManager<
   public constructor() {
     super();
     this._queriesMap = new Map();
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get<TEntity extends IEntity>(
+    model: IAntSqlModel,
+  ): IAntSqlModelManager<TEntity> {
+    return super.get(model) as IAntSqlModelManager<TEntity>;
   }
 
   /**
