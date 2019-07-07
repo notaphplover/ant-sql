@@ -30,7 +30,7 @@
   "license": "ISC",
   "dependencies": {
     "@antjs/ant-js": "^0.5.2",
-    "knex": "^0.17.6"
+    "knex": "^0.18.3"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.27",

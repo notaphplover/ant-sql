@@ -72,7 +72,7 @@ export class DBTestManager {
   public createDatabaseIfNotExists(
     knex: Knex,
     dbName: string,
-  ): Bluebird<any> {
+  ): Promise<any> {
     let query: string;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
@@ -85,7 +85,7 @@ END`;
       default:
         throw new Error(`Driver "${ knex.client.driverName }" not supported`);
     }
-    return knex.raw(query);
+    return knex.raw<any>(query);
   }
 
   /**
@@ -113,8 +113,8 @@ END`;
    * @param knex Knex instance.
    * @returns Tables found in the db schema.
    */
-  public listTables(knex: Knex): Bluebird<string[]> {
-    let knexQuery: Bluebird<any[]>;
+  public listTables(knex: Knex): Promise<string[]> {
+    let knexQuery: Promise<any[]>;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
         knexQuery = knex('information_schema.tables')
@@ -158,8 +158,8 @@ END`;
    * @param knex Knex connection.
    * @returns Promise of query executed.
    */
-  public ping(knex: Knex): Bluebird<any> {
-    let knexQuery: Bluebird<any>;
+  public ping(knex: Knex): Promise<any> {
+    let knexQuery: Promise<any>;
     const limitResultsSize = 1;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
