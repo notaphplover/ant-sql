@@ -74,6 +74,7 @@ export class SqlModelManagerTest implements ITest {
         new SqlModelManager(
           model,
           this._redis.redis,
+          true,
           secondaryEntityManager,
         );
       }).not.toThrowError();
@@ -93,6 +94,7 @@ export class SqlModelManagerTest implements ITest {
       const sqlModelManager = new SqlModelManager(
         model,
         this._redis.redis,
+        true,
         secondaryEntityManager,
       );
       const methodsToTest = [

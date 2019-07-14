@@ -50,8 +50,8 @@ export class AntSqlModelManager<TEntity extends IEntity>
     return new SqlModelManager<TEntity>(
       model,
       config.redis,
+      config.negativeCache || true,
       this._generateSecondaryEntityManager(model, config),
-      config.negativeCache,
     );
   }
 
