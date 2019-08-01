@@ -70,6 +70,7 @@ export class QueryConfigFactoryTest implements ITest {
       this._itMustBuildAQueryByUniqueFieldThatReturnsNullIfNoEntityIsFound();
       this._itMustBuildAValidQueryByFieldConfig();
       this._itMustBuildAValidQueryByUniqueFieldConfig();
+      this._itMustMQueryWithRepeatedQueries();
     });
   }
 
@@ -321,6 +322,61 @@ export class QueryConfigFactoryTest implements ITest {
       ]);
 
       expect(playerByName).toEqual(player1);
+
+      expect(playersByNames).toContain(player1);
+      expect(playersByNames).toContain(player2);
+      expect(playersByNames).not.toContain(player3);
+      expect(playersByNames).not.toContain(player4);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustMQueryWithRepeatedQueries(): void {
+    const itsName = 'It must perform an mquery with repeated queries';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const antSqlManager = new AntSqlManager();
+      const factory = new QueryConfigFactory();
+      const modelManager = antSqlManager
+        .get<NamedEntityTest>(model)
+        .config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+      const query = modelManager
+        .query(
+          factory.getQueryByField<NamedEntityTest>(
+            this._dbConnection, model, model.getColumn('name'), model.tableName + '/query/',
+          ),
+        );
+
+      const player1 = { id: 1, name: 'name-1' };
+      const player2 = { id: 2, name: 'name-1' };
+      const player3 = { id: 3, name: 'name-2' };
+      const player4 = { id: 4, name: 'name-3' };
+
+      await modelManager.mInsert([
+        player1,
+        player2,
+        player3,
+        player4,
+      ]);
+
+      const playersByNames = await query.mGet([
+        {name: 'name-1'},
+        {name: 'name-1'},
+      ]);
 
       expect(playersByNames).toContain(player1);
       expect(playersByNames).toContain(player2);
