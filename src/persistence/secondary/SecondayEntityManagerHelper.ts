@@ -30,7 +30,7 @@ export class SecondaryEntityManagerHelper<TEntity extends IEntity> {
    */
   public buildKnexObject(model: IAntSqlModel, entity: TEntity): {[key: string]: any} {
     const updateObject: {[key: string]: any} = {};
-    for (const [, columnData] of model.columns) {
+    for (const columnData of model.columns) {
       const entityValue = entity[columnData.entityAlias];
       if (undefined !== entityValue) {
         updateObject[columnData.sqlName] = entityValue;
