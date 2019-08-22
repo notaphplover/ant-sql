@@ -1,9 +1,9 @@
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import { AntTest } from './AntTest';
 import { AntSqlManagerTest } from './api/AntSqlManagerTest';
 import { AntSqlModelManagerTest } from './api/AntSqlModelManagerTest';
 import { QueryConfigFactoryTest } from './api/QueryConfigFactoryTest';
 import { dbServerAwaiterManager } from './await/DbServerAwaiterManager';
-import { ITest } from './ITest';
 import { AntSqlModelTest } from './model/AntSqlModelTest';
 import { RedisWrapper } from './persistence/primary/RedisWrapper';
 import { SqlModelManagerTest } from './persistence/primary/SqlModelManagerTest';

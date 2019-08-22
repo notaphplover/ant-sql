@@ -1,10 +1,10 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
 import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 import { SecondaryEntityManagerHelper } from '../../../persistence/secondary/SecondayEntityManagerHelper';
 import { dbServerAwaiterManager } from '../../await/DbServerAwaiterManager';
-import { ITest } from '../../ITest';
 import { modelGenerator } from '../../model/AntSqlModelGenerator';
 import { DBConnectionWrapper } from './DBConnectionWrapper';
 import { DBTestManager } from './DBTestManager';

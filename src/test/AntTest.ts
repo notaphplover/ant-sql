@@ -1,6 +1,6 @@
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import * as AntJs from '../ant';
 import { AntSqlManager } from '../api/AntSqlManager';
-import { ITest } from './ITest';
 
 export class AntTest implements ITest {
 
