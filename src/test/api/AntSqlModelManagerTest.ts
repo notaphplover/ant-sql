@@ -1,11 +1,11 @@
 import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
 import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
+import { RedisMiddlewareMock } from '@antjs/ant-js/src/testapi/api/primary/RedisMiddlewareMock';
 import * as Knex from 'knex';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { AntSqlModel } from '../../model/AntSqlModel';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
-import { RedisWrapper } from '../persistence/primary/RedisWrapper';
 import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
@@ -29,10 +29,6 @@ export class AntSqlModelManagerTest implements ITest {
    * Declare name for the test
    */
   protected _declareName: string;
-  /**
-   * Redis connection wrapper.
-   */
-  protected _redisWrapper: RedisWrapper;
 
   /**
    * Creates a new test instance for AntSqlModelManager.
@@ -41,7 +37,6 @@ export class AntSqlModelManagerTest implements ITest {
   public constructor(dbConnection: Knex, dbAlias: string) {
     this._dbConnection = dbConnection;
     this._declareName = AntSqlModelManagerTest.name + '/' + dbAlias;
-    this._redisWrapper = new RedisWrapper();
   }
 
   public performTests(): void {
@@ -60,7 +55,7 @@ export class AntSqlModelManagerTest implements ITest {
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
       antModelManager.config({
         knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
+        redis: new RedisMiddlewareMock(),
       });
       const modelManager = antModelManager.modelManager;
 
@@ -104,7 +99,7 @@ export class AntSqlModelManagerTest implements ITest {
       const model = modelTestGen(prefix);
       const config: IAntSqlModelConfig = {
         knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
+        redis: new RedisMiddlewareMock(),
       };
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
       const modelManager = antModelManager.generateModelManager(model, config);
@@ -120,7 +115,7 @@ export class AntSqlModelManagerTest implements ITest {
       const model = modelTestGen(prefix);
       const config: IAntSqlModelConfig = {
         knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
+        redis: new RedisMiddlewareMock(),
       };
       const antModelManager = new AntSqlModelManagerForTest(model, new Map());
       const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
