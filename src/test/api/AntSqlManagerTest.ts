@@ -1,7 +1,7 @@
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import { AntSqlManager } from '../../ant';
 import { AntSqlModelManager } from '../../api/AntSqlModelManager';
 import { AntSqlModel } from '../../model/AntSqlModel';
-import { ITest } from '../ITest';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 

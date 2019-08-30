@@ -1,9 +1,9 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import * as Knex from 'knex';
 import { IAntSqlModel } from '../../../model/IAntSqlModel';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
-import { ITest } from '../../ITest';
 import { modelGenerator } from '../../model/AntSqlModelGenerator';
 import { DBTestManager } from './DBTestManager';
 
