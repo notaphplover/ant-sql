@@ -10,6 +10,7 @@ import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSec
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../persistence/secondary/KnexDriver';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { IAntSqlModelManager } from './IAntSqlModelManager';
 
 export class AntSqlModelManager<TEntity extends IEntity>
   extends AntModelManager<
@@ -17,7 +18,7 @@ export class AntSqlModelManager<TEntity extends IEntity>
     IAntSqlModelConfig,
     IAntSqlModel,
     ISqlModelManager<TEntity>
-> {
+> implements IAntSqlModelManager<TEntity> {
 
   /**
    * Inserts an entity.
