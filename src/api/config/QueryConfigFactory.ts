@@ -188,7 +188,7 @@ export class QueryConfigFactory {
         const value = result[column.sqlName];
         const indexes = valuesMap.get(value);
         for (const index of indexes) {
-          finalResults[index].push(id);
+          (finalResults[index] as Array<any>).push(id);
         }
       }
       return finalResults;
