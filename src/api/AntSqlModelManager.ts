@@ -1,6 +1,5 @@
 import { AntModelManager } from '@antjs/ant-js/src/api/AntModelManager';
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { ICacheOptions } from '@antjs/ant-js/src/persistence/primary/options/ICacheOptions';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { SqlModelManager } from '../persistence/primary/SqlModelManager';
@@ -10,6 +9,8 @@ import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSec
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../persistence/secondary/KnexDriver';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { IAntSqlModelManager } from './IAntSqlModelManager';
+import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
 
 export class AntSqlModelManager<TEntity extends IEntity>
   extends AntModelManager<
@@ -17,24 +18,26 @@ export class AntSqlModelManager<TEntity extends IEntity>
     IAntSqlModelConfig,
     IAntSqlModel,
     ISqlModelManager<TEntity>
-> {
+> implements IAntSqlModelManager<TEntity> {
 
   /**
    * Inserts an entity.
    * @param entity Entity to be inserted.
+   * @param options Persistency options.
    * @returns Promise of entity inserted.
    */
-  public insert(entity: TEntity, cacheOptions?: ICacheOptions): Promise<any> {
-    return this.modelManager.insert(entity, cacheOptions);
+  public insert(entity: TEntity, options?: IAntSqlUpdateOptions): Promise<any> {
+    return this.modelManager.insert(entity, options);
   }
 
   /**
    * Inserts multiple entities.
    * @param entities Entities to be inserted.
+   * @param options Persistency options.
    * @returns Promise of entities inserted.
    */
-  public mInsert(entities: TEntity[], cacheOptions?: ICacheOptions): Promise<any> {
-    return this.modelManager.mInsert(entities, cacheOptions);
+  public mInsert(entities: TEntity[], options?: IAntSqlUpdateOptions): Promise<any> {
+    return this.modelManager.mInsert(entities, options);
   }
 
   /**
