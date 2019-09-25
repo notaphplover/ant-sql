@@ -12,6 +12,43 @@ import { IAntSqlModel } from '../../model/IAntSqlModel';
 export class QueryConfigFactory {
 
   /**
+   * Creates a query of all entities of a certain model.
+   * @param knex Knex instance.
+   * @param model Query mode.
+   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @returns Query config.
+   */
+  public getQueryAll<TEntity extends IEntity>(
+    knex: Knex,
+    model: IAntSqlModel,
+    queryPrefix: string,
+  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  /**
+   * Creates a query of all entities of a certain model.
+   * @param knex Knex instance.
+   * @param model Query mode.
+   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @returns Query config.
+   */
+  public getQueryAll<
+    TEntity extends IEntity,
+    TQueryResult extends MultipleQueryResult,
+  >(
+    knex: Knex,
+    model: IAntSqlModel,
+    queryPrefix: string,
+  ): IAntQueryConfig<TEntity, TQueryResult> {
+    return {
+      isMultiple: true,
+      query: this._buildAllIdsQuery<TEntity, TQueryResult>(
+        knex, model,
+      ),
+      queryKeyGen: () => queryPrefix,
+      reverseHashKey: queryPrefix + 'reverse',
+    };
+  }
+
+  /**
    * Creates a query of entities by a single field.
    * @param knex Knex instance.
    * @param model Query model.
@@ -96,6 +133,27 @@ export class QueryConfigFactory {
       ),
       queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
       reverseHashKey: queryPrefix + 'reverse',
+    };
+  }
+
+  /**
+   * Creates an all ids query.
+   * @param knex Knex connection.
+   * @param model AntSQL model.
+   * @returns query built.
+   */
+  private _buildAllIdsQuery<
+    TEntity extends IEntity,
+    TQueryResult extends MultipleQueryResult,
+  >(
+    knex: Knex,
+    model: IAntSqlModel,
+  ): TQuery<TQueryResult> {
+    return () => {
+      return this._createAllEntitiesIdsQuery(knex, model)
+        .then(
+          (results: TEntity[]) => results.map((result) => result[model.id]) as TQueryResult,
+        );
     };
   }
 
@@ -276,6 +334,21 @@ export class QueryConfigFactory {
   }
 
   /**
+   * Creates an all query.
+   * @param knex Knex instance.
+   * @param model Query model.
+   * @returns query builder.
+   */
+  private _createAllEntitiesIdsQuery(
+    knex: Knex,
+    model: IAntSqlModel,
+  ): Knex.QueryBuilder {
+    return knex
+      .select(model.id)
+      .from(model.tableName);
+  }
+
+  /**
    * Creates a query by field value.
    * @param knex Knex instance.
    * @param model Query model.
@@ -288,9 +361,7 @@ export class QueryConfigFactory {
     column: IAntSQLColumn,
     values: any[],
   ): Knex.QueryBuilder {
-    return knex
-      .select(model.id)
-      .from(model.tableName)
+    return this._createAllEntitiesIdsQuery(knex, model)
       .whereIn(column.sqlName, values);
   }
 
@@ -326,9 +397,7 @@ export class QueryConfigFactory {
     column: IAntSQLColumn,
     value: any,
   ): Knex.QueryBuilder {
-    return knex
-      .select(model.id)
-      .from(model.tableName)
+    return this._createAllEntitiesIdsQuery(knex, model)
       .where(column.sqlName, value);
   }
 }
