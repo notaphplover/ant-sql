@@ -12,36 +12,42 @@ import { IAntSqlModel } from '../../model/IAntSqlModel';
 export class QueryConfigFactory {
 
   /**
-   * Creates a query of all entities of a certain model.
-   * @param knex Knex instance.
-   * @param model Query mode.
-   * @param queryPrefix Query prefix used to generate Redis keys.
-   * @returns Query config.
+   * Knex connection.
    */
-  public getQueryAll<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
-    queryPrefix: string,
-  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  protected _knex: Knex;
+  /**
+   * Model to manage.
+   */
+  protected _model: IAntSqlModel;
+
+  /**
+   * Creates a query config factory.
+   * @param knex Knex connection.
+   * @param model Queries model.
+   */
+  public constructor(knex: Knex, model: IAntSqlModel) {
+    this._knex = knex;
+    this._model = model;
+  }
+
   /**
    * Creates a query of all entities of a certain model.
-   * @param knex Knex instance.
-   * @param model Query mode.
    * @param queryPrefix Query prefix used to generate Redis keys.
    * @returns Query config.
    */
-  public getQueryAll<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  public all<TEntity extends IEntity>(queryPrefix: string): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  /**
+   * Creates a query of all entities of a certain model.
+   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @returns Query config.
+   */
+  public all<TEntity extends IEntity, TQueryResult extends MultipleQueryResult>(
     queryPrefix: string,
   ): IAntQueryConfig<TEntity, TQueryResult> {
     return {
       isMultiple: true,
       query: this._buildAllIdsQuery<TEntity, TQueryResult>(
-        knex, model,
+        this._knex, this._model,
       ),
       queryKeyGen: () => queryPrefix,
       reverseHashKey: queryPrefix + 'reverse',
@@ -50,42 +56,34 @@ export class QueryConfigFactory {
 
   /**
    * Creates a query of entities by a single field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param queryPrefix Query prefix.
    * @returns Query config.
    */
-  public getQueryByField<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byField<TEntity extends IEntity>(
     column: IAntSQLColumn,
     queryPrefix: string,
   ): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of entities by a single field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param queryPrefix Query prefix.
    * @returns Query config.
    */
-  public getQueryByField<
+  public byField<
     TEntity extends IEntity,
     TQueryResult extends MultipleQueryResult,
   >(
-    knex: Knex,
-    model: IAntSqlModel,
     column: IAntSQLColumn,
     queryPrefix: string,
   ): IAntQueryConfig<TEntity, TQueryResult> {
     return {
       isMultiple: true,
       mQuery: this._buildIdsByFieldsQuery<TEntity, TQueryResult>(
-        knex, model, column,
+        this._knex, this._model, column,
       ),
       query: this._buildIdsByFieldQuery<TEntity, TQueryResult>(
-        knex, model, column,
+        this._knex, this._model, column,
       ),
       queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
       reverseHashKey: queryPrefix + 'reverse',
@@ -94,42 +92,34 @@ export class QueryConfigFactory {
 
   /**
    * Creates a query of entities by an unique field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param queryPrefix Query prefix.
    * @returns Query config.
    */
-  public getQueryByUniqueField<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byUniqueField<TEntity extends IEntity>(
     column: IAntSQLColumn,
     queryPrefix: string,
   ): IAntQueryConfig<TEntity, SingleQueryResult>;
   /**
    * Creates a query of entities by an unique field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param queryPrefix Query prefix.
    * @returns Query config.
    */
-  public getQueryByUniqueField<
+  public byUniqueField<
     TEntity extends IEntity,
     TQueryResult extends SingleQueryResult,
   >(
-    knex: Knex,
-    model: IAntSqlModel,
     column: IAntSQLColumn,
     queryPrefix: string,
   ): IAntQueryConfig<TEntity, TQueryResult> {
     return {
       isMultiple: false,
       mQuery: this._buildIdsByUniqueFieldsQuery<TEntity, TQueryResult>(
-        knex, model, column,
+        this._knex, this._model, column,
       ),
       query: this._buildIdsByUniqueFieldQuery<TEntity, TQueryResult>(
-        knex, model, column,
+        this._knex, this._model, column,
       ),
       queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
       reverseHashKey: queryPrefix + 'reverse',
