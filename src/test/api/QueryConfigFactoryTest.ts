@@ -63,11 +63,13 @@ export class QueryConfigFactoryTest implements ITest {
   public performTests(): void {
     describe(this._declareName, () => {
       this._itMustBeInitializable();
-      this._itMustBuildAnMqueryByFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided();
-      this._itMustBuildAnMqueryByUniqueFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided();
+      this._itMustBuildAnMQueryByFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided();
+      this._itMustBuildAnMQueryByUniqueFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided();
+      this._itMustBuildAQueryAllThatDoesNotNeedParameters();
       this._itMustBuildAQueryByFieldThatNeedsParameters();
       this._itMustBuildAQueryByUniqueFieldThatNeedsParameters();
       this._itMustBuildAQueryByUniqueFieldThatReturnsNullIfNoEntityIsFound();
+      this._itMustBuildAValidQueryAllBuildConfig();
       this._itMustBuildAValidQueryByFieldConfig();
       this._itMustBuildAValidQueryByUniqueFieldConfig();
       this._itMustMQueryWithRepeatedQueries();
@@ -84,8 +86,8 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
-  private _itMustBuildAnMqueryByFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided(): void {
-    const itsName = 'It must build an query by field that returns an empty array if an empty params array is provided';
+  private _itMustBuildAnMQueryByFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided(): void {
+    const itsName = 'It must build an mquery by field that returns an empty array if an empty params array is provided';
     const prefix = this._declareName + '/' + itsName + '/';
     it(itsName, async (done) => {
       await this._beforeAllPromise;
@@ -108,9 +110,9 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
-  private _itMustBuildAnMqueryByUniqueFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided(): void {
+  private _itMustBuildAnMQueryByUniqueFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided(): void {
     const itsName =
-      'It must build an query by unique field that returns an empty array if an empty params array is provided';
+      'It must build an mquery by unique field that returns an empty array if an empty params array is provided';
     const prefix = this._declareName + '/' + itsName + '/';
     it(itsName, async (done) => {
       await this._beforeAllPromise;
@@ -129,6 +131,33 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       expect(await queryConfig.mQuery(new Array())).toEqual(new Array());
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustBuildAQueryAllThatDoesNotNeedParameters(): void {
+    const itsName = 'It must build an all query that does not need parameters';
+    const prefix = this._declareName + '/' + itsName + '/';
+
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const factory = new QueryConfigFactory();
+      const queryConfig = factory.getQueryAll<NamedEntityTest>(
+        this._dbConnection, model, model.tableName + '/query/',
+      );
+
+      expect(() => queryConfig.query(null)).not.toThrowError();
+      expect(() => queryConfig.query({})).not.toThrowError();
+
       done();
     }, MAX_SAFE_TIMEOUT);
   }
@@ -209,6 +238,65 @@ export class QueryConfigFactoryTest implements ITest {
       const entityFound = await queryConfig.query({ name: 'name-1' });
 
       expect(entityFound).toBeNull();
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustBuildAValidQueryAllBuildConfig(): void {
+    const itsName = 'It must build a valid all query config';
+    const prefix = this._declareName + '/' + itsName + '/';
+
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const antSqlManager = new AntSqlManager();
+      const factory = new QueryConfigFactory();
+      const modelManager = antSqlManager
+        .get<NamedEntityTest>(model)
+        .config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+      const query = modelManager
+        .query(
+          factory.getQueryAll<NamedEntityTest>(
+            this._dbConnection, model, model.tableName + '/query/',
+          ),
+        );
+
+      const player1 = { id: 1, name: 'name-1' };
+      const player2 = { id: 2, name: 'name-1' };
+      const player3 = { id: 3, name: 'name-2' };
+      const player4 = { id: 4, name: 'name-3' };
+
+      await modelManager.mInsert([
+        player1,
+        player2,
+        player3,
+        player4,
+      ]);
+
+      const playersQueryResult = await query.get({});
+      const playersMQueryResult = await query.mGet([{}]);
+
+      expect(playersQueryResult).toContain(player1);
+      expect(playersQueryResult).toContain(player2);
+      expect(playersQueryResult).toContain(player3);
+      expect(playersQueryResult).toContain(player4);
+
+      expect(playersMQueryResult).toContain(player1);
+      expect(playersMQueryResult).toContain(player2);
+      expect(playersMQueryResult).toContain(player3);
+      expect(playersMQueryResult).toContain(player4);
+
       done();
     }, MAX_SAFE_TIMEOUT);
   }
