@@ -103,8 +103,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.byField<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byField(
         model.getColumn('name'), model.tableName + '/query/',
       );
 
@@ -128,8 +128,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byUniqueField(
         model.getColumn('name'), model.tableName + '/query/',
       );
 
@@ -153,8 +153,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.all<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.all(
         model.tableName + '/query/',
       );
 
@@ -179,8 +179,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.byField<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byField(
         model.getColumn('name'), model.tableName + '/query/',
       );
 
@@ -206,8 +206,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byUniqueField(
         model.getColumn('name'), model.tableName + '/query/',
       );
 
@@ -233,8 +233,8 @@ export class QueryConfigFactoryTest implements ITest {
         tableGeneratorOtherColumns,
       );
 
-      const factory = new QueryConfigFactory(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField<NamedEntityTest>(
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byUniqueField(
         model.getColumn('name'), model.tableName + '/query-unique/',
       );
 
@@ -261,16 +261,16 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const antSqlManager = new AntSqlManager();
-      const factory = new QueryConfigFactory(this._dbConnection, model);
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
       const modelManager = antSqlManager
-        .get<NamedEntityTest>(model)
+        .get(model)
         .config({
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
       const query = modelManager
         .query(
-          factory.all<NamedEntityTest>(
+          factory.all(
             model.tableName + '/query/',
           ),
         );
@@ -319,16 +319,16 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const antSqlManager = new AntSqlManager();
-      const factory = new QueryConfigFactory(this._dbConnection, model);
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
       const modelManager = antSqlManager
-        .get<NamedEntityTest>(model)
+        .get(model)
         .config({
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
       const query = modelManager
         .query(
-          factory.byField<NamedEntityTest>(
+          factory.byField(
             model.getColumn('name'), model.tableName + '/query/',
           ),
         );
@@ -380,7 +380,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const antSqlManager = new AntSqlManager();
-      const factory = new QueryConfigFactory(this._dbConnection, model);
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
       const modelManager = antSqlManager
         .get<NamedEntityTest>(model)
         .config({
@@ -401,7 +401,7 @@ export class QueryConfigFactoryTest implements ITest {
 
       const query = modelManager
         .query(
-          factory.byUniqueField<NamedEntityTest>(
+          factory.byUniqueField(
             model.getColumn('name'), model.tableName + '/query-unique/',
           ),
         );
@@ -438,7 +438,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const antSqlManager = new AntSqlManager();
-      const factory = new QueryConfigFactory(this._dbConnection, model);
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
       const modelManager = antSqlManager
         .get<NamedEntityTest>(model)
         .config({
@@ -447,7 +447,7 @@ export class QueryConfigFactoryTest implements ITest {
         });
       const query = modelManager
         .query(
-          factory.byField<NamedEntityTest>(
+          factory.byField(
             model.getColumn('name'), model.tableName + '/query/',
           ),
         );
