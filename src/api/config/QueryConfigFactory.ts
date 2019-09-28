@@ -112,8 +112,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an all ids query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @returns query built.
    */
   private _buildAllIdsQuery<TQueryResult extends MultipleQueryResult>(): TQuery<TQueryResult> {
@@ -127,8 +125,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an ids by field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @param column AntSql column.
    * @returns query built.
    */
@@ -152,8 +148,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an ids by fields query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @param column AntSql column.
    * @returns query built.
    */
@@ -179,7 +173,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   }
   /**
    * Creates a promise callback to handle the results query response.
-   * @param model AntSqlModel.
    * @param column AntSql column.
    * @param valuesMap Values map.
    * @param valuesLength values length.
@@ -228,8 +221,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an ids by unique field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @param column AntSql column.
    * @returns query built.
    */
@@ -254,8 +245,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an ids by unique field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @param column AntSql column.
    * @returns query built.
    */
@@ -279,8 +268,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates an all query.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @returns query builder.
    */
   private _createAllEntitiesIdsQuery(): Knex.QueryBuilder {
@@ -291,8 +278,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
@@ -306,8 +291,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
@@ -323,8 +306,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
