@@ -40,8 +40,6 @@ export const modelGenerator = (
     'id',
     keyGen,
     columnsArgs,
-    (keyGen.prefix ? tableNameGenerator(keyGen.prefix) : '')
-      + (keyGen.prefix && keyGen.suffix ? '_' : '')
-      + (keyGen.suffix ? tableNameGenerator(keyGen.suffix) : ''),
+    tableNameGenerator(keyGen.prefix),
   );
 };

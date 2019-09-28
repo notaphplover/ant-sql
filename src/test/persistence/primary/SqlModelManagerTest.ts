@@ -27,9 +27,7 @@ const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
     'id',
     keyGen,
     [{ entityAlias: 'id', sqlName: 'id' }],
-    (keyGen.prefix ? tableNameGenerator(keyGen.prefix) : '')
-      + (keyGen.prefix && keyGen.suffix ? '_' : '')
-      + (keyGen.suffix ? tableNameGenerator(keyGen.suffix) : ''),
+    tableNameGenerator(keyGen.prefix),
   );
 };
 
