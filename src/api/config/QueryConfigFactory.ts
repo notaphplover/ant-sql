@@ -8,6 +8,7 @@ import {
 import * as Knex from 'knex';
 import { IAntSQLColumn } from '../../model/IAntSQLColumn';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { ICfgGenOptions } from './ICfgGenOptions';
 
 export class QueryConfigFactory<TEntity extends IEntity> {
 
@@ -32,81 +33,103 @@ export class QueryConfigFactory<TEntity extends IEntity> {
 
   /**
    * Creates a query of all entities of a certain model.
-   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public all(queryPrefix: string): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  public all(options?: ICfgGenOptions<TEntity>): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of all entities of a certain model.
-   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @param options Config generation options
    * @returns Query config.
    */
   public all<TQueryResult extends MultipleQueryResult>(
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'all/';
+    options = this._processCfgGenOptions(
+      options,
+      () => this._model.keyGen.prefix + queryAlias,
+      queryAlias,
+    );
+
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       query: this._buildAllIdsQuery<TQueryResult>(),
-      queryKeyGen: () => queryPrefix,
-      reverseHashKey: queryPrefix + 'reverse',
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
   public byField(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
   public byField<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'f_' + column.entityAlias + '/';
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
+      queryAlias,
+    );
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       mQuery: this._buildIdsByFieldsQuery<TQueryResult>(column),
       query: this._buildIdsByFieldQuery<TQueryResult>(column),
-      queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
-      reverseHashKey: queryPrefix + 'reverse',
+      queryKeyGen: options.entityKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
   /**
    * Creates a query of entities by an unique field.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
   public byUniqueField(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, SingleQueryResult>;
   /**
    * Creates a query of entities by an unique field.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
   public byUniqueField<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'uf_' + column.entityAlias + '/';
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
+      queryAlias,
+    );
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: false,
       mQuery: this._buildIdsByUniqueFieldsQuery<TQueryResult>(column),
       query: this._buildIdsByUniqueFieldQuery<TQueryResult>(column),
-      queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
-      reverseHashKey: queryPrefix + 'reverse',
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
@@ -193,7 +216,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
         const value = result[column.sqlName];
         const indexes = valuesMap.get(value);
         for (const index of indexes) {
-          (finalResults[index] as Array<any>).push(id);
+          (finalResults[index] as any[]).push(id);
         }
       }
       return finalResults;
@@ -315,5 +338,32 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   ): Knex.QueryBuilder {
     return this._createAllEntitiesIdsQuery()
       .where(column.sqlName, value);
+  }
+
+  /**
+   * Process a config generation options.
+   * @param options CfgGen options provided.
+   * @param defaultQueryKeyGen Default query keyGen.
+   * @param queryName Query name.
+   * @returns Processed config generation options.
+   */
+  private _processCfgGenOptions(
+    options: ICfgGenOptions<TEntity>,
+    defaultQueryKeyGen: (params: any) => string,
+    queryName: string,
+  ): ICfgGenOptions<TEntity> {
+    if (!options) {
+      options = {};
+    }
+    if (!options.queryKeyGen) {
+      options.queryKeyGen = defaultQueryKeyGen;
+    }
+    if (!options.entityKeyGen) {
+      options.entityKeyGen = options.queryKeyGen;
+    }
+    if (!options.reverseHashKey) {
+      options.reverseHashKey = this._model.keyGen.prefix + queryName + '/reverse';
+    }
+    return options;
   }
 }

@@ -70,6 +70,7 @@ export class QueryConfigFactoryTest implements ITest {
       this._itMustBuildAQueryByUniqueFieldThatNeedsParameters();
       this._itMustBuildAQueryByUniqueFieldThatReturnsNullIfNoEntityIsFound();
       this._itMustBuildAValidQueryAllBuildConfig();
+      this._itMustBuildAValidQueryAllWithParameters();
       this._itMustBuildAValidQueryByFieldConfig();
       this._itMustBuildAValidQueryByUniqueFieldConfig();
       this._itMustMQueryWithRepeatedQueries();
@@ -104,9 +105,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.byField(
-        model.getColumn('name'), model.tableName + '/query/',
-      );
+      const queryConfig = factory.byField(model.getColumn('name'));
 
       expect(await queryConfig.mQuery(new Array())).toEqual(new Array());
       done();
@@ -129,9 +128,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField(
-        model.getColumn('name'), model.tableName + '/query/',
-      );
+      const queryConfig = factory.byUniqueField(model.getColumn('name'));
 
       expect(await queryConfig.mQuery(new Array())).toEqual(new Array());
       done();
@@ -154,9 +151,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.all(
-        model.tableName + '/query/',
-      );
+      const queryConfig = factory.all();
 
       expect(() => queryConfig.query(null)).not.toThrowError();
       expect(() => queryConfig.query({})).not.toThrowError();
@@ -180,9 +175,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.byField(
-        model.getColumn('name'), model.tableName + '/query/',
-      );
+      const queryConfig = factory.byField(model.getColumn('name'));
 
       expect(() => queryConfig.query(null)).toThrowError();
       expect(() => queryConfig.query({})).toThrowError();
@@ -207,9 +200,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField(
-        model.getColumn('name'), model.tableName + '/query/',
-      );
+      const queryConfig = factory.byUniqueField(model.getColumn('name'));
 
       expect(() => queryConfig.query(null)).toThrowError();
       expect(() => queryConfig.query({})).toThrowError();
@@ -234,9 +225,7 @@ export class QueryConfigFactoryTest implements ITest {
       );
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
-      const queryConfig = factory.byUniqueField(
-        model.getColumn('name'), model.tableName + '/query-unique/',
-      );
+      const queryConfig = factory.byUniqueField(model.getColumn('name'));
 
       const entityFound = await queryConfig.query({ name: 'name-1' });
 
@@ -268,12 +257,7 @@ export class QueryConfigFactoryTest implements ITest {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
-      const query = modelManager
-        .query(
-          factory.all(
-            model.tableName + '/query/',
-          ),
-        );
+      const query = modelManager.query(factory.all());
 
       const player1 = { id: 1, name: 'name-1' };
       const player2 = { id: 2, name: 'name-1' };
@@ -304,6 +288,64 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
+  private _itMustBuildAValidQueryAllWithParameters(): void {
+    const itsName = 'It must build a valid all query config with parameters';
+    const prefix = this._declareName + '/' + itsName + '/';
+
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const antSqlManager = new AntSqlManager();
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const modelManager = antSqlManager
+        .get(model)
+        .config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+
+      const keyGen = () => prefix + 'k-k-key';
+      const reverseKey = prefix + 'reverse-key';
+
+      const query = modelManager.query(factory.all({
+        entityKeyGen: keyGen,
+        queryKeyGen: keyGen,
+        reverseHashKey: reverseKey,
+      }));
+
+      const player1 = { id: 1, name: 'name-1' };
+      const player2 = { id: 2, name: 'name-1' };
+      const player3 = { id: 3, name: 'name-2' };
+      const player4 = { id: 4, name: 'name-3' };
+
+      await modelManager.mInsert([
+        player1,
+        player2,
+        player3,
+        player4,
+      ]);
+
+      await query.get({});
+
+      const resultKeyExist = await this._redisWrapper.redis.exists(keyGen());
+      const reverseKeyExists = await this._redisWrapper.redis.exists(reverseKey);
+      const expectedResult = 1 // Exists (https://redis.io/commands/exists)
+
+      expect(resultKeyExist).toBe(expectedResult);
+      expect(reverseKeyExists).toBe(expectedResult);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
   private _itMustBuildAValidQueryByFieldConfig(): void {
     const itsName = 'It must build a valid query by field config';
     const prefix = this._declareName + '/' + itsName + '/';
@@ -326,12 +368,7 @@ export class QueryConfigFactoryTest implements ITest {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
-      const query = modelManager
-        .query(
-          factory.byField(
-            model.getColumn('name'), model.tableName + '/query/',
-          ),
-        );
+      const query = modelManager.query(factory.byField(model.getColumn('name')));
 
       const player1 = { id: 1, name: 'name-1' };
       const player2 = { id: 2, name: 'name-1' };
@@ -399,12 +436,7 @@ export class QueryConfigFactoryTest implements ITest {
         player4,
       ]);
 
-      const query = modelManager
-        .query(
-          factory.byUniqueField(
-            model.getColumn('name'), model.tableName + '/query-unique/',
-          ),
-        );
+      const query = modelManager.query(factory.byUniqueField(model.getColumn('name')));
 
       const playerByName = await query.get({name: player1.name});
       const playersByNames = await query.mGet([
@@ -445,12 +477,7 @@ export class QueryConfigFactoryTest implements ITest {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
-      const query = modelManager
-        .query(
-          factory.byField(
-            model.getColumn('name'), model.tableName + '/query/',
-          ),
-        );
+      const query = modelManager.query(factory.byField(model.getColumn('name')));
 
       const player1 = { id: 1, name: 'name-1' };
       const player2 = { id: 2, name: 'name-1' };
