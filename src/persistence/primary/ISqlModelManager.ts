@@ -1,8 +1,8 @@
-import { IModelManager } from '@antjs/ant-js/src/persistence/primary/IModelManager';
-import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
-import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { IModelManager } from '@antjs/ant-js/src/persistence/primary/IModelManager';
 import { ISqlInsertable } from './ISqlInsertable';
+import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
+import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
 export interface ISqlModelManager<TEntity extends IEntity>
   extends IModelManager<TEntity>, ISqlInsertable<TEntity> {

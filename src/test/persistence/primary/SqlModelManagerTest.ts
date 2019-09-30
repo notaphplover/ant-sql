@@ -1,17 +1,17 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
+import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/CacheMode';
 import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/AntSqlModel';
 import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
+import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';
 import { SqlModelManager } from '../../../persistence/primary/SqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
 import { RedisWrapper } from './RedisWrapper';
-import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
-import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';
-import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/CacheMode';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
@@ -174,7 +174,7 @@ export class SqlModelManagerTest implements ITest {
         cacheMode: CacheMode.CacheAndOverwrite,
         persist: false,
         ttl: null,
-      }
+      };
 
       await Promise.all([
         sqlModelManager.delete(entity.id, deleteOptions),

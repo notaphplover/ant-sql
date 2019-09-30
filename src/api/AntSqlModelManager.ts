@@ -2,6 +2,7 @@ import { AntModelManager } from '@antjs/ant-js/src/api/AntModelManager';
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
+import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
 import { SqlModelManager } from '../persistence/primary/SqlModelManager';
 import { AntMySqlSecondaryEntityManager } from '../persistence/secondary/AntMySqlSecondaryEntityManager';
 import { AntSQLiteSecondaryEntityManager } from '../persistence/secondary/AntSQLiteSecondaryEntityManager';
@@ -10,7 +11,6 @@ import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSeconda
 import { KnexDriver } from '../persistence/secondary/KnexDriver';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
-import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
 
 export class AntSqlModelManager<TEntity extends IEntity>
   extends AntModelManager<
