@@ -90,8 +90,57 @@ export class QueryConfigFactory<TEntity extends IEntity> {
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
-      mQuery: this._buildIdsByFieldsQuery<TQueryResult>(column),
+      mQuery: this._buildIdsByFieldMQuery<TQueryResult>(column),
       query: this._buildIdsByFieldQuery<TQueryResult>(column),
+      queryKeyGen: options.entityKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byFields(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byFields<TQueryResult extends MultipleQueryResult>(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, TQueryResult> {
+    const separator = '/';
+    const queryAlias =
+      'mf_'
+      + columns.reduce(
+        (previous, next) =>
+          previous
+          + separator
+          + next.entityAlias,
+        '',
+      );
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) =>
+          columns.reduce(
+            (previous, next) =>
+              previous + params[next.entityAlias],
+            this._model.keyGen.prefix + queryAlias,
+          ),
+      queryAlias,
+    );
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: true,
+      query: this._buildIdsByFieldsQuery<TQueryResult>(columns),
       queryKeyGen: options.entityKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
@@ -126,8 +175,58 @@ export class QueryConfigFactory<TEntity extends IEntity> {
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: false,
-      mQuery: this._buildIdsByUniqueFieldsQuery<TQueryResult>(column),
+      mQuery: this._buildIdsByUniqueFieldMQuery<TQueryResult>(column),
       query: this._buildIdsByUniqueFieldQuery<TQueryResult>(column),
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byUniqueFields(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, SingleQueryResult>;
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byUniqueFields<TQueryResult extends SingleQueryResult>(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, TQueryResult> {
+    const separator = '/';
+    const queryAlias =
+      'umf_'
+      + columns.reduce(
+        (previous, next) =>
+          previous
+          + separator
+          + next.entityAlias,
+        '',
+      );
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) =>
+          columns.reduce(
+            (previous, next) =>
+              previous + params[next.entityAlias],
+            this._model.keyGen.prefix + queryAlias,
+          ),
+      queryAlias,
+    );
+
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: false,
+      query: this._buildIdsByUniqueFieldsQuery<TQueryResult>(columns),
       queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
@@ -144,6 +243,79 @@ export class QueryConfigFactory<TEntity extends IEntity> {
           (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
         );
     };
+  }
+
+  /**
+   * Creates an ids by field mquery.
+   * @param column AntSql column.
+   * @returns query built.
+   */
+  private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(
+    column: IAntSQLColumn,
+  ): TQuery<TQueryResult[]> {
+    return (params: any[]) => {
+      if (!params) {
+        throw new Error('Expected params!');
+      }
+      if (0 === params.length) {
+        return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
+      }
+      const valuesArray = params.map((params: any) => params[column.entityAlias]);
+      const valuesMap = this._buildIdsByFieldMQueryBuildValuesMap(valuesArray);
+      return this._createEntitiesByFieldMQueryWithField(column, valuesArray)
+        .then(
+          this._buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult>(
+            column, valuesMap, valuesArray.length,
+          ),
+        );
+    };
+  }
+  /**
+   * Creates a promise callback to handle the results query response.
+   * @param column AntSql column.
+   * @param valuesMap Values map.
+   * @param valuesLength values length.
+   * @returns promise callback to handle the results query response.
+   */
+  private _buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult extends MultipleQueryResult>(
+    column: IAntSQLColumn,
+    valuesMap: Map<any, number[]>,
+    valuesLength: number,
+  ): (results: TEntity[]) => TQueryResult[] {
+    return (results: TEntity[]) => {
+      const finalResults: TQueryResult[] = new Array();
+      for (let i = 0; i < valuesLength; ++i) {
+        finalResults[i] = new Array() as TQueryResult;
+      }
+      for (const result of results) {
+        const id = result[this._model.id];
+        const value = result[column.sqlName];
+        const indexes = valuesMap.get(value);
+        for (const index of indexes) {
+          (finalResults[index] as any[]).push(id);
+        }
+      }
+      return finalResults;
+    };
+  }
+  /**
+   * Builds a values-to-indexes map from a values array.
+   * @param valuesArray Values array.
+   */
+  private _buildIdsByFieldMQueryBuildValuesMap(
+    valuesArray: any[],
+  ): Map<any, number[]> {
+    const valuesMap = new Map<any, number[]>();
+    for (let i = 0; i < valuesArray.length; ++i) {
+      const value = valuesArray[i];
+      let entry = valuesMap.get(value);
+      if (undefined === entry) {
+        entry = new Array();
+        valuesMap.set(value, entry);
+      }
+      entry.push(i);
+    }
+    return valuesMap;
   }
 
   /**
@@ -170,14 +342,33 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   }
 
   /**
-   * Creates an ids by fields query.
+   * Builds an ids by fields query.
+   * @param columns Columns to filter.
+   * @returns Ids by fields query.
+   */
+  private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(
+    columns: IAntSQLColumn[],
+  ): TQuery<TQueryResult> {
+    return (params: any) => {
+      if (!params) {
+        throw new Error('Expected params!');
+      }
+      return this._createEntitiesByFieldsQuery(columns, params)
+        .then(
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+        );
+    };
+  }
+
+  /**
+   * Creates an ids by unique field query.
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(
+  private _buildIdsByUniqueFieldMQuery<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
   ): TQuery<TQueryResult[]> {
-    return (params: any[]) => {
+    return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -185,61 +376,11 @@ export class QueryConfigFactory<TEntity extends IEntity> {
         return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
       }
       const valuesArray = params.map((params: any) => params[column.entityAlias]);
-      const valuesMap = this._buildIdsByFieldsQueryBuildValuesMap(valuesArray);
-      return this._createEntitiesByFieldMQueryWithField(column, valuesArray)
+      return this._createEntitiesByFieldMQuery(column, valuesArray)
         .then(
-          this._buildIdsByFieldsQueryBuildPromiseCallback<TQueryResult>(
-            column, valuesMap, valuesArray.length,
-          ),
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
         );
     };
-  }
-  /**
-   * Creates a promise callback to handle the results query response.
-   * @param column AntSql column.
-   * @param valuesMap Values map.
-   * @param valuesLength values length.
-   * @returns promise callback to handle the results query response.
-   */
-  private _buildIdsByFieldsQueryBuildPromiseCallback<TQueryResult extends MultipleQueryResult>(
-    column: IAntSQLColumn,
-    valuesMap: Map<any, number[]>,
-    valuesLength: number,
-  ): (results: TEntity[]) => TQueryResult[] {
-    return (results: TEntity[]) => {
-      const finalResults: TQueryResult[] = new Array();
-      for (let i = 0; i < valuesLength; ++i) {
-        finalResults[i] = new Array() as TQueryResult;
-      }
-      for (const result of results) {
-        const id = result[this._model.id];
-        const value = result[column.sqlName];
-        const indexes = valuesMap.get(value);
-        for (const index of indexes) {
-          (finalResults[index] as any[]).push(id);
-        }
-      }
-      return finalResults;
-    };
-  }
-  /**
-   * Builds a values-to-indexes map from a values array.
-   * @param valuesArray Values array.
-   */
-  private _buildIdsByFieldsQueryBuildValuesMap(
-    valuesArray: any[],
-  ): Map<any, number[]> {
-    const valuesMap = new Map<any, number[]>();
-    for (let i = 0; i < valuesArray.length; ++i) {
-      const value = valuesArray[i];
-      let entry = valuesMap.get(value);
-      if (undefined === entry) {
-        entry = new Array();
-        valuesMap.set(value, entry);
-      }
-      entry.push(i);
-    }
-    return valuesMap;
   }
 
   /**
@@ -272,19 +413,16 @@ export class QueryConfigFactory<TEntity extends IEntity> {
    * @returns query built.
    */
   private _buildIdsByUniqueFieldsQuery<TQueryResult extends SingleQueryResult>(
-    column: IAntSQLColumn,
-  ): TQuery<TQueryResult[]> {
+    columns: IAntSQLColumn[],
+  ): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
       }
-      if (0 === params.length) {
-        return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
-      }
-      const valuesArray = params.map((params: any) => params[column.entityAlias]);
-      return this._createEntitiesByFieldMQuery(column, valuesArray)
+      return this._createEntitiesByFieldsQuery(columns, params)
+        .first()
         .then(
-          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
+          (result: TEntity) => result ? result[this._model.id] as TQueryResult : null,
         );
     };
   }
@@ -338,6 +476,24 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   ): Knex.QueryBuilder {
     return this._createAllEntitiesIdsQuery()
       .where(column.sqlName, value);
+  }
+
+  /**
+   * Creates an entities by fields query.
+   *
+   * @param columns columns to filter.
+   * @param params Entity to filter.
+   * @returns Entities by fields query.
+   */
+  private _createEntitiesByFieldsQuery(
+    columns: IAntSQLColumn[],
+    params: any,
+  ): Knex.QueryBuilder {
+    return columns.reduce(
+      (previous, next) =>
+        previous.andWhere(next.sqlName, params[next.entityAlias]),
+      this._createAllEntitiesIdsQuery(),
+    );
   }
 
   /**

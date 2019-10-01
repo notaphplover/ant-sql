@@ -67,12 +67,17 @@ export class QueryConfigFactoryTest implements ITest {
       this._itMustBuildAnMQueryByUniqueFieldThatReturnsAnEmptyArrayIfAnEmptyParamsArrayIsProvided();
       this._itMustBuildAQueryAllThatDoesNotNeedParameters();
       this._itMustBuildAQueryByFieldThatNeedsParameters();
+      this._itMustBuildAQueryByFieldsThatNeedsParameters();
       this._itMustBuildAQueryByUniqueFieldThatNeedsParameters();
+      this._itMustBuildAQueryByUniqueFieldsThatNeedsParameters();
       this._itMustBuildAQueryByUniqueFieldThatReturnsNullIfNoEntityIsFound();
+      this._itMustBuildAQueryByUniqueFieldsThatReturnsNullIfNoEntityIsFound();
       this._itMustBuildAValidQueryAllBuildConfig();
       this._itMustBuildAValidQueryAllWithParameters();
       this._itMustBuildAValidQueryByFieldConfig();
+      this._itMustBuildAValidQueryByFieldsConfig();
       this._itMustBuildAValidQueryByUniqueFieldConfig();
+      this._itMustBuildAValidQueryByUniqueFieldsConfig();
       this._itMustMQueryWithRepeatedQueries();
     });
   }
@@ -185,6 +190,31 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
+  private _itMustBuildAQueryByFieldsThatNeedsParameters(): void {
+    const itsName = 'It must build a query by fields that needs parameters';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byFields([model.getColumn('name')]);
+
+      expect(() => queryConfig.query(null)).toThrowError();
+      expectAsync(queryConfig.query({})).toBeRejected();
+      expect(() => queryConfig.mQuery(null)).toThrowError();
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
   private _itMustBuildAQueryByUniqueFieldThatNeedsParameters(): void {
     const itsName = 'It must build a query by unique field that needs parameters';
     const prefix = this._declareName + '/' + itsName + '/';
@@ -210,6 +240,31 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
+  private _itMustBuildAQueryByUniqueFieldsThatNeedsParameters(): void {
+    const itsName = 'It must build a query by unique fields that needs parameters';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byUniqueFields([model.getColumn('name')]);
+
+      expect(() => queryConfig.query(null)).toThrowError();
+      expectAsync(queryConfig.query({})).toBeRejected();
+      expect(() => queryConfig.mQuery(null)).toThrowError();
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
   private _itMustBuildAQueryByUniqueFieldThatReturnsNullIfNoEntityIsFound(): void {
     const itsName = 'It must build a query by unique field that returns null if no entity is found';
     const prefix = this._declareName + '/' + itsName + '/';
@@ -226,6 +281,30 @@ export class QueryConfigFactoryTest implements ITest {
 
       const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
       const queryConfig = factory.byUniqueField(model.getColumn('name'));
+
+      const entityFound = await queryConfig.query({ name: 'name-1' });
+
+      expect(entityFound).toBeNull();
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustBuildAQueryByUniqueFieldsThatReturnsNullIfNoEntityIsFound(): void {
+    const itsName = 'It must build a query by unique fields that returns null if no entity is found';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const queryConfig = factory.byUniqueFields([model.getColumn('name')]);
 
       const entityFound = await queryConfig.query({ name: 'name-1' });
 
@@ -402,6 +481,62 @@ export class QueryConfigFactoryTest implements ITest {
     }, MAX_SAFE_TIMEOUT);
   }
 
+  private _itMustBuildAValidQueryByFieldsConfig(): void {
+    const itsName = 'It must build a valid query by fields config';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const antSqlManager = new AntSqlManager();
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const modelManager = antSqlManager
+        .get(model)
+        .config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+      const query = modelManager.query(factory.byFields([model.getColumn('name')]));
+
+      const player1 = { id: 1, name: 'name-1' };
+      const player2 = { id: 2, name: 'name-1' };
+      const player3 = { id: 3, name: 'name-2' };
+      const player4 = { id: 4, name: 'name-3' };
+
+      await modelManager.mInsert([
+        player1,
+        player2,
+        player3,
+        player4,
+      ]);
+
+      const playersByName = await query.get({name: 'name-1'});
+      const playersByNames = await query.mGet([
+        {name: 'name-1'},
+        {name: 'name-2'},
+      ]);
+
+      expect(playersByName).toContain(player1);
+      expect(playersByName).toContain(player2);
+      expect(playersByName).not.toContain(player3);
+      expect(playersByName).not.toContain(player4);
+
+      expect(playersByNames).toContain(player1);
+      expect(playersByNames).toContain(player2);
+      expect(playersByNames).toContain(player3);
+      expect(playersByNames).not.toContain(player4);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
   private _itMustBuildAValidQueryByUniqueFieldConfig(): void {
     const itsName = 'It must build a valid query by unique field config';
     const prefix = this._declareName + '/' + itsName + '/';
@@ -437,6 +572,59 @@ export class QueryConfigFactoryTest implements ITest {
       ]);
 
       const query = modelManager.query(factory.byUniqueField(model.getColumn('name')));
+
+      const playerByName = await query.get({name: player1.name});
+      const playersByNames = await query.mGet([
+        {name: player1.name},
+        {name: player2.name},
+      ]);
+
+      expect(playerByName).toEqual(player1);
+
+      expect(playersByNames).toContain(player1);
+      expect(playersByNames).toContain(player2);
+      expect(playersByNames).not.toContain(player3);
+      expect(playersByNames).not.toContain(player4);
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustBuildAValidQueryByUniqueFieldsConfig(): void {
+    const itsName = 'It must build a valid query by unique fields config';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      await this._beforeAllPromise;
+
+      const model = namedModelGenerator({ prefix: prefix });
+      await this._dbTestManager.createTable(
+        this._dbConnection,
+        model.tableName,
+        tableGeneratorColumnId,
+        tableGeneratorOtherColumns,
+      );
+
+      const antSqlManager = new AntSqlManager();
+      const factory = new QueryConfigFactory<NamedEntityTest>(this._dbConnection, model);
+      const modelManager = antSqlManager
+        .get<NamedEntityTest>(model)
+        .config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+
+      const player1 = { id: 1, name: 'name-1' };
+      const player2 = { id: 2, name: 'name-2' };
+      const player3 = { id: 3, name: 'name-3' };
+      const player4 = { id: 4, name: 'name-4' };
+      await modelManager.mInsert([
+        player1,
+        player2,
+        player3,
+        player4,
+      ]);
+
+      const query = modelManager.query(factory.byUniqueFields([model.getColumn('name')]));
 
       const playerByName = await query.get({name: player1.name});
       const playersByNames = await query.mGet([
