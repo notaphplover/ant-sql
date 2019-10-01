@@ -337,7 +337,7 @@ export class QueryConfigFactoryTest implements ITest {
 
       const resultKeyExist = await this._redisWrapper.redis.exists(keyGen());
       const reverseKeyExists = await this._redisWrapper.redis.exists(reverseKey);
-      const expectedResult = 1 // Exists (https://redis.io/commands/exists)
+      const expectedResult = 1; // Exists (https://redis.io/commands/exists)
 
       expect(resultKeyExist).toBe(expectedResult);
       expect(reverseKeyExists).toBe(expectedResult);
