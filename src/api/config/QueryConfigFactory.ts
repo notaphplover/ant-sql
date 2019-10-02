@@ -8,198 +8,249 @@ import {
 import * as Knex from 'knex';
 import { IAntSQLColumn } from '../../model/IAntSQLColumn';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { ICfgGenOptions } from './ICfgGenOptions';
 
-export class QueryConfigFactory {
+export class QueryConfigFactory<TEntity extends IEntity> {
+
+  /**
+   * Knex connection.
+   */
+  protected _knex: Knex;
+  /**
+   * Model to manage.
+   */
+  protected _model: IAntSqlModel;
+
+  /**
+   * Creates a query config factory.
+   * @param knex Knex connection.
+   * @param model Queries model.
+   */
+  public constructor(knex: Knex, model: IAntSqlModel) {
+    this._knex = knex;
+    this._model = model;
+  }
 
   /**
    * Creates a query of all entities of a certain model.
-   * @param knex Knex instance.
-   * @param model Query mode.
-   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryAll<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
-    queryPrefix: string,
-  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  public all(options?: ICfgGenOptions<TEntity>): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of all entities of a certain model.
-   * @param knex Knex instance.
-   * @param model Query mode.
-   * @param queryPrefix Query prefix used to generate Redis keys.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryAll<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
-    queryPrefix: string,
+  public all<TQueryResult extends MultipleQueryResult>(
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'all/';
+    options = this._processCfgGenOptions(
+      options,
+      () => this._model.keyGen.prefix + queryAlias,
+      queryAlias,
+    );
+
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: true,
-      query: this._buildAllIdsQuery<TEntity, TQueryResult>(
-        knex, model,
-      ),
-      queryKeyGen: () => queryPrefix,
-      reverseHashKey: queryPrefix + 'reverse',
+      query: this._buildAllIdsQuery<TQueryResult>(),
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
   /**
    * Creates a query of entities by a single field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryByField<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byField(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of entities by a single field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryByField<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byField<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'f_' + column.entityAlias + '/';
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
+      queryAlias,
+    );
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: true,
-      mQuery: this._buildIdsByFieldsQuery<TEntity, TQueryResult>(
-        knex, model, column,
-      ),
-      query: this._buildIdsByFieldQuery<TEntity, TQueryResult>(
-        knex, model, column,
-      ),
-      queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
-      reverseHashKey: queryPrefix + 'reverse',
+      mQuery: this._buildIdsByFieldMQuery<TQueryResult>(column),
+      query: this._buildIdsByFieldQuery<TQueryResult>(column),
+      queryKeyGen: options.entityKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byFields(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byFields<TQueryResult extends MultipleQueryResult>(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, TQueryResult> {
+    const separator = '/';
+    const queryAlias =
+      'mf_'
+      + columns.reduce(
+        (previous, next) =>
+          previous
+          + separator
+          + next.entityAlias,
+        '',
+      );
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) =>
+          columns.reduce(
+            (previous, next) =>
+              previous + params[next.entityAlias],
+            this._model.keyGen.prefix + queryAlias,
+          ),
+      queryAlias,
+    );
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: true,
+      query: this._buildIdsByFieldsQuery<TQueryResult>(columns),
+      queryKeyGen: options.entityKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
   /**
    * Creates a query of entities by an unique field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryByUniqueField<TEntity extends IEntity>(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byUniqueField(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, SingleQueryResult>;
   /**
    * Creates a query of entities by an unique field.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
-   * @param queryPrefix Query prefix.
+   * @param options Config generation options
    * @returns Query config.
    */
-  public getQueryByUniqueField<
-    TEntity extends IEntity,
-    TQueryResult extends SingleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  public byUniqueField<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
-    queryPrefix: string,
+    options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
+    const queryAlias = 'uf_' + column.entityAlias + '/';
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
+      queryAlias,
+    );
     return {
+      entityKeyGen: options.entityKeyGen,
       isMultiple: false,
-      mQuery: this._buildIdsByUniqueFieldsQuery<TEntity, TQueryResult>(
-        knex, model, column,
-      ),
-      query: this._buildIdsByUniqueFieldQuery<TEntity, TQueryResult>(
-        knex, model, column,
-      ),
-      queryKeyGen: (params: any) => queryPrefix + params[column.entityAlias],
-      reverseHashKey: queryPrefix + 'reverse',
+      mQuery: this._buildIdsByUniqueFieldMQuery<TQueryResult>(column),
+      query: this._buildIdsByUniqueFieldQuery<TQueryResult>(column),
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byUniqueFields(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, SingleQueryResult>;
+  /**
+   * Creates a query of entities by multiple fields.
+   * @param columns columns to filter.
+   * @param options config generation options.
+   * @returns Query of entities by multiple fields.
+   */
+  public byUniqueFields<TQueryResult extends SingleQueryResult>(
+    columns: IAntSQLColumn[],
+    options?: ICfgGenOptions<TEntity>,
+  ): IAntQueryConfig<TEntity, TQueryResult> {
+    const separator = '/';
+    const queryAlias =
+      'umf_'
+      + columns.reduce(
+        (previous, next) =>
+          previous
+          + separator
+          + next.entityAlias,
+        '',
+      );
+    options = this._processCfgGenOptions(
+      options,
+      (params: any) =>
+          columns.reduce(
+            (previous, next) =>
+              previous + params[next.entityAlias],
+            this._model.keyGen.prefix + queryAlias,
+          ),
+      queryAlias,
+    );
+
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: false,
+      query: this._buildIdsByUniqueFieldsQuery<TQueryResult>(columns),
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
     };
   }
 
   /**
    * Creates an all ids query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @returns query built.
    */
-  private _buildAllIdsQuery<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
-  ): TQuery<TQueryResult> {
+  private _buildAllIdsQuery<TQueryResult extends MultipleQueryResult>(): TQuery<TQueryResult> {
     return () => {
-      return this._createAllEntitiesIdsQuery(knex, model)
+      return this._createAllEntitiesIdsQuery()
         .then(
-          (results: TEntity[]) => results.map((result) => result[model.id]) as TQueryResult,
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
         );
     };
   }
 
   /**
-   * Creates an ids by field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
+   * Creates an ids by field mquery.
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByFieldQuery<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
-    column: IAntSQLColumn,
-  ): TQuery<TQueryResult> {
-    return (params: any) => {
-      if (!params) {
-        throw new Error('Expected params!');
-      }
-      const fieldValue: string = params[column.entityAlias];
-      if (!fieldValue) {
-        throw new Error('Expected a field value!');
-      }
-      return this._createEntitiesByFieldQuery(knex, model, column, fieldValue)
-        .then(
-          (results: TEntity[]) => results.map((result) => result[model.id]) as TQueryResult,
-        );
-    };
-  }
-
-  /**
-   * Creates an ids by fields query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
-   * @param column AntSql column.
-   * @returns query built.
-   */
-  private _buildIdsByFieldsQuery<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
   ): TQuery<TQueryResult[]> {
     return (params: any[]) => {
@@ -210,28 +261,23 @@ export class QueryConfigFactory {
         return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
       }
       const valuesArray = params.map((params: any) => params[column.entityAlias]);
-      const valuesMap = this._buildIdsByFieldsQueryBuildValuesMap(valuesArray);
-      return this._createEntitiesByFieldMQueryWithField(knex, model, column, valuesArray)
+      const valuesMap = this._buildIdsByFieldMQueryBuildValuesMap(valuesArray);
+      return this._createEntitiesByFieldMQueryWithField(column, valuesArray)
         .then(
-          this._buildIdsByFieldsQueryBuildPromiseCallback<TEntity, TQueryResult>(
-            model, column, valuesMap, valuesArray.length,
+          this._buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult>(
+            column, valuesMap, valuesArray.length,
           ),
         );
     };
   }
   /**
    * Creates a promise callback to handle the results query response.
-   * @param model AntSqlModel.
    * @param column AntSql column.
    * @param valuesMap Values map.
    * @param valuesLength values length.
    * @returns promise callback to handle the results query response.
    */
-  private _buildIdsByFieldsQueryBuildPromiseCallback<
-    TEntity extends IEntity,
-    TQueryResult extends MultipleQueryResult,
-  >(
-    model: IAntSqlModel,
+  private _buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
     valuesMap: Map<any, number[]>,
     valuesLength: number,
@@ -242,11 +288,11 @@ export class QueryConfigFactory {
         finalResults[i] = new Array() as TQueryResult;
       }
       for (const result of results) {
-        const id = result[model.id];
+        const id = result[this._model.id];
         const value = result[column.sqlName];
         const indexes = valuesMap.get(value);
         for (const index of indexes) {
-          (finalResults[index] as Array<any>).push(id);
+          (finalResults[index] as any[]).push(id);
         }
       }
       return finalResults;
@@ -256,7 +302,7 @@ export class QueryConfigFactory {
    * Builds a values-to-indexes map from a values array.
    * @param valuesArray Values array.
    */
-  private _buildIdsByFieldsQueryBuildValuesMap(
+  private _buildIdsByFieldMQueryBuildValuesMap(
     valuesArray: any[],
   ): Map<any, number[]> {
     const valuesMap = new Map<any, number[]>();
@@ -273,18 +319,11 @@ export class QueryConfigFactory {
   }
 
   /**
-   * Creates an ids by unique field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
+   * Creates an ids by field query.
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByUniqueFieldQuery<
-    TEntity extends IEntity,
-    TQueryResult extends SingleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
   ): TQuery<TQueryResult> {
     return (params: any) => {
@@ -293,29 +332,40 @@ export class QueryConfigFactory {
       }
       const fieldValue: string = params[column.entityAlias];
       if (!fieldValue) {
-        throw new Error('Expected a value!');
+        throw new Error('Expected a field value!');
       }
-      return this._createEntitiesByFieldQuery(knex, model, column, fieldValue)
-        .first()
+      return this._createEntitiesByFieldQuery(column, fieldValue)
         .then(
-          (result: TEntity) => result ? result[model.id] as TQueryResult : null,
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+        );
+    };
+  }
+
+  /**
+   * Builds an ids by fields query.
+   * @param columns Columns to filter.
+   * @returns Ids by fields query.
+   */
+  private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(
+    columns: IAntSQLColumn[],
+  ): TQuery<TQueryResult> {
+    return (params: any) => {
+      if (!params) {
+        throw new Error('Expected params!');
+      }
+      return this._createEntitiesByFieldsQuery(columns, params)
+        .then(
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
         );
     };
   }
 
   /**
    * Creates an ids by unique field query.
-   * @param knex Knex connection.
-   * @param model AntSQL model.
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByUniqueFieldsQuery<
-    TEntity extends IEntity,
-    TQueryResult extends SingleQueryResult,
-  >(
-    knex: Knex,
-    model: IAntSqlModel,
+  private _buildIdsByUniqueFieldMQuery<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
   ): TQuery<TQueryResult[]> {
     return (params: any) => {
@@ -326,78 +376,150 @@ export class QueryConfigFactory {
         return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
       }
       const valuesArray = params.map((params: any) => params[column.entityAlias]);
-      return this._createEntitiesByFieldMQuery(knex, model, column, valuesArray)
+      return this._createEntitiesByFieldMQuery(column, valuesArray)
         .then(
-          (results: TEntity[]) => results.map((result) => result[model.id]) as TQueryResult[],
+          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
+        );
+    };
+  }
+
+  /**
+   * Creates an ids by unique field query.
+   * @param column AntSql column.
+   * @returns query built.
+   */
+  private _buildIdsByUniqueFieldQuery<TQueryResult extends SingleQueryResult>(
+    column: IAntSQLColumn,
+  ): TQuery<TQueryResult> {
+    return (params: any) => {
+      if (!params) {
+        throw new Error('Expected params!');
+      }
+      const fieldValue: string = params[column.entityAlias];
+      if (!fieldValue) {
+        throw new Error('Expected a value!');
+      }
+      return this._createEntitiesByFieldQuery(column, fieldValue)
+        .first()
+        .then(
+          (result: TEntity) => result ? result[this._model.id] as TQueryResult : null,
+        );
+    };
+  }
+
+  /**
+   * Creates an ids by unique field query.
+   * @param column AntSql column.
+   * @returns query built.
+   */
+  private _buildIdsByUniqueFieldsQuery<TQueryResult extends SingleQueryResult>(
+    columns: IAntSQLColumn[],
+  ): TQuery<TQueryResult> {
+    return (params: any) => {
+      if (!params) {
+        throw new Error('Expected params!');
+      }
+      return this._createEntitiesByFieldsQuery(columns, params)
+        .first()
+        .then(
+          (result: TEntity) => result ? result[this._model.id] as TQueryResult : null,
         );
     };
   }
 
   /**
    * Creates an all query.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @returns query builder.
    */
-  private _createAllEntitiesIdsQuery(
-    knex: Knex,
-    model: IAntSqlModel,
-  ): Knex.QueryBuilder {
-    return knex
-      .select(model.id)
-      .from(model.tableName);
+  private _createAllEntitiesIdsQuery(): Knex.QueryBuilder {
+    return this._knex
+      .select(this._model.id)
+      .from(this._model.tableName);
   }
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
   private _createEntitiesByFieldMQuery(
-    knex: Knex,
-    model: IAntSqlModel,
     column: IAntSQLColumn,
     values: any[],
   ): Knex.QueryBuilder {
-    return this._createAllEntitiesIdsQuery(knex, model)
+    return this._createAllEntitiesIdsQuery()
       .whereIn(column.sqlName, values);
   }
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
   private _createEntitiesByFieldMQueryWithField(
-    knex: Knex,
-    model: IAntSqlModel,
     column: IAntSQLColumn,
     values: any[],
   ): Knex.QueryBuilder {
-    return knex
-      .select(model.id, column.sqlName)
-      .from(model.tableName)
+    return this._knex
+      .select(this._model.id, column.sqlName)
+      .from(this._model.tableName)
       .whereIn(column.sqlName, values);
   }
 
   /**
    * Creates a query by field value.
-   * @param knex Knex instance.
-   * @param model Query model.
    * @param column Query column.
    * @param value Entity value.
    */
   private _createEntitiesByFieldQuery(
-    knex: Knex,
-    model: IAntSqlModel,
     column: IAntSQLColumn,
     value: any,
   ): Knex.QueryBuilder {
-    return this._createAllEntitiesIdsQuery(knex, model)
+    return this._createAllEntitiesIdsQuery()
       .where(column.sqlName, value);
+  }
+
+  /**
+   * Creates an entities by fields query.
+   *
+   * @param columns columns to filter.
+   * @param params Entity to filter.
+   * @returns Entities by fields query.
+   */
+  private _createEntitiesByFieldsQuery(
+    columns: IAntSQLColumn[],
+    params: any,
+  ): Knex.QueryBuilder {
+    return columns.reduce(
+      (previous, next) =>
+        previous.andWhere(next.sqlName, params[next.entityAlias]),
+      this._createAllEntitiesIdsQuery(),
+    );
+  }
+
+  /**
+   * Process a config generation options.
+   * @param options CfgGen options provided.
+   * @param defaultQueryKeyGen Default query keyGen.
+   * @param queryName Query name.
+   * @returns Processed config generation options.
+   */
+  private _processCfgGenOptions(
+    options: ICfgGenOptions<TEntity>,
+    defaultQueryKeyGen: (params: any) => string,
+    queryName: string,
+  ): ICfgGenOptions<TEntity> {
+    if (!options) {
+      options = {};
+    }
+    if (!options.queryKeyGen) {
+      options.queryKeyGen = defaultQueryKeyGen;
+    }
+    if (!options.entityKeyGen) {
+      options.entityKeyGen = options.queryKeyGen;
+    }
+    if (!options.reverseHashKey) {
+      options.reverseHashKey = this._model.keyGen.prefix + queryName + '/reverse';
+    }
+    return options;
   }
 }

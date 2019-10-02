@@ -33,7 +33,7 @@ export class AntSqlModelTest implements ITest {
         // tslint:disable-next-line:no-unused-expression
         new AntSqlModel(
           'id',
-          { prefix: 'somePrefix', suffix: 'someSuffix'},
+          { prefix: 'somePrefix' },
           [{
             entityAlias: 'id',
             sqlName: 'id',
@@ -51,7 +51,7 @@ export class AntSqlModelTest implements ITest {
       const tableName = 'ModelSqlTableName';
       const model = new AntSqlModel(
         'id',
-        { prefix: 'somePrefix', suffix: 'someSuffix'},
+        { prefix: 'somePrefix' },
         [{
           entityAlias: 'id',
           sqlName: 'id',
@@ -74,7 +74,7 @@ export class AntSqlModelTest implements ITest {
       };
       const model = new AntSqlModel(
         'id',
-        { prefix: 'somePrefix', suffix: 'someSuffix'},
+        { prefix: 'somePrefix' },
         [column],
         tableName,
       );
@@ -99,7 +99,7 @@ export class AntSqlModelTest implements ITest {
       };
       expect(() => new AntSqlModel(
         'id',
-        { prefix: 'somePrefix', suffix: 'someSuffix'},
+        { prefix: 'somePrefix' },
         [column1, column2],
         tableName,
       )).toThrowError();
@@ -113,7 +113,7 @@ export class AntSqlModelTest implements ITest {
       const tableName = 'ModelSqlTableName';
       const model = new AntSqlModel(
         'id',
-        { prefix: 'somePrefix', suffix: 'someSuffix'},
+        { prefix: 'somePrefix' },
         [{
           entityAlias: 'id',
           sqlName: 'id',

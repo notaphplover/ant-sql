@@ -1,11 +1,11 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
-import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
-import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 import { ISqlSecondaryEntityManager } from '../secondary/ISqlSecondaryEntityManager';
 import { ISqlModelManager } from './ISqlModelManager';
 import { AntSqlDeleteOptions } from './options/AntSqlDeleteOptions';
 import { AntSqlUpdateOptions } from './options/AntSqlUpdateOptions';
+import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
+import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
 export class SqlModelManager<TEntity extends IEntity> extends ModelManager<
   TEntity,
@@ -68,7 +68,7 @@ export class SqlModelManager<TEntity extends IEntity> extends ModelManager<
    */
   public async mInsert(
     entities: TEntity[],
-    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions,
+    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions(),
   ): Promise<any> {
     if (options.persist) {
       await this._successor.mInsert(entities);
