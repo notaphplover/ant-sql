@@ -10,6 +10,7 @@ import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSec
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../persistence/secondary/KnexDriver';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
+import { QueryConfigFactory } from './config/QueryConfigFactory';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
 export class AntSqlModelManager<TEntity extends IEntity>
@@ -19,6 +20,44 @@ export class AntSqlModelManager<TEntity extends IEntity>
     IAntSqlModel,
     ISqlModelManager<TEntity>
 > implements IAntSqlModelManager<TEntity> {
+
+  /**
+   * Query config factory.
+   */
+  protected _queryConfigFactory: QueryConfigFactory<TEntity>;
+
+  /**
+   * Gets the query config factory.
+   * @returns query config factory.
+   */
+  public get cfgGen(): QueryConfigFactory<TEntity> {
+    if (!this._queryConfigFactory) {
+      throw new Error(
+`The current action could not be performed because the model manager is not ready.
+This is probably caused by the absence of a config instance. Ensure that config is set.`,
+      );
+    }
+
+    return this._queryConfigFactory;
+  }
+
+  /**
+   * Gets the current AntJS model config.
+   * @returns Current AntJS model config.
+   */
+  public config(): IAntSqlModelConfig;
+  /**
+   * Sets the current AntJS model config.
+   * @param config new AntJS model config.
+   * @returns this instance.
+   */
+  public config(config: IAntSqlModelConfig): this;
+  public config(config?: IAntSqlModelConfig): IAntSqlModelConfig|this {
+    if (undefined !== config && !this._config) {
+      this._queryConfigFactory = new QueryConfigFactory(config.knex, this._model);
+    }
+    return super.config(config);
+  }
 
   /**
    * Inserts an entity.
