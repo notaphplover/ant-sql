@@ -60,7 +60,7 @@ export class AntSqlModelManagerTest implements ITest {
     const prefix = this._declareName + '/' + itsName + '/';
     it(itsName, async (done) => {
       const model = modelTestGen(prefix);
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       antModelManager.config({
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
@@ -109,7 +109,7 @@ export class AntSqlModelManagerTest implements ITest {
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       const modelManager = antModelManager.generateModelManager(model, config);
       expect(modelManager instanceof ModelManager).toBe(true);
       done();
@@ -125,7 +125,7 @@ export class AntSqlModelManagerTest implements ITest {
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
       expect(secondaryEntityManager instanceof AntSqlSecondaryEntityManager).toBe(true);
       done();
@@ -141,7 +141,7 @@ export class AntSqlModelManagerTest implements ITest {
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map()).config(config);
+      const antModelManager = new AntSqlModelManagerForTest(model).config(config);
       const queryConfigFactory = antModelManager.cfgGen;
       expect(queryConfigFactory instanceof QueryConfigFactory).toBe(true);
       done();
@@ -153,7 +153,7 @@ export class AntSqlModelManagerTest implements ITest {
     const prefix = this._declareName + '/' + itsName + '/';
     it(itsName, async (done) => {
       const model = modelTestGen(prefix);
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       expect(() => antModelManager.cfgGen).toThrowError();
       done();
     }, MAX_SAFE_TIMEOUT);
