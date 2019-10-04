@@ -1,13 +1,16 @@
 import { IEntity } from '@antjs/ant-js/src/model/IEntity';
 import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
+import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/CacheMode';
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/AntSqlModel';
 import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
+import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';
 import { SqlModelManager } from '../../../persistence/primary/SqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
-import { ITest } from '../../ITest';
 import { RedisWrapper } from './RedisWrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
@@ -24,9 +27,7 @@ const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
     'id',
     keyGen,
     [{ entityAlias: 'id', sqlName: 'id' }],
-    (keyGen.prefix ? tableNameGenerator(keyGen.prefix) : '')
-      + (keyGen.prefix && keyGen.suffix ? '_' : '')
-      + (keyGen.suffix ? tableNameGenerator(keyGen.suffix) : ''),
+    tableNameGenerator(keyGen.prefix),
   );
 };
 
@@ -57,6 +58,7 @@ export class SqlModelManagerTest implements ITest {
     describe(this._declareName, () => {
       this._itMustBeInitializable();
       this._itMustCallSecondaryEntityManagerMethods();
+      this._itMustNotCallSecondaryLayerIfNoPersist();
     });
   }
 
@@ -74,6 +76,7 @@ export class SqlModelManagerTest implements ITest {
         new SqlModelManager(
           model,
           this._redis.redis,
+          true,
           secondaryEntityManager,
         );
       }).not.toThrowError();
@@ -93,6 +96,7 @@ export class SqlModelManagerTest implements ITest {
       const sqlModelManager = new SqlModelManager(
         model,
         this._redis.redis,
+        true,
         secondaryEntityManager,
       );
       const methodsToTest = [
@@ -123,6 +127,66 @@ export class SqlModelManagerTest implements ITest {
 
       for (const methodToTest of methodsToTest) {
         expect(secondaryEntityManager[methodToTest]).toHaveBeenCalled();
+      }
+
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustNotCallSecondaryLayerIfNoPersist(): void {
+    const itsName = 'mustNotCallSecondaryLayerIfNoPersist';
+    const prefix = this._declareName + '/' + itsName + '/';
+
+    it(itsName, async (done) => {
+      const model = modelGenerator({ prefix: prefix });
+      const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
+        model,
+        this._dbConnection,
+      );
+      const sqlModelManager = new SqlModelManager(
+        model,
+        this._redis.redis,
+        true,
+        secondaryEntityManager,
+      );
+
+      const methodsToTest = [
+        'delete',
+        'insert',
+        'mDelete',
+        'mInsert',
+        'mUpdate',
+        'update',
+      ] as Array<keyof ISqlSecondaryEntityManager<any>>;
+
+      for (const methodToTest of methodsToTest) {
+        spyOn(secondaryEntityManager, methodToTest as any).and.returnValue(
+          new Promise((resolve) => resolve(methodToTest)),
+        );
+      }
+
+      const entity: EntityTest = { id: 0 };
+      const deleteOptions: IAntSqlDeleteOptions = {
+        negativeCache: true,
+        persist: false,
+      };
+      const updateOptions: IAntSqlUpdateOptions = {
+        cacheMode: CacheMode.CacheAndOverwrite,
+        persist: false,
+        ttl: null,
+      };
+
+      await Promise.all([
+        sqlModelManager.delete(entity.id, deleteOptions),
+        sqlModelManager.insert(entity, updateOptions),
+        sqlModelManager.mDelete([entity.id], deleteOptions),
+        sqlModelManager.mInsert([entity], updateOptions),
+        sqlModelManager.mUpdate([entity], updateOptions),
+        sqlModelManager.update(entity, updateOptions),
+      ]);
+
+      for (const methodToTest of methodsToTest) {
+        expect(secondaryEntityManager[methodToTest]).not.toHaveBeenCalled();
       }
 
       done();

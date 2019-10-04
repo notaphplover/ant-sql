@@ -1,10 +1,11 @@
 import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import * as Knex from 'knex';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
+import { QueryConfigFactory } from '../../api/config/QueryConfigFactory';
 import { AntSqlModel } from '../../model/AntSqlModel';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
-import { ITest } from '../ITest';
 import { RedisWrapper } from '../persistence/primary/RedisWrapper';
 import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
@@ -49,6 +50,8 @@ export class AntSqlModelManagerTest implements ITest {
       this._itMustCallModelManagerMethods();
       this._itMustGenerateAModelManager();
       this._itMustGenerateASecondaryEntityManager();
+      this._itMustReturnQueryConfigFactoryIfConfigIsSet();
+      this._itMustNotReturnQueryConfigFactoryIfConfigIsNotSet();
     });
   }
 
@@ -57,7 +60,7 @@ export class AntSqlModelManagerTest implements ITest {
     const prefix = this._declareName + '/' + itsName + '/';
     it(itsName, async (done) => {
       const model = modelTestGen(prefix);
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       antModelManager.config({
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
@@ -106,7 +109,7 @@ export class AntSqlModelManagerTest implements ITest {
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       const modelManager = antModelManager.generateModelManager(model, config);
       expect(modelManager instanceof ModelManager).toBe(true);
       done();
@@ -122,9 +125,36 @@ export class AntSqlModelManagerTest implements ITest {
         knex: this._dbConnection,
         redis: this._redisWrapper.redis,
       };
-      const antModelManager = new AntSqlModelManagerForTest(model, new Map());
+      const antModelManager = new AntSqlModelManagerForTest(model);
       const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
       expect(secondaryEntityManager instanceof AntSqlSecondaryEntityManager).toBe(true);
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustReturnQueryConfigFactoryIfConfigIsSet(): void {
+    const itsName = 'it must return a query config factory if the model manager is configured';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      const model = modelTestGen(prefix);
+      const config: IAntSqlModelConfig = {
+        knex: this._dbConnection,
+        redis: this._redisWrapper.redis,
+      };
+      const antModelManager = new AntSqlModelManagerForTest(model).config(config);
+      const queryConfigFactory = antModelManager.cfgGen;
+      expect(queryConfigFactory instanceof QueryConfigFactory).toBe(true);
+      done();
+    }, MAX_SAFE_TIMEOUT);
+  }
+
+  private _itMustNotReturnQueryConfigFactoryIfConfigIsNotSet(): void {
+    const itsName = 'it must not return a query config factory if the model manager is not configured';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(itsName, async (done) => {
+      const model = modelTestGen(prefix);
+      const antModelManager = new AntSqlModelManagerForTest(model);
+      expect(() => antModelManager.cfgGen).toThrowError();
       done();
     }, MAX_SAFE_TIMEOUT);
   }

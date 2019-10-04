@@ -1,9 +1,11 @@
+import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
 import { AntTest } from './AntTest';
 import { AntSqlManagerTest } from './api/AntSqlManagerTest';
 import { AntSqlModelManagerTest } from './api/AntSqlModelManagerTest';
+import { QueryConfigFactoryTest } from './api/QueryConfigFactoryTest';
 import { dbServerAwaiterManager } from './await/DbServerAwaiterManager';
-import { ITest } from './ITest';
 import { AntSqlModelTest } from './model/AntSqlModelTest';
+import { RedisWrapper } from './persistence/primary/RedisWrapper';
 import { SqlModelManagerTest } from './persistence/primary/SqlModelManagerTest';
 import { AntSqlSecondaryEntityManagerTest } from './persistence/secondary/AntSqlSecondaryEntityManagerTest';
 import { DBConnectionWrapper } from './persistence/secondary/DBConnectionWrapper';
@@ -22,6 +24,14 @@ export class AllTest implements ITest {
   }
 
   public performTests(): void {
+    const redisWrapper = new RedisWrapper();
+    const redis = redisWrapper.redis;
+    const flushRedisPromise: Promise<any> = redis
+      .flushall()
+      .then(
+        () => redis.script(['flush']),
+      );
+
     new AntSqlManagerTest().performTests();
     new AntSqlModelTest().performTests();
     new AntTest().performTests();
@@ -39,6 +49,11 @@ export class AllTest implements ITest {
         connection.client.driverName,
       );
 
+      const deleteAllTablesAndFlushRedisPromise = Promise.all([
+        flushRedisPromise,
+        deleteAllTablesPromise,
+      ]);
+
       new AntSqlModelManagerTest(
         connection,
         connection.client.driverName,
@@ -49,6 +64,12 @@ export class AllTest implements ITest {
         connection,
         connection.client.driverName,
         this._testManager.getSecondaryEntityManagerGenerator(config.connection),
+      ).performTests();
+
+      new QueryConfigFactoryTest(
+        deleteAllTablesAndFlushRedisPromise,
+        connection,
+        connection.client.driverName,
       ).performTests();
     }
   }

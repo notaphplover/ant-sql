@@ -1,6 +1,6 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "0.1.1",
+  "version": "1.0.0-beta.0",
   "description": "SQL extension for AntJS",
   "main": "src/ant.js",
   "scripts": {
@@ -29,23 +29,25 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^0.5.2",
-    "knex": "^0.17.6"
+    "@antjs/ant-js": "^1.0.0-beta.7",
+    "knex": "^0.19.4"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.27",
-    "@types/ioredis": "^4.0.12",
-    "@types/jasmine": "^3.3.13",
-    "@types/node": "^11.13.12",
-    "coveralls": "^3.0.4",
-    "jasmine": "^3.4.0",
+    "@types/ioredis": "^4.0.18",
+    "@types/jasmine": "^3.4.1",
+    "@types/node": "^12.7.8",
+    "coveralls": "^3.0.6",
+    "ioredis": "^4.14.1",
+    "jasmine": "^3.5.0",
+    "lodash": "^4.17.15",
     "mssql": "^5.1.0",
     "mysql": "^2.17.1",
-    "mysql2": "^1.6.5",
+    "mysql2": "^1.7.0",
     "nyc": "^14.1.1",
-    "pg": "^7.11.0",
-    "sqlite3": "^4.0.9",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.2"
+    "pg": "^7.12.1",
+    "sqlite3": "^4.1.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.3"
   }
 }
