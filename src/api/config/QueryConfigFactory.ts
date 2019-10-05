@@ -36,12 +36,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
    * @param options Config generation options
    * @returns Query config.
    */
-  public all(options?: ICfgGenOptions<TEntity>): IAntQueryConfig<TEntity, MultipleQueryResult>;
-  /**
-   * Creates a query of all entities of a certain model.
-   * @param options Config generation options
-   * @returns Query config.
-   */
   public all<TQueryResult extends MultipleQueryResult>(
     options?: ICfgGenOptions<TEntity>,
   ): IAntQueryConfig<TEntity, TQueryResult> {
@@ -61,16 +55,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
     };
   }
 
-  /**
-   * Creates a query of entities by a single field.
-   * @param column Query column.
-   * @param options Config generation options
-   * @returns Query config.
-   */
-  public byField(
-    column: IAntSQLColumn,
-    options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.
@@ -97,16 +81,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
     };
   }
 
-  /**
-   * Creates a query of entities by multiple fields.
-   * @param columns columns to filter.
-   * @param options config generation options.
-   * @returns Query of entities by multiple fields.
-   */
-  public byFields(
-    columns: IAntSQLColumn[],
-    options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, MultipleQueryResult>;
   /**
    * Creates a query of entities by multiple fields.
    * @param columns columns to filter.
@@ -152,16 +126,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
    * @param options Config generation options
    * @returns Query config.
    */
-  public byUniqueField(
-    column: IAntSQLColumn,
-    options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, SingleQueryResult>;
-  /**
-   * Creates a query of entities by an unique field.
-   * @param column Query column.
-   * @param options Config generation options
-   * @returns Query config.
-   */
   public byUniqueField<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
     options?: ICfgGenOptions<TEntity>,
@@ -182,16 +146,6 @@ export class QueryConfigFactory<TEntity extends IEntity> {
     };
   }
 
-  /**
-   * Creates a query of entities by multiple fields.
-   * @param columns columns to filter.
-   * @param options config generation options.
-   * @returns Query of entities by multiple fields.
-   */
-  public byUniqueFields(
-    columns: IAntSQLColumn[],
-    options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, SingleQueryResult>;
   /**
    * Creates a query of entities by multiple fields.
    * @param columns columns to filter.
