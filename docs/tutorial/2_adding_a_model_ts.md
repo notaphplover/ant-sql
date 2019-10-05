@@ -124,4 +124,4 @@ You can access the [tutorial repository](https://github.com/notaphplover/ant-js-
 npm run docker-test-user-entity-ts
 ```
 
-Next tutorial: Adding queries ([Javascript](./3_adding_queries_js.md) or [Typescript](./3_adding_queries_ts.md)).
+Next tutorial: Adding simple queries ([Javascript](./3_adding_simple_queries_js.md) or [Typescript](./3_adding_simple_queries_ts.md)).

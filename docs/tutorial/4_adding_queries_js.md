@@ -18,10 +18,6 @@ If you really need to cache a "bad" query, you can try to simulate it as a set o
 
   * Supose the user model has a "money" field. Supose we want to search users with in a certain range of money. We could create a query of appropiate ranges and then create the query as a process of the result of multiple queries. We could create, for example, a query that takes a number and returns users with money between (number * 10000) and ((number + 1) * 10000 - 1).Then, we could use this query multiple times to search users at almost any range.
 
-  * Supose we want to query users whose username contains a letter. There is a way to achieve this:
-    * First of all, create a query that takes a number n and a letter l and returns all the users whose n-th letter is l.
-    * Request a multiple query for each position, from 0 to the length limit of the field.
-
   Sometimes you won't be able to create a "good" query. In these cases, it's probably because it's not a good idea to create the cached query.
 
 In this tutorial we are creating two queries:
