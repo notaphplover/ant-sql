@@ -1,24 +1,6 @@
 # 3. Adding queries (Typescript)
 
-We are now able to define multiple models and find entities by ids. ¿What if we want to perform a more complex search?
-
-First of all, let's define a query in the library context. A query is a request for a set of entities of the __same model__. If you want to perform queries that targets different models, you will have to create (at least) one query for each model.
-
-Another important restriction when creating queries is the following one:
-
-__For each query, there must be only a way to find an entity__
-
-__Example of a good query__: A query that takes a letter and finds all the users whose username starts with the letter is a valid query because, for each user, there is only a way to find the user. The only way to find the user "notaphplover" is passing "n" to the query.
-
-__Example of a bad query__: A query that takes a letter and finds all the users whose username contains the letter is a bad query. There are multuple ways to find the user "notaphplover" ("n", "o", "t"...)
-
-This restriction is one of the keys to build a fast cache algorithm.
-
-If you really need to cache a "bad" query, you can try to simulate it as a set of multiple "good" queries:
-
-  * Supose the user model has a "money" field. Supose we want to search users with in a certain range of money. We could create a query of appropiate ranges and then create the query as a process of the result of multiple queries. We could create, for example, a query that takes a number and returns users with money between (number * 10000) and ((number + 1) * 10000 - 1).Then, we could use this query multiple times to search users at almost any range.
-
-  Sometimes you won't be able to create a "good" query. In these cases, it's probably because it's not a good idea to create the cached query.
+We are now able to define multiple models and find entities by ids or by other fields. ¿What if we want to perform a more complex search? It's time to use queries.
 
 In this tutorial we are creating two queries:
 

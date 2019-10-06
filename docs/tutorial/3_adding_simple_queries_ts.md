@@ -21,4 +21,109 @@ The simple queries currently implemented are the following ones:
 
 Let's put this on practise. In this tutorial we are implementing to search users whose username is a certain string.
 
-The idea is to inject the queries into the manager. Let's create our query injector:
+The idea is to inject the queries into the manager. It could be a good idea to provide an interface for injecting queries and then coding a class that implements the interface:
+
+__src/provider/UserQueriesProvider.ts__
+```typescript
+import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
+import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
+import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import * as Knex from 'knex';
+
+export interface IQueryInjector<TEntity extends IEntity> {
+
+  /**
+   * Injects queries in an AntJS model manager.
+   * @param knex Knex instance.
+   * @param antModelManager ant model manager where the queries will be injected.
+   * @param model Queries model.
+   */
+  injectQueries(
+    knex: Knex,
+    antModelManager: IAntSqlModelManager<TEntity>,
+    model: IAntSqlModel,
+  ): { [key: string]: IPrimaryQueryManager<TEntity> };
+}
+
+```
+
+Now, let's create our query injector:
+
+```typescript
+import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
+import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
+import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import * as Knex from 'knex';
+import { IUser } from '../entity/IUser';
+import { IQueryInjector } from './IQueryInjector';
+
+export class UserQueriesProvider implements IQueryInjector<IUser> {
+
+  public injectQueries(
+    _: Knex,
+    antModelManager: IAntSqlModelManager<IUser>,
+    model: IAntSqlModel,
+  ): { [key: string]: IPrimaryQueryManager<IUser>; } {
+    return {
+      userByUsernameQuery: this._addUserByUsernameQuery(
+        antModelManager, model,
+      ),
+    };
+  }
+
+  private _addUserByUsernameQuery(
+    userManager: IAntSqlModelManager<IUser>,
+    userModel: IAntSqlModel,
+  ): IPrimaryQueryManager<IUser> {
+    return userManager.query<number>(
+      userManager.cfgGen.byUniqueField<number>(userModel.getColumn('username')),
+    ) as IPrimaryQueryManager<IUser>;
+  }
+}
+
+```
+
+Let's explain the process:
+
+- `userManager.query` is the query generator function. It requires a query configuration in order to generate a query. The generic type passed is the returning type of the query (remember that a query is a [request for ids](https://notaphplover.github.io/ant-js/fundamentals/queies.md))
+- We are using simple queries, so we are using the configurator factory `userManager.cfgGen` to provide the query configuration.
+
+
+Once we have our provider, we can just use it in out AntSqlProvider:
+
+__src/provider/AntSqlProvider.ts__
+
+```typescript
+...
+
+const { userByUsernameQuery } = new UserQueriesProvider().injectQueries(
+  knex, userManager, userModel,
+);
+
+...
+```
+
+Don't forget to export the query managers, they are the objects we will use to perform queries.
+
+```typescript
+...
+
+export {
+  manager,
+  userManager,
+  userByUsernameQuery,
+};
+
+```
+
+That's all, we are ready to work with the query managers!
+
+You can access the [tutorial repository](https://github.com/notaphplover/ant-js-tutorial) in order to see the code in action. If you have Docker installed, you will be able to run the code with the following command:
+
+```
+npm run docker-test-user-simple-queries-ts
+```
+
+Next tutorial: Adding queries ([Javascript](./4_adding_queries_js.md) or [Typescript](./4_adding_queries_ts.md)).
+
