@@ -12,7 +12,18 @@ __src/provider/ModelProvider.ts__
 ```ts
 import { AntSqlModel } from '@antjs/ant-sql/src/model/AntSqlModel';
 
-const userModel = new AntSqlModel('id', { prefix: 'user::' }, 'User');
+const userModel = new AntSqlModel(
+  'id',
+  { prefix: 'user::' },
+  [{
+    entityAlias: 'id',
+    sqlName: 'id',
+  }, {
+    entityAlias: 'username',
+    sqlName: 'username',
+  }],
+  'User',
+);
 
 export { userModel };
 
@@ -22,7 +33,8 @@ We have defined our first model:
 
 1. The first argument is the name of the identifier field of the model. AntJS needs models identified by a field.
 2. The second argument is the key generation configuration. This config is used to define redis keys. An user with id equal to three will be stored in redis with a 'user::3' key.
-3. The third argument is the SQL table name.
+3. The third argument is the collection of columns of the model.
+4. The fourth argument is the SQL table name.
 
 We will be working with entities of the model, but we have no type defined for our entities. It would be a good idea to create a new interface for defining our entities:
 
@@ -124,4 +136,4 @@ You can access the [tutorial repository](https://github.com/notaphplover/ant-js-
 npm run docker-test-user-entity-ts
 ```
 
-Next tutorial: Adding queries ([Javascript](./3_adding_queries_js.md) or [Typescript](./3_adding_queries_ts.md)).
+Next tutorial: Adding simple queries ([Javascript](./3_adding_simple_queries_js.md) or [Typescript](./3_adding_simple_queries_ts.md)).
