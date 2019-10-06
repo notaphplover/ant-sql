@@ -1,4 +1,4 @@
-# 3. Adding simple queries (Typescript)
+# 3. Adding simple queries (Javascript)
 
 We are now able to define multiple models and find entities by ids. ¿What if we want to perform a more complex search? Don't worry, here comes __queries__ to the rescue
 
@@ -24,47 +24,23 @@ Let's put this on practise. In this tutorial we are implementing to search users
 The idea is to inject the queries into the manager. It could be a good idea to provide an interface for injecting queries and then coding a class that implements the interface:
 
 __src/provider/UserQueriesProvider.ts__
-```typescript
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
-import * as Knex from 'knex';
+```javascript
+'use strict';
 
-export interface IQueryInjector<TEntity extends IEntity> {
+class UserQueriesProvider {
 
   /**
-   * Injects queries in an AntJS model manager.
-   * @param knex Knex instance.
-   * @param antModelManager ant model manager where the queries will be injected.
-   * @param model Queries model.
+   * Injects queries in the user manager and returns the query managers generated.
+   * @param { import('knex') } _ Knex instance.
+   * @param { import('@antjs/ant-sql/src/api/AntSqlModelManager').AntSqlModelManager } antModelManager User manager
+   * @param { import('@antjs/ant-sql/src/model/AntSqlModel').AntSqlModel } model User model
+   * @returns { object } Queries object.
    */
   injectQueries(
-    knex: Knex,
-    antModelManager: IAntSqlModelManager<TEntity>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<TEntity> };
-}
-
-```
-
-Now, let's create our query injector:
-
-```typescript
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
-import * as Knex from 'knex';
-import { IUser } from '../entity/IUser';
-import { IQueryInjector } from './IQueryInjector';
-
-export class UserQueriesProvider implements IQueryInjector<IUser> {
-
-  public injectQueries(
-    _: Knex,
-    antModelManager: IAntSqlModelManager<IUser>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<IUser>; } {
+    _,
+    antModelManager,
+    model,
+  ) {
     return {
       userByUsernameQuery: this._addUserByUsernameQuery(
         antModelManager, model,
@@ -72,15 +48,20 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
     };
   }
 
-  private _addUserByUsernameQuery(
-    userManager: IAntSqlModelManager<IUser>,
-    userModel: IAntSqlModel,
-  ): IPrimaryQueryManager<IUser> {
-    return userManager.query<number>(
-      userManager.cfgGen.byUniqueField<number>(userModel.getColumn('username')),
-    ) as IPrimaryQueryManager<IUser>;
+  /**
+   * Adds a "users by username" query.
+   * @param { import('@antjs/ant-sql/src/api/IAntSqlModelManager').IAntSqlModelManager } userManager User manager
+   * @param { import('@antjs/ant-sql/src/model/AntSqlModel').AntSqlModel } userModel User model
+   * @returns { import('@antjs/ant-js/src/persistence/primary/query/SingleResultQueryManager') } Query manager created.
+   */
+  _addUserByUsernameQuery(userManager, userModel) {
+    return userManager.query(
+      userManager.cfgGen.byUniqueField(userModel.getColumn('username')),
+    );
   }
 }
+
+module.exports = { UserQueriesProvider };
 
 ```
 
@@ -122,7 +103,7 @@ That's all, we are ready to work with the query managers!
 You can access the [tutorial repository](https://github.com/notaphplover/ant-js-tutorial) in order to see the code in action. If you have Docker installed, you will be able to run the code with the following command:
 
 ```
-npm run docker-test-user-simple-queries-ts
+npm run docker-test-user-simple-queries-js
 ```
 
 Next tutorial: Adding queries ([Javascript](./4_adding_queries_js.md) or [Typescript](./4_adding_queries_ts.md)).
