@@ -7,7 +7,7 @@ SQL extension for [AntJS](https://github.com/notaphplover/ant-js).
 
 ## Status
 
-Not even in alpha, so please don´t use it for now.
+In beta phase. The library is being tested in a pre production environment.
 
 ## How to build the library
 
