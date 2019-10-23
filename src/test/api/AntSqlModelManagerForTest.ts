@@ -3,7 +3,7 @@ import { PrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/prima
 import { SecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/secondary-entity-manager';
 import { AntSqlModelManager } from '../../api/ant-sql-model-manager';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
-import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { SqlModel } from '../../model/sql-model';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 
 export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlModelManager<TEntity> {
@@ -20,7 +20,7 @@ export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlMod
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  public generateModelManager(model: IAntSqlModel, config: ApiSqlModelConfig): PrimaryModelManager<TEntity> {
+  public generateModelManager(model: SqlModel, config: ApiSqlModelConfig): PrimaryModelManager<TEntity> {
     return this._generateModelManager(model, config);
   }
 
@@ -31,7 +31,7 @@ export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlMod
    * @returns Secondary model manager generated.
    */
   public generateSecondaryEntityManager(
-    model: IAntSqlModel,
+    model: SqlModel,
     config: ApiSqlModelConfig,
   ): SecondaryEntityManager<TEntity> {
     return this._generateSecondaryEntityManager(model, config);

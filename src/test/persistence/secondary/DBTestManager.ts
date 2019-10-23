@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
-import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { SqlModel } from '../../../model/sql-model';
 import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
 import { AntSQLiteSecondaryEntityManager } from '../../../persistence/secondary/AntSQLiteSecondaryEntityManager';
 import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
@@ -91,7 +91,7 @@ END`;
    */
   public getSecondaryEntityManagerGenerator<TEntity extends Entity>(
     knex: Knex,
-  ): (model: IAntSqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
+  ): (model: SqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:

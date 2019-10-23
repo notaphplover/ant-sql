@@ -1,7 +1,7 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
-import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { SqlModel } from '../../../model/sql-model';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
 import { modelGenerator } from '../../model/AntSqlModelGenerator';
 import { DBTestManager } from './DBTestManager';
@@ -39,7 +39,7 @@ export class AntSqlSecondaryEntityManagerTest implements Test {
    * Secondary entity manager generator.
    */
   protected _secondaryEntityManagerGenerator: <TEntity extends Entity>(
-    model: IAntSqlModel,
+    model: SqlModel,
     knex: Knex,
   ) => ISqlSecondaryEntityManager<TEntity>;
 
@@ -48,7 +48,7 @@ export class AntSqlSecondaryEntityManagerTest implements Test {
     dbConnection: Knex,
     dbAlias: string,
     secondaryEntityManagerGenerator: <TEntity extends Entity>(
-      model: IAntSqlModel,
+      model: SqlModel,
       knex: Knex,
     ) => ISqlSecondaryEntityManager<TEntity>,
   ) {

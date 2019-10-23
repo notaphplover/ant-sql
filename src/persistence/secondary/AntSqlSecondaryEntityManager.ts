@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
-import { IAntSqlModel } from '../../model/IAntSqlModel';
+import { SqlModel } from '../../model/sql-model';
 import { ISqlSecondaryEntityManager } from './ISqlSecondaryEntityManager';
 import { SecondaryEntityManagerHelper } from './SecondayEntityManagerHelper';
 
@@ -13,7 +13,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends Entity> implements ISq
   /**
    * Model to manage.
    */
-  protected _model: IAntSqlModel;
+  protected _model: SqlModel;
 
   /**
    * Query Builder.
@@ -25,7 +25,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends Entity> implements ISq
    * @param model Model to manage.
    * @param dbConnection SQL knex connection.
    */
-  public constructor(model: IAntSqlModel, dbConnection: Knex) {
+  public constructor(model: SqlModel, dbConnection: Knex) {
     this._dbConnection = dbConnection;
     this._helper = new SecondaryEntityManagerHelper(model, dbConnection);
     this._model = model;
@@ -34,7 +34,7 @@ export class AntSqlSecondaryEntityManager<TEntity extends Entity> implements ISq
   /**
    * Model to manage.
    */
-  public get model(): IAntSqlModel {
+  public get model(): SqlModel {
     return this._model;
   }
 

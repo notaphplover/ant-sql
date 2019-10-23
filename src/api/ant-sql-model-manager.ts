@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
-import { IAntSqlModel } from '../model/IAntSqlModel';
+import { SqlModel } from '../model/sql-model';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
 import { SqlModelManager } from '../persistence/primary/SqlModelManager';
@@ -14,7 +14,7 @@ import { QueryConfigFactory } from './config/query-config-factory';
 import { ApiSqlModelManager } from './api-sql-model-manager';
 
 export class AntSqlModelManager<TEntity extends Entity>
-  extends AntModelManager<TEntity, ApiSqlModelConfig, IAntSqlModel, ISqlModelManager<TEntity>>
+  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel, ISqlModelManager<TEntity>>
   implements ApiSqlModelManager<TEntity> {
   /**
    * Query config factory.
@@ -80,7 +80,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(model: IAntSqlModel, config: ApiSqlModelConfig): ISqlModelManager<TEntity> {
+  protected _generateModelManager(model: SqlModel, config: ApiSqlModelConfig): ISqlModelManager<TEntity> {
     return new SqlModelManager<TEntity>(
       model,
       config.redis,
@@ -96,7 +96,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @returns Secondary model manager generated.
    */
   protected _generateSecondaryEntityManager(
-    model: IAntSqlModel,
+    model: SqlModel,
     config: ApiSqlModelConfig,
   ): ISqlSecondaryEntityManager<TEntity> {
     const knex = config.knex;

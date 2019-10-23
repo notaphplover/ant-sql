@@ -4,7 +4,7 @@ import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/ant-sql-model';
-import { IAntSqlModel } from '../../../model/IAntSqlModel';
+import { SqlModel } from '../../../model/sql-model';
 import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
 import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';
 import { SqlModelManager } from '../../../persistence/primary/SqlModelManager';
@@ -21,7 +21,7 @@ const tableNameGenerator = (baseAlias: string) =>
     .update(baseAlias)
     .digest('hex');
 
-const modelGenerator = (keyGen: KeyGenParams): IAntSqlModel => {
+const modelGenerator = (keyGen: KeyGenParams): SqlModel => {
   return new AntSqlModel('id', keyGen, [{ entityAlias: 'id', sqlName: 'id' }], tableNameGenerator(keyGen.prefix));
 };
 
