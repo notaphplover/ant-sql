@@ -13,7 +13,6 @@ import { DBTestManager } from './persistence/secondary/DBTestManager';
 import { SecondaryEntityManagerHelperTest } from './persistence/secondary/SecondaryEntityManagerHelperTest';
 
 export class AllTest implements Test {
-
   /**
    * DB Test manager.
    */
@@ -26,11 +25,7 @@ export class AllTest implements Test {
   public performTests(): void {
     const redisWrapper = new RedisWrapper();
     const redis = redisWrapper.redis;
-    const flushRedisPromise: Promise<any> = redis
-      .flushall()
-      .then(
-        () => redis.script(['flush']),
-      );
+    const flushRedisPromise: Promise<any> = redis.flushall().then(() => redis.script(['flush']));
 
     new AntSqlManagerTest().performTests();
     new AntSqlModelTest().performTests();
@@ -45,19 +40,11 @@ export class AllTest implements Test {
 
     for (const config of dBConnectionWrapper.config) {
       const connection = config.connection;
-      const deleteAllTablesPromise = dbServerAwaiterManager.getTablesDeletedAwaiter(
-        connection.client.driverName,
-      );
+      const deleteAllTablesPromise = dbServerAwaiterManager.getTablesDeletedAwaiter(connection.client.driverName);
 
-      const deleteAllTablesAndFlushRedisPromise = Promise.all([
-        flushRedisPromise,
-        deleteAllTablesPromise,
-      ]);
+      const deleteAllTablesAndFlushRedisPromise = Promise.all([flushRedisPromise, deleteAllTablesPromise]);
 
-      new AntSqlModelManagerTest(
-        connection,
-        connection.client.driverName,
-      ).performTests();
+      new AntSqlModelManagerTest(connection, connection.client.driverName).performTests();
 
       new AntSqlSecondaryEntityManagerTest(
         deleteAllTablesPromise,

@@ -7,7 +7,6 @@ import { IAntSqlModel } from '../../model/IAntSqlModel';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 
 export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlModelManager<TEntity> {
-
   /**
    * Gets the inner model manager.
    */
@@ -21,10 +20,7 @@ export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlMod
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  public generateModelManager(
-    model: IAntSqlModel,
-    config: IAntSqlModelConfig,
-  ): PrimaryModelManager<TEntity> {
+  public generateModelManager(model: IAntSqlModel, config: IAntSqlModelConfig): PrimaryModelManager<TEntity> {
     return this._generateModelManager(model, config);
   }
 

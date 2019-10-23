@@ -10,9 +10,7 @@ export class AntSqlManagerForTest extends AntSqlManager {
    * @param model Model to manage.
    * @returns model manager created.
    */
-  public createModelManager<TEntity extends Entity>(
-    model: IAntSqlModel,
-  ): ApiModelManager<TEntity, IAntSqlModelConfig> {
+  public createModelManager<TEntity extends Entity>(model: IAntSqlModel): ApiModelManager<TEntity, IAntSqlModelConfig> {
     return this._createModelManager(model);
   }
 }

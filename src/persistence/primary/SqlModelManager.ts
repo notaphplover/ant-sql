@@ -7,21 +7,16 @@ import { AntSqlUpdateOptions } from './options/AntSqlUpdateOptions';
 import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
 import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
-export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelManager<
-  TEntity,
-  ISqlSecondaryEntityManager<TEntity>
-> implements ISqlModelManager<TEntity> {
-
+export class SqlModelManager<TEntity extends Entity>
+  extends AntPrimaryModelManager<TEntity, ISqlSecondaryEntityManager<TEntity>>
+  implements ISqlModelManager<TEntity> {
   /**
    * Deletes an entity from the cache layer.
    * @param id id of the entity to delete.
    * @param options persistency options.
    * @returns Promise of entity deleted.
    */
-  public async delete(
-    id: number | string,
-    options: IAntSqlDeleteOptions = new AntSqlDeleteOptions(),
-  ): Promise<any> {
+  public async delete(id: number | string, options: IAntSqlDeleteOptions = new AntSqlDeleteOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.delete(id);
     }
@@ -34,10 +29,7 @@ export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelMana
    * @param options persistency options.
    * @returns Promise of entity inserted.
    */
-  public async insert(
-    entity: TEntity,
-    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions(),
-  ): Promise<any> {
+  public async insert(entity: TEntity, options: IAntSqlUpdateOptions = new AntSqlUpdateOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.insert(entity);
     }
@@ -66,10 +58,7 @@ export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelMana
    * @param options persistency options.
    * @returns Promise of entities inserted.
    */
-  public async mInsert(
-    entities: TEntity[],
-    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions(),
-  ): Promise<any> {
+  public async mInsert(entities: TEntity[], options: IAntSqlUpdateOptions = new AntSqlUpdateOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.mInsert(entities);
     }
@@ -82,10 +71,7 @@ export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelMana
    * @param options persistency options.
    * @returns Promise of entities updated.
    */
-  public async mUpdate(
-    entities: TEntity[],
-    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions(),
-  ): Promise<any> {
+  public async mUpdate(entities: TEntity[], options: IAntSqlUpdateOptions = new AntSqlUpdateOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.mUpdate(entities);
     }
@@ -98,10 +84,7 @@ export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelMana
    * @param options persistency options.
    * @returns Promise of entity deleted.
    */
-  public async update(
-    entity: TEntity,
-    options: IAntSqlUpdateOptions = new AntSqlUpdateOptions(),
-  ): Promise<any> {
+  public async update(entity: TEntity, options: IAntSqlUpdateOptions = new AntSqlUpdateOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.update(entity);
     }

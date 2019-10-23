@@ -3,11 +3,8 @@ import { IAntSqlModel } from '../model/IAntSqlModel';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
-export interface IAntSqlManager extends ApiGeneralManager<
-  IAntSqlModelConfig,
-  IAntSqlModel,
-  IAntSqlModelManager<Entity>
-> {
+export interface IAntSqlManager
+  extends ApiGeneralManager<IAntSqlModelConfig, IAntSqlModel, IAntSqlModelManager<Entity>> {
   /**
    * @inheritdoc
    */

@@ -5,11 +5,11 @@ import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { QueryConfigFactory } from './config/QueryConfigFactory';
 
 export interface IAntSqlModelManager<TEntity extends Entity>
-  extends ApiModelManager<TEntity, IAntSqlModelConfig>, ISqlInsertable<TEntity> {
-
-    /**
-     * Gets the query config factory.
-     * @returns query config factory.
-     */
-    cfgGen: QueryConfigFactory<TEntity>;
-  }
+  extends ApiModelManager<TEntity, IAntSqlModelConfig>,
+    ISqlInsertable<TEntity> {
+  /**
+   * Gets the query config factory.
+   * @returns query config factory.
+   */
+  cfgGen: QueryConfigFactory<TEntity>;
+}

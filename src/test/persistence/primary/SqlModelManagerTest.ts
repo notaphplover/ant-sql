@@ -15,25 +15,19 @@ import { RedisWrapper } from './RedisWrapper';
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
 const tableNameGenerator = (baseAlias: string) =>
-  't_'
-  + crypto
+  't_' +
+  crypto
     .createHash('md5')
     .update(baseAlias)
     .digest('hex');
 
 const modelGenerator = (keyGen: KeyGenParams): IAntSqlModel => {
-  return new AntSqlModel(
-    'id',
-    keyGen,
-    [{ entityAlias: 'id', sqlName: 'id' }],
-    tableNameGenerator(keyGen.prefix),
-  );
+  return new AntSqlModel('id', keyGen, [{ entityAlias: 'id', sqlName: 'id' }], tableNameGenerator(keyGen.prefix));
 };
 
 type EntityTest = { id: number } & Entity;
 
 export class SqlModelManagerTest implements Test {
-
   /**
    * Database connection wrapper.
    */
@@ -64,131 +58,109 @@ export class SqlModelManagerTest implements Test {
   private _itMustBeInitializable(): void {
     const itsName = 'mustBeInitializable';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelGenerator({ prefix: prefix });
-      const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
-        model,
-        this._dbConnection,
-      );
-      expect(() => {
-        // tslint:disable-next-line:no-unused-expression
-        new SqlModelManager(
-          model,
-          this._redis.redis,
-          true,
-          secondaryEntityManager,
-        );
-      }).not.toThrowError();
-      done();
-    }, MAX_SAFE_TIMEOUT);
+    it(
+      itsName,
+      async (done) => {
+        const model = modelGenerator({ prefix: prefix });
+        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        expect(() => {
+          // tslint:disable-next-line:no-unused-expression
+          new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
+        }).not.toThrowError();
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustCallSecondaryEntityManagerMethods(): void {
     const itsName = 'mustCallSecondaryEntityManagerMethods';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelGenerator({ prefix: prefix });
-      const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
-        model,
-        this._dbConnection,
-      );
-      const sqlModelManager = new SqlModelManager(
-        model,
-        this._redis.redis,
-        true,
-        secondaryEntityManager,
-      );
-      const methodsToTest = [
-        'delete',
-        'insert',
-        'mDelete',
-        'mInsert',
-        'mUpdate',
-        'update',
-      ] as Array<keyof ISqlSecondaryEntityManager<any>>;
+    it(
+      itsName,
+      async (done) => {
+        const model = modelGenerator({ prefix: prefix });
+        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        const sqlModelManager = new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
+        const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
+          keyof ISqlSecondaryEntityManager<any>
+        >;
 
-      for (const methodToTest of methodsToTest) {
-        spyOn(secondaryEntityManager, methodToTest as any).and.returnValue(
-          new Promise((resolve) => resolve(methodToTest)),
-        );
-      }
+        for (const methodToTest of methodsToTest) {
+          spyOn(secondaryEntityManager, methodToTest as any).and.returnValue(
+            new Promise((resolve) => resolve(methodToTest)),
+          );
+        }
 
-      const entity: EntityTest = { id: 0 };
+        const entity: EntityTest = { id: 0 };
 
-      await Promise.all([
-        sqlModelManager.delete(entity.id),
-        sqlModelManager.insert(entity),
-        sqlModelManager.mDelete([entity.id]),
-        sqlModelManager.mInsert([entity]),
-        sqlModelManager.mUpdate([entity]),
-        sqlModelManager.update(entity),
-      ]);
+        await Promise.all([
+          sqlModelManager.delete(entity.id),
+          sqlModelManager.insert(entity),
+          sqlModelManager.mDelete([entity.id]),
+          sqlModelManager.mInsert([entity]),
+          sqlModelManager.mUpdate([entity]),
+          sqlModelManager.update(entity),
+        ]);
 
-      for (const methodToTest of methodsToTest) {
-        expect(secondaryEntityManager[methodToTest]).toHaveBeenCalled();
-      }
+        for (const methodToTest of methodsToTest) {
+          expect(secondaryEntityManager[methodToTest]).toHaveBeenCalled();
+        }
 
-      done();
-    }, MAX_SAFE_TIMEOUT);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustNotCallSecondaryLayerIfNoPersist(): void {
     const itsName = 'mustNotCallSecondaryLayerIfNoPersist';
     const prefix = this._declareName + '/' + itsName + '/';
 
-    it(itsName, async (done) => {
-      const model = modelGenerator({ prefix: prefix });
-      const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(
-        model,
-        this._dbConnection,
-      );
-      const sqlModelManager = new SqlModelManager(
-        model,
-        this._redis.redis,
-        true,
-        secondaryEntityManager,
-      );
+    it(
+      itsName,
+      async (done) => {
+        const model = modelGenerator({ prefix: prefix });
+        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        const sqlModelManager = new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
 
-      const methodsToTest = [
-        'delete',
-        'insert',
-        'mDelete',
-        'mInsert',
-        'mUpdate',
-        'update',
-      ] as Array<keyof ISqlSecondaryEntityManager<any>>;
+        const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
+          keyof ISqlSecondaryEntityManager<any>
+        >;
 
-      for (const methodToTest of methodsToTest) {
-        spyOn(secondaryEntityManager, methodToTest as any).and.returnValue(
-          new Promise((resolve) => resolve(methodToTest)),
-        );
-      }
+        for (const methodToTest of methodsToTest) {
+          spyOn(secondaryEntityManager, methodToTest as any).and.returnValue(
+            new Promise((resolve) => resolve(methodToTest)),
+          );
+        }
 
-      const entity: EntityTest = { id: 0 };
-      const deleteOptions: IAntSqlDeleteOptions = {
-        negativeCache: true,
-        persist: false,
-      };
-      const updateOptions: IAntSqlUpdateOptions = {
-        cacheMode: CacheMode.CacheAndOverwrite,
-        persist: false,
-        ttl: null,
-      };
+        const entity: EntityTest = { id: 0 };
+        const deleteOptions: IAntSqlDeleteOptions = {
+          negativeCache: true,
+          persist: false,
+        };
+        const updateOptions: IAntSqlUpdateOptions = {
+          cacheMode: CacheMode.CacheAndOverwrite,
+          persist: false,
+          ttl: null,
+        };
 
-      await Promise.all([
-        sqlModelManager.delete(entity.id, deleteOptions),
-        sqlModelManager.insert(entity, updateOptions),
-        sqlModelManager.mDelete([entity.id], deleteOptions),
-        sqlModelManager.mInsert([entity], updateOptions),
-        sqlModelManager.mUpdate([entity], updateOptions),
-        sqlModelManager.update(entity, updateOptions),
-      ]);
+        await Promise.all([
+          sqlModelManager.delete(entity.id, deleteOptions),
+          sqlModelManager.insert(entity, updateOptions),
+          sqlModelManager.mDelete([entity.id], deleteOptions),
+          sqlModelManager.mInsert([entity], updateOptions),
+          sqlModelManager.mUpdate([entity], updateOptions),
+          sqlModelManager.update(entity, updateOptions),
+        ]);
 
-      for (const methodToTest of methodsToTest) {
-        expect(secondaryEntityManager[methodToTest]).not.toHaveBeenCalled();
-      }
+        for (const methodToTest of methodsToTest) {
+          expect(secondaryEntityManager[methodToTest]).not.toHaveBeenCalled();
+        }
 
-      done();
-    }, MAX_SAFE_TIMEOUT);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 }

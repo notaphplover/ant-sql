@@ -60,14 +60,12 @@ class DbServerAwaiterManager {
     if (config.dbCreationOptions) {
       return dbServerAwaiter
         .awaitServer(config.dbCreationOptions.connection)
-        .then(() => testManager.createDatabaseIfNotExists(
-          config.dbCreationOptions.connection,
-          config.dbCreationOptions.name,
-        ));
+        .then(() =>
+          testManager.createDatabaseIfNotExists(config.dbCreationOptions.connection, config.dbCreationOptions.name),
+        );
     } else {
       const connection = config.connection;
-      return dbServerAwaiter
-        .awaitServer(connection);
+      return dbServerAwaiter.awaitServer(connection);
     }
   }
 
@@ -84,8 +82,7 @@ class DbServerAwaiterManager {
       const dbReadyPromise = this._createDBReadyPromise(config, dbAwaiter, dbTestManager);
       this._dbReadyAwaiters.set(connection.client.driverName, dbReadyPromise);
 
-      const dbTablesDeletedAwaiter = dbReadyPromise
-        .then(() => this._dbTestManager.deleteAllTables(connection));
+      const dbTablesDeletedAwaiter = dbReadyPromise.then(() => this._dbTestManager.deleteAllTables(connection));
       this._dbTablesDeletedAwaiters.set(connection.client.driverName, dbTablesDeletedAwaiter);
     }
   }

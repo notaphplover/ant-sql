@@ -14,13 +14,8 @@ import { QueryConfigFactory } from './config/QueryConfigFactory';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
 export class AntSqlModelManager<TEntity extends Entity>
-  extends AntModelManager<
-    TEntity,
-    IAntSqlModelConfig,
-    IAntSqlModel,
-    ISqlModelManager<TEntity>
-> implements IAntSqlModelManager<TEntity> {
-
+  extends AntModelManager<TEntity, IAntSqlModelConfig, IAntSqlModel, ISqlModelManager<TEntity>>
+  implements IAntSqlModelManager<TEntity> {
   /**
    * Query config factory.
    */
@@ -33,7 +28,7 @@ export class AntSqlModelManager<TEntity extends Entity>
   public get cfgGen(): QueryConfigFactory<TEntity> {
     if (!this._queryConfigFactory) {
       throw new Error(
-`The current action could not be performed because the model manager is not ready.
+        `The current action could not be performed because the model manager is not ready.
 This is probably caused by the absence of a config instance. Ensure that config is set.`,
       );
     }
@@ -52,7 +47,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @returns this instance.
    */
   public config(config: IAntSqlModelConfig): this;
-  public config(config?: IAntSqlModelConfig): IAntSqlModelConfig|this {
+  public config(config?: IAntSqlModelConfig): IAntSqlModelConfig | this {
     if (undefined !== config && !this._config) {
       this._queryConfigFactory = new QueryConfigFactory(config.knex, this._model);
     }
@@ -85,10 +80,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(
-    model: IAntSqlModel,
-    config: IAntSqlModelConfig,
-  ): ISqlModelManager<TEntity> {
+  protected _generateModelManager(model: IAntSqlModel, config: IAntSqlModelConfig): ISqlModelManager<TEntity> {
     return new SqlModelManager<TEntity>(
       model,
       config.redis,

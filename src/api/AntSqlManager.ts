@@ -6,12 +6,8 @@ import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { IAntSqlManager } from './IAntSqlManager';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
-export class AntSqlManager extends AntManager<
-  IAntSqlModelConfig,
-  IAntSqlModel,
-  IAntSqlModelManager<Entity>
-> implements IAntSqlManager {
-
+export class AntSqlManager extends AntManager<IAntSqlModelConfig, IAntSqlModel, IAntSqlModelManager<Entity>>
+  implements IAntSqlManager {
   /**
    * Creates a new AntSqlManager.
    */
