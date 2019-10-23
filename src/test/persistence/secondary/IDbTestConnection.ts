@@ -8,5 +8,5 @@ export interface IDbTestConnection {
   /**
    * True if the database must be created.
    */
-  dbCreationOptions?: { connection: Knex, name: string };
+  dbCreationOptions?: { connection: Knex; name: string };
 }

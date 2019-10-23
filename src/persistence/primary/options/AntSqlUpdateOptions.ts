@@ -14,11 +14,7 @@ export class AntSqlUpdateOptions extends AntJsUpdateOptions implements IAntSqlUp
    * @param ttl TTL of the entities to update.
    * @param persist True to persist changes in the sql server.
    */
-  public constructor(
-    cacheMode?: CacheMode,
-    ttl?: number,
-    persist: boolean = true,
-  ) {
+  public constructor(cacheMode?: CacheMode, ttl?: number, persist: boolean = true) {
     super(cacheMode, ttl);
 
     this._persist = persist;

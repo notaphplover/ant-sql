@@ -2,7 +2,6 @@ import * as Knex from 'knex';
 import { DBTestManager } from '../persistence/secondary/DBTestManager';
 
 export class DbServerAwaiter {
-
   protected _dbTestManager: DBTestManager;
 
   protected _millisPerRequest: number;
@@ -18,10 +17,13 @@ export class DbServerAwaiter {
    */
   public awaitServer(connection: Knex): Promise<any> {
     const innerAwait = (connection: Knex, resolve: (value?: unknown) => void) => {
-      this._dbTestManager.ping(connection)
+      this._dbTestManager
+        .ping(connection)
         .then(resolve)
         .catch(() => {
-          setTimeout(() => { innerAwait(connection, resolve); }, this._millisPerRequest);
+          setTimeout(() => {
+            innerAwait(connection, resolve);
+          }, this._millisPerRequest);
         });
     };
     return new Promise((resolve) => {

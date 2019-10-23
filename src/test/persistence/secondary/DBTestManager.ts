@@ -8,7 +8,6 @@ import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlS
 import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 
 export class DBTestManager {
-
   /**
    * Creates a new table in the database schema.
    * @param name Name of the new table.
@@ -20,18 +19,20 @@ export class DBTestManager {
   public async createTable(
     dbConnection: Knex,
     name: string,
-    primaryKeyColumn: { name: string, type: 'number' | 'string' | 'increments' },
-    otherColumns: {[key: string]: 'number' | 'string' } = {},
+    primaryKeyColumn: { name: string; type: 'number' | 'string' | 'increments' },
+    otherColumns: { [key: string]: 'number' | 'string' } = {},
   ): Promise<string> {
     const tableExists = await dbConnection.schema.hasTable(name);
-    if (tableExists) { throw new Error(`Table ${name} already exists.`); }
+    if (tableExists) {
+      throw new Error(`Table ${name} already exists.`);
+    }
     await dbConnection.schema.createTable(name, (table) => {
       const addColumn = (name: string, type: 'number' | 'string' | 'increments') => {
         if ('number' === type) {
           table.integer(name);
         } else if ('string' === type) {
           table.string(name);
-        } else if ( 'increments' === type) {
+        } else if ('increments' === type) {
           table.increments(name);
         }
       };
@@ -60,7 +61,7 @@ export class DBTestManager {
    * @param entity Entity to insert.
    */
   public insert(dbConnection: Knex, table: string, entity: any): Promise<any> {
-    return dbConnection(table).insert(entity) as unknown as Promise<any>;
+    return (dbConnection(table).insert(entity) as unknown) as Promise<any>;
   }
 
   /**
@@ -68,21 +69,17 @@ export class DBTestManager {
    * @param knex Knex connection.
    * @param dbName DB Name.
    */
-  public createDatabaseIfNotExists(
-    knex: Knex,
-    dbName: string,
-  ): Promise<any> {
+  public createDatabaseIfNotExists(knex: Knex, dbName: string): Promise<any> {
     let query: string;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
-        query =
-`IF  NOT EXISTS (SELECT * FROM sys.databases WHERE name = N'${dbName}')
+        query = `IF  NOT EXISTS (SELECT * FROM sys.databases WHERE name = N'${dbName}')
 BEGIN
     CREATE DATABASE [${dbName}]
 END`;
         break;
       default:
-        throw new Error(`Driver "${ knex.client.driverName }" not supported`);
+        throw new Error(`Driver "${knex.client.driverName}" not supported`);
     }
     return knex.raw<any>(query);
   }
@@ -92,8 +89,9 @@ END`;
    * @param knex Knex instance.
    * @returns Secondary entity manager generator.
    */
-  public getSecondaryEntityManagerGenerator<TEntity extends Entity>(knex: Knex)
-    : (model: IAntSqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
+  public getSecondaryEntityManagerGenerator<TEntity extends Entity>(
+    knex: Knex,
+  ): (model: IAntSqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
@@ -129,8 +127,7 @@ END`;
         break;
       case KnexDriver.ORACLE:
       case KnexDriver.ORACLEDB:
-        knexQuery = knex('user_tables')
-          .select('table_name');
+        knexQuery = knex('user_tables').select('table_name');
         break;
       case KnexDriver.PG:
         knexQuery = knex('information_schema.tables')
@@ -145,7 +142,7 @@ END`;
           .andWhereNot('table_name', 'like', 'sqlite_%');
         break;
       default:
-        throw new Error(`Driver "${ knex.client.driverName }" not supported`);
+        throw new Error(`Driver "${knex.client.driverName}" not supported`);
     }
     return knexQuery.then((results) => {
       return results.map((row: any) => row.table_name);
@@ -190,7 +187,7 @@ END`;
           .limit(limitResultsSize);
         break;
       default:
-        throw new Error(`Driver "${ knex.client.driverName }" not supported`);
+        throw new Error(`Driver "${knex.client.driverName}" not supported`);
     }
     return knexQuery;
   }

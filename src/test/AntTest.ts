@@ -3,7 +3,6 @@ import * as AntJs from '../ant';
 import { AntSqlManager } from '../api/AntSqlManager';
 
 export class AntTest implements Test {
-
   public performTests() {
     describe('AntTest', () => {
       this._itMustExportTypes();

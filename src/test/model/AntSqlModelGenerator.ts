@@ -6,8 +6,8 @@ import { IAntSQLColumn } from '../../model/IAntSQLColumn';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
 
 const tableNameGenerator = (baseAlias: string) =>
-  't_'
-  + crypto
+  't_' +
+  crypto
     .createHash('md5')
     .update(baseAlias)
     .digest('hex');
@@ -36,10 +36,5 @@ export const modelGenerator = (
     }
   }
 
-  return new AntSqlModel(
-    'id',
-    keyGen,
-    columnsArgs,
-    tableNameGenerator(keyGen.prefix),
-  );
+  return new AntSqlModel('id', keyGen, columnsArgs, tableNameGenerator(keyGen.prefix));
 };

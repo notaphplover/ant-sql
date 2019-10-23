@@ -10,7 +10,6 @@ import { IAntSqlModel } from '../../model/IAntSqlModel';
 import { ICfgGenOptions } from './ICfgGenOptions';
 
 export class QueryConfigFactory<TEntity extends Entity> {
-
   /**
    * Knex connection.
    */
@@ -39,11 +38,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ICfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'all/';
-    options = this._processCfgGenOptions(
-      options,
-      () => this._model.keyGen.prefix + queryAlias,
-      queryAlias,
-    );
+    options = this._processCfgGenOptions(options, () => this._model.keyGen.prefix + queryAlias, queryAlias);
 
     return {
       entityKeyGen: options.entityKeyGen,
@@ -91,23 +86,11 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ICfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
-    const queryAlias =
-      'mf_'
-      + columns.reduce(
-        (previous, next) =>
-          previous
-          + separator
-          + next.entityAlias,
-        '',
-      );
+    const queryAlias = 'mf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
     options = this._processCfgGenOptions(
       options,
       (params: any) =>
-          columns.reduce(
-            (previous, next) =>
-              previous + params[next.entityAlias],
-            this._model.keyGen.prefix + queryAlias,
-          ),
+        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
       queryAlias,
     );
     return {
@@ -156,23 +139,11 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ICfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
-    const queryAlias =
-      'umf_'
-      + columns.reduce(
-        (previous, next) =>
-          previous
-          + separator
-          + next.entityAlias,
-        '',
-      );
+    const queryAlias = 'umf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
     options = this._processCfgGenOptions(
       options,
       (params: any) =>
-          columns.reduce(
-            (previous, next) =>
-              previous + params[next.entityAlias],
-            this._model.keyGen.prefix + queryAlias,
-          ),
+        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
       queryAlias,
     );
 
@@ -191,10 +162,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
    */
   private _buildAllIdsQuery<TQueryResult extends MultipleQueryResult>(): TQuery<TQueryResult> {
     return () => {
-      return this._createAllEntitiesIdsQuery()
-        .then(
-          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
-        );
+      return this._createAllEntitiesIdsQuery().then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+      );
     };
   }
 
@@ -211,16 +181,15 @@ export class QueryConfigFactory<TEntity extends Entity> {
         throw new Error('Expected params!');
       }
       if (0 === params.length) {
-        return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
+        return new Promise<TQueryResult[]>((resolve) => {
+          resolve(new Array());
+        });
       }
       const valuesArray = params.map((params: any) => params[column.entityAlias]);
       const valuesMap = this._buildIdsByFieldMQueryBuildValuesMap(valuesArray);
-      return this._createEntitiesByFieldMQueryWithField(column, valuesArray)
-        .then(
-          this._buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult>(
-            column, valuesMap, valuesArray.length,
-          ),
-        );
+      return this._createEntitiesByFieldMQueryWithField(column, valuesArray).then(
+        this._buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult>(column, valuesMap, valuesArray.length),
+      );
     };
   }
   /**
@@ -255,9 +224,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * Builds a values-to-indexes map from a values array.
    * @param valuesArray Values array.
    */
-  private _buildIdsByFieldMQueryBuildValuesMap(
-    valuesArray: any[],
-  ): Map<any, number[]> {
+  private _buildIdsByFieldMQueryBuildValuesMap(valuesArray: any[]): Map<any, number[]> {
     const valuesMap = new Map<any, number[]>();
     for (let i = 0; i < valuesArray.length; ++i) {
       const value = valuesArray[i];
@@ -276,9 +243,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(
-    column: IAntSQLColumn,
-  ): TQuery<TQueryResult> {
+  private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(column: IAntSQLColumn): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -287,10 +252,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
       if (!fieldValue) {
         throw new Error('Expected a field value!');
       }
-      return this._createEntitiesByFieldQuery(column, fieldValue)
-        .then(
-          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
-        );
+      return this._createEntitiesByFieldQuery(column, fieldValue).then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+      );
     };
   }
 
@@ -306,10 +270,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
       if (!params) {
         throw new Error('Expected params!');
       }
-      return this._createEntitiesByFieldsQuery(columns, params)
-        .then(
-          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
-        );
+      return this._createEntitiesByFieldsQuery(columns, params).then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+      );
     };
   }
 
@@ -326,13 +289,14 @@ export class QueryConfigFactory<TEntity extends Entity> {
         throw new Error('Expected params!');
       }
       if (0 === params.length) {
-        return new Promise<TQueryResult[]>((resolve) => { resolve(new Array()); });
+        return new Promise<TQueryResult[]>((resolve) => {
+          resolve(new Array());
+        });
       }
       const valuesArray = params.map((params: any) => params[column.entityAlias]);
-      return this._createEntitiesByFieldMQuery(column, valuesArray)
-        .then(
-          (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
-        );
+      return this._createEntitiesByFieldMQuery(column, valuesArray).then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
+      );
     };
   }
 
@@ -354,9 +318,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
       }
       return this._createEntitiesByFieldQuery(column, fieldValue)
         .first()
-        .then(
-          (result: TEntity) => result ? result[this._model.id] as TQueryResult : null,
-        );
+        .then((result: TEntity) => (result ? (result[this._model.id] as TQueryResult) : null));
     };
   }
 
@@ -374,9 +336,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
       }
       return this._createEntitiesByFieldsQuery(columns, params)
         .first()
-        .then(
-          (result: TEntity) => result ? result[this._model.id] as TQueryResult : null,
-        );
+        .then((result: TEntity) => (result ? (result[this._model.id] as TQueryResult) : null));
     };
   }
 
@@ -385,9 +345,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query builder.
    */
   private _createAllEntitiesIdsQuery(): Knex.QueryBuilder {
-    return this._knex
-      .select(this._model.id)
-      .from(this._model.tableName);
+    return this._knex.select(this._model.id).from(this._model.tableName);
   }
 
   /**
@@ -395,12 +353,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldMQuery(
-    column: IAntSQLColumn,
-    values: any[],
-  ): Knex.QueryBuilder {
-    return this._createAllEntitiesIdsQuery()
-      .whereIn(column.sqlName, values);
+  private _createEntitiesByFieldMQuery(column: IAntSQLColumn, values: any[]): Knex.QueryBuilder {
+    return this._createAllEntitiesIdsQuery().whereIn(column.sqlName, values);
   }
 
   /**
@@ -408,10 +362,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldMQueryWithField(
-    column: IAntSQLColumn,
-    values: any[],
-  ): Knex.QueryBuilder {
+  private _createEntitiesByFieldMQueryWithField(column: IAntSQLColumn, values: any[]): Knex.QueryBuilder {
     return this._knex
       .select(this._model.id, column.sqlName)
       .from(this._model.tableName)
@@ -423,12 +374,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldQuery(
-    column: IAntSQLColumn,
-    value: any,
-  ): Knex.QueryBuilder {
-    return this._createAllEntitiesIdsQuery()
-      .where(column.sqlName, value);
+  private _createEntitiesByFieldQuery(column: IAntSQLColumn, value: any): Knex.QueryBuilder {
+    return this._createAllEntitiesIdsQuery().where(column.sqlName, value);
   }
 
   /**
@@ -438,13 +385,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param params Entity to filter.
    * @returns Entities by fields query.
    */
-  private _createEntitiesByFieldsQuery(
-    columns: IAntSQLColumn[],
-    params: any,
-  ): Knex.QueryBuilder {
+  private _createEntitiesByFieldsQuery(columns: IAntSQLColumn[], params: any): Knex.QueryBuilder {
     return columns.reduce(
-      (previous, next) =>
-        previous.andWhere(next.sqlName, params[next.entityAlias]),
+      (previous, next) => previous.andWhere(next.sqlName, params[next.entityAlias]),
       this._createAllEntitiesIdsQuery(),
     );
   }

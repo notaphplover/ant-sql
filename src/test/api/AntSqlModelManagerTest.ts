@@ -11,15 +11,18 @@ import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
-const modelTestGen = (prefix: string) => new AntSqlModel(
-  'id',
-  { prefix: prefix },
-  [{
-    entityAlias: 'id',
-    sqlName: 'id',
-  }],
-  prefix.replace(/\//g, '_'),
-);
+const modelTestGen = (prefix: string) =>
+  new AntSqlModel(
+    'id',
+    { prefix: prefix },
+    [
+      {
+        entityAlias: 'id',
+        sqlName: 'id',
+      },
+    ],
+    prefix.replace(/\//g, '_'),
+  );
 
 export class AntSqlModelManagerTest implements Test {
   /**
@@ -58,104 +61,118 @@ export class AntSqlModelManagerTest implements Test {
   private _itMustCallModelManagerMethods(): void {
     const itsName = 'mustCallModelManagerMethods';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const antModelManager = new AntSqlModelManagerForTest(model);
-      antModelManager.config({
-        knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
-      });
-      const modelManager = antModelManager.modelManager;
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const antModelManager = new AntSqlModelManagerForTest(model);
+        antModelManager.config({
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        });
+        const modelManager = antModelManager.modelManager;
 
-      const methodsToTest = [
-        'insert',
-        'mInsert',
-      ] as Array<keyof ISqlModelManager<any>>;
+        const methodsToTest = ['insert', 'mInsert'] as Array<keyof ISqlModelManager<any>>;
 
-      for (const methodToTest of methodsToTest) {
-        spyOn(modelManager, methodToTest as any).and.returnValue(methodToTest as any);
-      }
+        for (const methodToTest of methodsToTest) {
+          spyOn(modelManager, methodToTest as any).and.returnValue(methodToTest as any);
+        }
 
-      const entity = { id: 0 };
+        const entity = { id: 0 };
 
-      const [
-        insertResult,
-        mInsertResult,
-      ] = await Promise.all([
-        antModelManager.insert(entity),
-        antModelManager.mInsert([entity]),
-      ]);
+        const [insertResult, mInsertResult] = await Promise.all([
+          antModelManager.insert(entity),
+          antModelManager.mInsert([entity]),
+        ]);
 
-      const results: {[key: string]: any} = {
-        insert: insertResult,
-        mInsert: mInsertResult,
-      };
+        const results: { [key: string]: any } = {
+          insert: insertResult,
+          mInsert: mInsertResult,
+        };
 
-      for (const methodToTest of methodsToTest) {
-        expect(modelManager[methodToTest]).toHaveBeenCalled();
-        expect(results[methodToTest]).toBe(methodToTest);
-      }
+        for (const methodToTest of methodsToTest) {
+          expect(modelManager[methodToTest]).toHaveBeenCalled();
+          expect(results[methodToTest]).toBe(methodToTest);
+        }
 
-      done();
-    }, MAX_SAFE_TIMEOUT);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustGenerateAModelManager(): void {
     const itsName = 'mustGenerateAModelManager';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const config: IAntSqlModelConfig = {
-        knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
-      };
-      const antModelManager = new AntSqlModelManagerForTest(model);
-      const modelManager = antModelManager.generateModelManager(model, config);
-      expect(modelManager instanceof AntPrimaryModelManager).toBe(true);
-      done();
-    }, MAX_SAFE_TIMEOUT);
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const config: IAntSqlModelConfig = {
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        };
+        const antModelManager = new AntSqlModelManagerForTest(model);
+        const modelManager = antModelManager.generateModelManager(model, config);
+        expect(modelManager instanceof AntPrimaryModelManager).toBe(true);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustGenerateASecondaryEntityManager(): void {
     const itsName = 'mustGenerateASecondaryEntityManager';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const config: IAntSqlModelConfig = {
-        knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
-      };
-      const antModelManager = new AntSqlModelManagerForTest(model);
-      const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
-      expect(secondaryEntityManager instanceof AntSqlSecondaryEntityManager).toBe(true);
-      done();
-    }, MAX_SAFE_TIMEOUT);
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const config: IAntSqlModelConfig = {
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        };
+        const antModelManager = new AntSqlModelManagerForTest(model);
+        const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
+        expect(secondaryEntityManager instanceof AntSqlSecondaryEntityManager).toBe(true);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustReturnQueryConfigFactoryIfConfigIsSet(): void {
     const itsName = 'it must return a query config factory if the model manager is configured';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const config: IAntSqlModelConfig = {
-        knex: this._dbConnection,
-        redis: this._redisWrapper.redis,
-      };
-      const antModelManager = new AntSqlModelManagerForTest(model).config(config);
-      const queryConfigFactory = antModelManager.cfgGen;
-      expect(queryConfigFactory instanceof QueryConfigFactory).toBe(true);
-      done();
-    }, MAX_SAFE_TIMEOUT);
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const config: IAntSqlModelConfig = {
+          knex: this._dbConnection,
+          redis: this._redisWrapper.redis,
+        };
+        const antModelManager = new AntSqlModelManagerForTest(model).config(config);
+        const queryConfigFactory = antModelManager.cfgGen;
+        expect(queryConfigFactory instanceof QueryConfigFactory).toBe(true);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustNotReturnQueryConfigFactoryIfConfigIsNotSet(): void {
     const itsName = 'it must not return a query config factory if the model manager is not configured';
     const prefix = this._declareName + '/' + itsName + '/';
-    it(itsName, async (done) => {
-      const model = modelTestGen(prefix);
-      const antModelManager = new AntSqlModelManagerForTest(model);
-      expect(() => antModelManager.cfgGen).toThrowError();
-      done();
-    }, MAX_SAFE_TIMEOUT);
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const antModelManager = new AntSqlModelManagerForTest(model);
+        expect(() => antModelManager.cfgGen).toThrowError();
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 }
