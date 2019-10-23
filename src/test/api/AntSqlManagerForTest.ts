@@ -1,5 +1,5 @@
 import { ApiModelManager } from '@antjs/ant-js/src/api/api-model-manager';
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { AntSqlManager } from '../../ant';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { IAntSqlModel } from '../../model/IAntSqlModel';

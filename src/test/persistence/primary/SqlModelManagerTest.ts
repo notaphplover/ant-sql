@@ -1,5 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
-import { KeyGenParams } from '@antjs/ant-js/src/model/key-gen-params';
+import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/cache-mode';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as crypto from 'crypto';

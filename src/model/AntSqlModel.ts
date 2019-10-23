@@ -1,4 +1,4 @@
-import { KeyGenParams } from '@antjs/ant-js/src/model/key-gen-params';
+import { KeyGenParams } from '@antjs/ant-js';
 import { AntModel } from '@antjs/ant-js/src/model/ant-model';
 import { IAntSQLColumn } from './IAntSQLColumn';
 import { IAntSqlModel } from './IAntSqlModel';

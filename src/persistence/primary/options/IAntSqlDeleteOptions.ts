@@ -1,4 +1,4 @@
-import { PersistencyDeleteOptions } from '@antjs/ant-js/src/persistence/primary/options/persistency-delete-options';
+import { PersistencyDeleteOptions } from '@antjs/ant-js';
 import { ISqlServerOptions } from './ISqlServerOptions';
 
 export interface IAntSqlDeleteOptions

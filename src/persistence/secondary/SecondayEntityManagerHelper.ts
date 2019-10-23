@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
 import { IAntSQLColumn } from '../../model/IAntSQLColumn';
 import { IAntSqlModel } from '../../model/IAntSqlModel';

@@ -1,5 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
-import { KeyGenParams } from '@antjs/ant-js/src/model/key-gen-params';
+import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
 import { AntSqlManager } from '../../ant';

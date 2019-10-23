@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 
 export interface ICfgGenOptions<TEntity extends Entity> {
   /**

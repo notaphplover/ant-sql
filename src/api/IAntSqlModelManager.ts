@@ -1,5 +1,5 @@
 import { ApiModelManager } from '@antjs/ant-js/src/api/api-model-manager';
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { ISqlInsertable } from '../persistence/primary/ISqlInsertable';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { QueryConfigFactory } from './config/QueryConfigFactory';

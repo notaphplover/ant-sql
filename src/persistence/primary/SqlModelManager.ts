@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
 import { ISqlSecondaryEntityManager } from '../secondary/ISqlSecondaryEntityManager';
 import { ISqlModelManager } from './ISqlModelManager';

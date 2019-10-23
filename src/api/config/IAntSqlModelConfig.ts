@@ -1,4 +1,4 @@
-import { ApiModelConfig } from '@antjs/ant-js/src/api/config/api-model-config';
+import { ApiModelConfig } from '@antjs/ant-js';
 import * as Knex from 'knex';
 
 export interface IAntSqlModelConfig extends ApiModelConfig {

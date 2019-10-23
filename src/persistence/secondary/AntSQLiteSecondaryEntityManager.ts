@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { AntSqlSecondaryEntityManager } from './AntSqlSecondaryEntityManager';
 
 export class AntSQLiteSecondaryEntityManager<TEntity extends Entity>

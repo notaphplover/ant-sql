@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { PrimaryModelManager} from '@antjs/ant-js/src/persistence/primary/primary-model-manager';
 import { ISqlInsertable } from './ISqlInsertable';
 import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';

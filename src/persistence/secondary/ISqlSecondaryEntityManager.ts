@@ -1,4 +1,4 @@
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { Entity } from '@antjs/ant-js';
 import { SecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/secondary-entity-manager';
 
 export interface ISqlSecondaryEntityManager<TEntity extends Entity> extends SecondaryEntityManager<TEntity> {

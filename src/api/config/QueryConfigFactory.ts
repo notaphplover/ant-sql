@@ -1,5 +1,4 @@
-import { ApiQueryConfig } from '@antjs/ant-js/src/api/config/api-query-config';
-import { Entity } from '@antjs/ant-js/src/model/entity';
+import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import {
   MultipleQueryResult,
   SingleQueryResult,

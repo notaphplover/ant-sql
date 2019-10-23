@@ -1,4 +1,4 @@
-import { Model } from '@antjs/ant-js/src/model/model';
+import { Model } from '@antjs/ant-js';
 import { IAntSQLColumn } from './IAntSQLColumn';
 
 export interface IAntSqlModel extends Model {
