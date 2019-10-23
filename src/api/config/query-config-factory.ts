@@ -5,9 +5,9 @@ import {
   TQuery,
 } from '@antjs/ant-js/src/persistence/primary/query/ant-primary-query-manager';
 import * as Knex from 'knex';
-import { IAntSQLColumn } from '../../model/IAntSQLColumn';
+import { ApiSqlColumn } from '../../model/api-sql-column';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
-import { ICfgGenOptions } from './ICfgGenOptions';
+import { ApiCfgGenOptions } from './api-config-generation-options';
 
 export class QueryConfigFactory<TEntity extends Entity> {
   /**
@@ -35,7 +35,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Query config.
    */
   public all<TQueryResult extends MultipleQueryResult>(
-    options?: ICfgGenOptions<TEntity>,
+    options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'all/';
     options = this._processCfgGenOptions(options, () => this._model.keyGen.prefix + queryAlias, queryAlias);
@@ -56,8 +56,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Query config.
    */
   public byField<TQueryResult extends MultipleQueryResult>(
-    column: IAntSQLColumn,
-    options?: ICfgGenOptions<TEntity>,
+    column: ApiSqlColumn,
+    options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'f_' + column.entityAlias + '/';
     options = this._processCfgGenOptions(
@@ -82,8 +82,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Query of entities by multiple fields.
    */
   public byFields<TQueryResult extends MultipleQueryResult>(
-    columns: IAntSQLColumn[],
-    options?: ICfgGenOptions<TEntity>,
+    columns: ApiSqlColumn[],
+    options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'mf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
@@ -109,8 +109,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Query config.
    */
   public byUniqueField<TQueryResult extends SingleQueryResult>(
-    column: IAntSQLColumn,
-    options?: ICfgGenOptions<TEntity>,
+    column: ApiSqlColumn,
+    options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'uf_' + column.entityAlias + '/';
     options = this._processCfgGenOptions(
@@ -135,8 +135,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Query of entities by multiple fields.
    */
   public byUniqueFields<TQueryResult extends SingleQueryResult>(
-    columns: IAntSQLColumn[],
-    options?: ICfgGenOptions<TEntity>,
+    columns: ApiSqlColumn[],
+    options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'umf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
@@ -174,7 +174,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(
-    column: IAntSQLColumn,
+    column: ApiSqlColumn,
   ): TQuery<TQueryResult[]> {
     return (params: any[]) => {
       if (!params) {
@@ -200,7 +200,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns promise callback to handle the results query response.
    */
   private _buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult extends MultipleQueryResult>(
-    column: IAntSQLColumn,
+    column: ApiSqlColumn,
     valuesMap: Map<any, number[]>,
     valuesLength: number,
   ): (results: TEntity[]) => TQueryResult[] {
@@ -243,7 +243,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(column: IAntSQLColumn): TQuery<TQueryResult> {
+  private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(column: ApiSqlColumn): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -264,7 +264,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Ids by fields query.
    */
   private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(
-    columns: IAntSQLColumn[],
+    columns: ApiSqlColumn[],
   ): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
@@ -282,7 +282,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByUniqueFieldMQuery<TQueryResult extends SingleQueryResult>(
-    column: IAntSQLColumn,
+    column: ApiSqlColumn,
   ): TQuery<TQueryResult[]> {
     return (params: any) => {
       if (!params) {
@@ -306,7 +306,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByUniqueFieldQuery<TQueryResult extends SingleQueryResult>(
-    column: IAntSQLColumn,
+    column: ApiSqlColumn,
   ): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
@@ -328,7 +328,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByUniqueFieldsQuery<TQueryResult extends SingleQueryResult>(
-    columns: IAntSQLColumn[],
+    columns: ApiSqlColumn[],
   ): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
@@ -353,7 +353,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldMQuery(column: IAntSQLColumn, values: any[]): Knex.QueryBuilder {
+  private _createEntitiesByFieldMQuery(column: ApiSqlColumn, values: any[]): Knex.QueryBuilder {
     return this._createAllEntitiesIdsQuery().whereIn(column.sqlName, values);
   }
 
@@ -362,7 +362,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldMQueryWithField(column: IAntSQLColumn, values: any[]): Knex.QueryBuilder {
+  private _createEntitiesByFieldMQueryWithField(column: ApiSqlColumn, values: any[]): Knex.QueryBuilder {
     return this._knex
       .select(this._model.id, column.sqlName)
       .from(this._model.tableName)
@@ -374,7 +374,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column Query column.
    * @param value Entity value.
    */
-  private _createEntitiesByFieldQuery(column: IAntSQLColumn, value: any): Knex.QueryBuilder {
+  private _createEntitiesByFieldQuery(column: ApiSqlColumn, value: any): Knex.QueryBuilder {
     return this._createAllEntitiesIdsQuery().where(column.sqlName, value);
   }
 
@@ -385,7 +385,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param params Entity to filter.
    * @returns Entities by fields query.
    */
-  private _createEntitiesByFieldsQuery(columns: IAntSQLColumn[], params: any): Knex.QueryBuilder {
+  private _createEntitiesByFieldsQuery(columns: ApiSqlColumn[], params: any): Knex.QueryBuilder {
     return columns.reduce(
       (previous, next) => previous.andWhere(next.sqlName, params[next.entityAlias]),
       this._createAllEntitiesIdsQuery(),
@@ -400,10 +400,10 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Processed config generation options.
    */
   private _processCfgGenOptions(
-    options: ICfgGenOptions<TEntity>,
+    options: ApiCfgGenOptions<TEntity>,
     defaultQueryKeyGen: (params: any) => string,
     queryName: string,
-  ): ICfgGenOptions<TEntity> {
+  ): ApiCfgGenOptions<TEntity> {
     if (!options) {
       options = {};
     }

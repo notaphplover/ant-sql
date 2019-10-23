@@ -1,7 +1,7 @@
 import { Entity } from '@antjs/ant-js';
 import { ApiModelManager } from '@antjs/ant-js/src/api/api-model-manager';
-import { AntSqlManager } from '../../ant';
-import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
+import { AntSqlManager } from '../../api/ant-sql-manager';
+import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
 
 export class AntSqlManagerForTest extends AntSqlManager {
@@ -10,7 +10,7 @@ export class AntSqlManagerForTest extends AntSqlManager {
    * @param model Model to manage.
    * @returns model manager created.
    */
-  public createModelManager<TEntity extends Entity>(model: IAntSqlModel): ApiModelManager<TEntity, IAntSqlModelConfig> {
+  public createModelManager<TEntity extends Entity>(model: IAntSqlModel): ApiModelManager<TEntity, ApiSqlModelConfig> {
     return this._createModelManager(model);
   }
 }

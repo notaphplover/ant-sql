@@ -3,7 +3,7 @@ import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/cache-m
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
-import { AntSqlModel } from '../../../model/AntSqlModel';
+import { AntSqlModel } from '../../../model/ant-sql-model';
 import { IAntSqlModel } from '../../../model/IAntSqlModel';
 import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
 import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';

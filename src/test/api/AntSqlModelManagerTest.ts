@@ -1,9 +1,9 @@
 import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
-import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
-import { QueryConfigFactory } from '../../api/config/QueryConfigFactory';
-import { AntSqlModel } from '../../model/AntSqlModel';
+import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
+import { QueryConfigFactory } from '../../api/config/query-config-factory';
+import { AntSqlModel } from '../../model/ant-sql-model';
 import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
 import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
 import { RedisWrapper } from '../persistence/primary/RedisWrapper';
@@ -108,7 +108,7 @@ export class AntSqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelTestGen(prefix);
-        const config: IAntSqlModelConfig = {
+        const config: ApiSqlModelConfig = {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         };
@@ -128,7 +128,7 @@ export class AntSqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelTestGen(prefix);
-        const config: IAntSqlModelConfig = {
+        const config: ApiSqlModelConfig = {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         };
@@ -148,7 +148,7 @@ export class AntSqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelTestGen(prefix);
-        const config: IAntSqlModelConfig = {
+        const config: ApiSqlModelConfig = {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         };

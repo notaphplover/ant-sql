@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 
-export interface ICfgGenOptions<TEntity extends Entity> {
+export interface ApiCfgGenOptions<TEntity extends Entity> {
   /**
    * Entity key generator.
    */

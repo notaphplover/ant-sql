@@ -1,8 +1,8 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
-import { AntSqlManager } from '../../ant';
-import { QueryConfigFactory } from '../../api/config/QueryConfigFactory';
+import { AntSqlManager } from '../../api/ant-sql-manager';
+import { QueryConfigFactory } from '../../api/config/query-config-factory';
 import { modelGenerator } from '../model/AntSqlModelGenerator';
 import { RedisWrapper } from '../persistence/primary/RedisWrapper';
 import { DBTestManager } from '../persistence/secondary/DBTestManager';
