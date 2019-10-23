@@ -8,5 +8,5 @@ node_js:
   - "node"
 services:
   - docker
-script: npm run test-coverage
+script: npm run ci-docker
 sudo: required
