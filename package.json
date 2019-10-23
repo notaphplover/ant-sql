@@ -9,6 +9,8 @@
     "build-and-test-and-coverage": "npm run build-and-test && npm run report-coverage",
     "build-and-test-debug": "npm run build && npm run test-debug-only",
     "clear-js": "node ./scripts/clear-compiled.js",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format-check": "prettier --check \"src/**/*.ts\"",
     "linter": "tslint -c ./tslint.json -p ./src.tsconfig.commonjs.json",
     "linter-fix": "tslint --fix -c ./tslint.json -p ./src.tsconfig.commonjs.json",
     "publish-npm": "npm run clear-js && npm run test && npm publish --access public",
@@ -47,6 +49,7 @@
     "mysql2": "^1.7.0",
     "nyc": "^14.1.1",
     "pg": "^7.12.1",
+    "prettier": "^1.18.2",
     "sqlite3": "^4.1.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"
