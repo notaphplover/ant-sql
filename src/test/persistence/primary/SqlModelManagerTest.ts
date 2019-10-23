@@ -1,7 +1,7 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
-import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/CacheMode';
-import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
+import { Entity } from '@antjs/ant-js/src/model/entity';
+import { KeyGenParams } from '@antjs/ant-js/src/model/key-gen-params';
+import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/cache-mode';
+import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/AntSqlModel';
@@ -22,7 +22,7 @@ const tableNameGenerator = (baseAlias: string) =>
     .update(baseAlias)
     .digest('hex');
 
-const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
+const modelGenerator = (keyGen: KeyGenParams): IAntSqlModel => {
   return new AntSqlModel(
     'id',
     keyGen,
@@ -31,9 +31,9 @@ const modelGenerator = (keyGen: IKeyGenParams): IAntSqlModel => {
   );
 };
 
-type EntityTest = { id: number } & IEntity;
+type EntityTest = { id: number } & Entity;
 
-export class SqlModelManagerTest implements ITest {
+export class SqlModelManagerTest implements Test {
 
   /**
    * Database connection wrapper.

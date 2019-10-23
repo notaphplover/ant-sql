@@ -1,4 +1,4 @@
-import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
+import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import { AntSqlManager } from '../../ant';
 import { AntSqlModelManager } from '../../api/AntSqlModelManager';
 import { AntSqlModel } from '../../model/AntSqlModel';
@@ -15,7 +15,7 @@ const modelTestGen = (prefix: string) => new AntSqlModel(
   prefix.replace(/\//g, '_'),
 );
 
-export class AntSqlManagerTest implements ITest {
+export class AntSqlManagerTest implements Test {
   /**
    * Declare name for the test
    */

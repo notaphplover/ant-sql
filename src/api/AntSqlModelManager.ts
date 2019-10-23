@@ -1,5 +1,5 @@
-import { AntModelManager } from '@antjs/ant-js/src/api/AntModelManager';
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
+import { Entity } from '@antjs/ant-js/src/model/entity';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
@@ -13,7 +13,7 @@ import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { QueryConfigFactory } from './config/QueryConfigFactory';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
-export class AntSqlModelManager<TEntity extends IEntity>
+export class AntSqlModelManager<TEntity extends Entity>
   extends AntModelManager<
     TEntity,
     IAntSqlModelConfig,

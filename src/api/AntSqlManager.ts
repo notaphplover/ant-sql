@@ -1,5 +1,5 @@
-import { AntManager } from '@antjs/ant-js/src/api/AntManager';
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { AntManager } from '@antjs/ant-js/src/api/ant-manager';
+import { Entity } from '@antjs/ant-js/src/model/entity';
 import { AntSqlModelManager } from '../api/AntSqlModelManager';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
@@ -9,7 +9,7 @@ import { IAntSqlModelManager } from './IAntSqlModelManager';
 export class AntSqlManager extends AntManager<
   IAntSqlModelConfig,
   IAntSqlModel,
-  IAntSqlModelManager<IEntity>
+  IAntSqlModelManager<Entity>
 > implements IAntSqlManager {
 
   /**
@@ -22,7 +22,7 @@ export class AntSqlManager extends AntManager<
   /**
    * @inheritdoc
    */
-  public get<TEntity extends IEntity>(model: IAntSqlModel): IAntSqlModelManager<TEntity> {
+  public get<TEntity extends Entity>(model: IAntSqlModel): IAntSqlModelManager<TEntity> {
     return super.get(model) as IAntSqlModelManager<TEntity>;
   }
 
@@ -31,7 +31,7 @@ export class AntSqlManager extends AntManager<
    * @param model Model to manage.
    * @returns model manager created.
    */
-  protected _createModelManager<TEntity extends IEntity>(model: IAntSqlModel): IAntSqlModelManager<TEntity> {
+  protected _createModelManager<TEntity extends Entity>(model: IAntSqlModel): IAntSqlModelManager<TEntity> {
     return new AntSqlModelManager<TEntity>(model);
   }
 }

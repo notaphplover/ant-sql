@@ -1,16 +1,16 @@
-import { IAntQueryConfig } from '@antjs/ant-js/src/api/config/IAntQueryConfig';
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { ApiQueryConfig } from '@antjs/ant-js/src/api/config/api-query-config';
+import { Entity } from '@antjs/ant-js/src/model/entity';
 import {
   MultipleQueryResult,
   SingleQueryResult,
   TQuery,
-} from '@antjs/ant-js/src/persistence/primary/query/PrimaryQueryManager';
+} from '@antjs/ant-js/src/persistence/primary/query/ant-primary-query-manager';
 import * as Knex from 'knex';
 import { IAntSQLColumn } from '../../model/IAntSQLColumn';
 import { IAntSqlModel } from '../../model/IAntSqlModel';
 import { ICfgGenOptions } from './ICfgGenOptions';
 
-export class QueryConfigFactory<TEntity extends IEntity> {
+export class QueryConfigFactory<TEntity extends Entity> {
 
   /**
    * Knex connection.
@@ -38,7 +38,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
    */
   public all<TQueryResult extends MultipleQueryResult>(
     options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, TQueryResult> {
+  ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'all/';
     options = this._processCfgGenOptions(
       options,
@@ -64,7 +64,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   public byField<TQueryResult extends MultipleQueryResult>(
     column: IAntSQLColumn,
     options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, TQueryResult> {
+  ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'f_' + column.entityAlias + '/';
     options = this._processCfgGenOptions(
       options,
@@ -90,7 +90,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   public byFields<TQueryResult extends MultipleQueryResult>(
     columns: IAntSQLColumn[],
     options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, TQueryResult> {
+  ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias =
       'mf_'
@@ -129,7 +129,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   public byUniqueField<TQueryResult extends SingleQueryResult>(
     column: IAntSQLColumn,
     options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, TQueryResult> {
+  ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'uf_' + column.entityAlias + '/';
     options = this._processCfgGenOptions(
       options,
@@ -155,7 +155,7 @@ export class QueryConfigFactory<TEntity extends IEntity> {
   public byUniqueFields<TQueryResult extends SingleQueryResult>(
     columns: IAntSQLColumn[],
     options?: ICfgGenOptions<TEntity>,
-  ): IAntQueryConfig<TEntity, TQueryResult> {
+  ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias =
       'umf_'

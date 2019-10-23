@@ -29,7 +29,7 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^1.0.0-beta.9",
+    "@antjs/ant-js": "^1.0.0-beta.10",
     "knex": "^0.19.5"
   },
   "devDependencies": {

@@ -1,5 +1,4 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import * as Bluebird from 'bluebird';
+import { Entity } from '@antjs/ant-js/src/model/entity';
 import * as Knex from 'knex';
 import { IAntSqlModel } from '../../../model/IAntSqlModel';
 import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
@@ -93,7 +92,7 @@ END`;
    * @param knex Knex instance.
    * @returns Secondary entity manager generator.
    */
-  public getSecondaryEntityManagerGenerator<TEntity extends IEntity>(knex: Knex)
+  public getSecondaryEntityManagerGenerator<TEntity extends Entity>(knex: Knex)
     : (model: IAntSqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:

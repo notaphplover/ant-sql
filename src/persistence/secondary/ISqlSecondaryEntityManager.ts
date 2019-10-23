@@ -1,7 +1,7 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { ISecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/ISecondaryEntityManager';
+import { Entity } from '@antjs/ant-js/src/model/entity';
+import { SecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/secondary-entity-manager';
 
-export interface ISqlSecondaryEntityManager<TEntity extends IEntity> extends ISecondaryEntityManager<TEntity> {
+export interface ISqlSecondaryEntityManager<TEntity extends Entity> extends SecondaryEntityManager<TEntity> {
 
   /**
    * Deletes an entity from its id.
