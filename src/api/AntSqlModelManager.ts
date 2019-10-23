@@ -1,5 +1,5 @@
-import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
 import { Entity } from '@antjs/ant-js';
+import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
 import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
