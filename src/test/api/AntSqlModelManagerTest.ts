@@ -1,5 +1,5 @@
-import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
-import { ITest } from '@antjs/ant-js/src/testapi/api/ITest';
+import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
+import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
 import { IAntSqlModelConfig } from '../../api/config/IAntSqlModelConfig';
 import { QueryConfigFactory } from '../../api/config/QueryConfigFactory';
@@ -21,7 +21,7 @@ const modelTestGen = (prefix: string) => new AntSqlModel(
   prefix.replace(/\//g, '_'),
 );
 
-export class AntSqlModelManagerTest implements ITest {
+export class AntSqlModelManagerTest implements Test {
   /**
    * Database connection wrapper.
    */
@@ -111,7 +111,7 @@ export class AntSqlModelManagerTest implements ITest {
       };
       const antModelManager = new AntSqlModelManagerForTest(model);
       const modelManager = antModelManager.generateModelManager(model, config);
-      expect(modelManager instanceof ModelManager).toBe(true);
+      expect(modelManager instanceof AntPrimaryModelManager).toBe(true);
       done();
     }, MAX_SAFE_TIMEOUT);
   }

@@ -1,5 +1,5 @@
-import { AntJsUpdateOptions } from '@antjs/ant-js/src/persistence/primary/options/AntJsUpdateOptions';
-import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/CacheMode';
+import { CacheMode } from '@antjs/ant-js';
+import { AntJsUpdateOptions } from '@antjs/ant-js/src/persistence/primary/options/antjs-update-options';
 import { IAntSqlUpdateOptions } from './IAntSqlUpdateOptions';
 
 export class AntSqlUpdateOptions extends AntJsUpdateOptions implements IAntSqlUpdateOptions {

@@ -1,16 +1,15 @@
-import { IAntManager } from '@antjs/ant-js/src/api/IAntManager';
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { ApiGeneralManager, Entity } from '@antjs/ant-js';
 import { IAntSqlModel } from '../model/IAntSqlModel';
 import { IAntSqlModelConfig } from './config/IAntSqlModelConfig';
 import { IAntSqlModelManager } from './IAntSqlModelManager';
 
-export interface IAntSqlManager extends IAntManager<
+export interface IAntSqlManager extends ApiGeneralManager<
   IAntSqlModelConfig,
   IAntSqlModel,
-  IAntSqlModelManager<IEntity>
+  IAntSqlModelManager<Entity>
 > {
   /**
    * @inheritdoc
    */
-  get<TEntity extends IEntity>(model: IAntSqlModel): IAntSqlModelManager<TEntity>;
+  get<TEntity extends Entity>(model: IAntSqlModel): IAntSqlModelManager<TEntity>;
 }

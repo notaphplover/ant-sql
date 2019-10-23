@@ -1,9 +1,9 @@
-import { IKeyGenParams } from '@antjs/ant-js/src/model/IKeyGenParams';
-import { Model } from '@antjs/ant-js/src/model/Model';
+import { KeyGenParams } from '@antjs/ant-js';
+import { AntModel } from '@antjs/ant-js/src/model/ant-model';
 import { IAntSQLColumn } from './IAntSQLColumn';
 import { IAntSqlModel } from './IAntSqlModel';
 
-export class AntSqlModel extends Model implements IAntSqlModel {
+export class AntSqlModel extends AntModel implements IAntSqlModel {
   /**
    * Auto generated column.
    */
@@ -28,7 +28,7 @@ export class AntSqlModel extends Model implements IAntSqlModel {
    */
   public constructor(
     id: string,
-    keyGen: IKeyGenParams,
+    keyGen: KeyGenParams,
     columns: Iterable<IAntSQLColumn>,
     tableName: string,
   ) {

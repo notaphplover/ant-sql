@@ -1,5 +1,5 @@
-import { IPersistencyUpdateOptions } from '@antjs/ant-js/src/persistence/primary/options/IPersistencyUpdateOptions';
+import { PersistencyUpdateOptions } from '@antjs/ant-js';
 import { ISqlServerOptions } from './ISqlServerOptions';
 
 export interface IAntSqlUpdateOptions
-  extends IPersistencyUpdateOptions, ISqlServerOptions {}
+  extends PersistencyUpdateOptions, ISqlServerOptions {}

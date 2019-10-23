@@ -1,7 +1,7 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { Entity } from '@antjs/ant-js';
 import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
-export interface ISqlInsertable<TEntity extends IEntity> {
+export interface ISqlInsertable<TEntity extends Entity> {
   /**
    * Inserts an entity.
    * @param entity Entity to be inserted.

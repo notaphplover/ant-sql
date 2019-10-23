@@ -1,5 +1,5 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { ModelManager } from '@antjs/ant-js/src/persistence/primary/ModelManager';
+import { Entity } from '@antjs/ant-js';
+import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
 import { ISqlSecondaryEntityManager } from '../secondary/ISqlSecondaryEntityManager';
 import { ISqlModelManager } from './ISqlModelManager';
 import { AntSqlDeleteOptions } from './options/AntSqlDeleteOptions';
@@ -7,7 +7,7 @@ import { AntSqlUpdateOptions } from './options/AntSqlUpdateOptions';
 import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
 import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
-export class SqlModelManager<TEntity extends IEntity> extends ModelManager<
+export class SqlModelManager<TEntity extends Entity> extends AntPrimaryModelManager<
   TEntity,
   ISqlSecondaryEntityManager<TEntity>
 > implements ISqlModelManager<TEntity> {

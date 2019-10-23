@@ -1,7 +1,7 @@
-import { IModel } from '@antjs/ant-js/src/model/IModel';
+import { Model } from '@antjs/ant-js';
 import { IAntSQLColumn } from './IAntSQLColumn';
 
-export interface IAntSqlModel extends IModel {
+export interface IAntSqlModel extends Model {
   /**
    * Map of table columns, including the id;
    * The key of the map is the alias of the column in the entities managed.

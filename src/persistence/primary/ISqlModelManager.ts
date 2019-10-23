@@ -1,11 +1,11 @@
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { IModelManager } from '@antjs/ant-js/src/persistence/primary/IModelManager';
+import { Entity } from '@antjs/ant-js';
+import { PrimaryModelManager} from '@antjs/ant-js/src/persistence/primary/primary-model-manager';
 import { ISqlInsertable } from './ISqlInsertable';
 import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
 import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
 
-export interface ISqlModelManager<TEntity extends IEntity>
-  extends IModelManager<TEntity>, ISqlInsertable<TEntity> {
+export interface ISqlModelManager<TEntity extends Entity>
+  extends PrimaryModelManager<TEntity>, ISqlInsertable<TEntity> {
 
   /**
    * Deletes an entity from the cache layer.
