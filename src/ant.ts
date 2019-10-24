@@ -1,3 +1,3 @@
-import { AntSqlManager } from './api/AntSqlManager';
+import { AntSqlManager } from './api/ant-sql-manager';
 
 export { AntSqlManager };

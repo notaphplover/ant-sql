@@ -48,6 +48,10 @@ _config.yml
 # AntSQL Tests
 /src/test
 
+# Prettier config
+.prettierignore
+.prettierrc
+
 # Travis build
 .travis.yml
 
