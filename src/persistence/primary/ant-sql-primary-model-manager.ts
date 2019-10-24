@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
-import { ISqlSecondaryEntityManager } from '../secondary/ISqlSecondaryEntityManager';
+import { SecondaryEntityManager } from '../secondary/secondary-entity-manager';
 import { SqlPrimaryModelManager } from './sql-primary-model-manager';
 import { AntSqlDeleteOptions } from './options/ant-sql-delete-options';
 import { AntSqlUpdateOptions } from './options/ant-sql-update-options';
@@ -8,7 +8,7 @@ import { SqlDeleteOptions } from './options/sql-delete-options';
 import { SqlUpdateOptions } from './options/sql-update-options';
 
 export class AntSqlPrimaryModelManager<TEntity extends Entity>
-  extends AntPrimaryModelManager<TEntity, ISqlSecondaryEntityManager<TEntity>>
+  extends AntPrimaryModelManager<TEntity, SecondaryEntityManager<TEntity>>
   implements SqlPrimaryModelManager<TEntity> {
   /**
    * Deletes an entity from the cache layer.

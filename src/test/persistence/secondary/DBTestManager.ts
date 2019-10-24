@@ -4,8 +4,8 @@ import { SqlModel } from '../../../model/sql-model';
 import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
 import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
-import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
-import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
+import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
+import { KnexDriver } from '../../../persistence/secondary/knex-driver';
 
 export class DBTestManager {
   /**
@@ -91,7 +91,7 @@ END`;
    */
   public getSecondaryEntityManagerGenerator<TEntity extends Entity>(
     knex: Knex,
-  ): (model: SqlModel, knex: Knex) => ISqlSecondaryEntityManager<TEntity> {
+  ): (model: SqlModel, knex: Knex) => SecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:

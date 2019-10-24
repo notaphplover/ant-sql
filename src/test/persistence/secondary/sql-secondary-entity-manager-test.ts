@@ -2,7 +2,7 @@ import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
 import { SqlModel } from '../../../model/sql-model';
-import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
+import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { modelGenerator } from '../../model/AntSqlModelGenerator';
 import { DBTestManager } from './DBTestManager';
 
@@ -18,7 +18,7 @@ const tableGeneratorOtherColumns: { [key: string]: 'string' | 'number' } = { nam
 type EntityTest = { id: number } & Entity;
 type NamedEntityTest = { id: number; name: string } & Entity;
 
-export class AntSqlSecondaryEntityManagerTest implements Test {
+export class SqlSecondaryEntityManagerTest implements Test {
   /**
    * Before all task performed promise.
    */
@@ -41,7 +41,7 @@ export class AntSqlSecondaryEntityManagerTest implements Test {
   protected _secondaryEntityManagerGenerator: <TEntity extends Entity>(
     model: SqlModel,
     knex: Knex,
-  ) => ISqlSecondaryEntityManager<TEntity>;
+  ) => SecondaryEntityManager<TEntity>;
 
   public constructor(
     beforeAllPromise: Promise<any>,
@@ -50,12 +50,12 @@ export class AntSqlSecondaryEntityManagerTest implements Test {
     secondaryEntityManagerGenerator: <TEntity extends Entity>(
       model: SqlModel,
       knex: Knex,
-    ) => ISqlSecondaryEntityManager<TEntity>,
+    ) => SecondaryEntityManager<TEntity>,
   ) {
     this._beforeAllPromise = beforeAllPromise;
     this._dbConnection = dbConnection;
     this._dbTestManager = new DBTestManager();
-    this._declareName = AntSqlSecondaryEntityManagerTest.name + '/' + dbAlias;
+    this._declareName = SqlSecondaryEntityManagerTest.name + '/' + dbAlias;
     this._secondaryEntityManagerGenerator = secondaryEntityManagerGenerator;
   }
 

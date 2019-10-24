@@ -9,7 +9,7 @@ import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delet
 import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
 import { AntSqlPrimaryModelManager } from '../../../persistence/primary/ant-sql-primary-model-manager';
 import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
-import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
+import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { RedisWrapper } from './RedisWrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
@@ -27,7 +27,7 @@ const modelGenerator = (keyGen: KeyGenParams): SqlModel => {
 
 type EntityTest = { id: number } & Entity;
 
-export class SqlModelManagerTest implements Test {
+export class AntSqlPrimaryModelManagerTest implements Test {
   /**
    * Database connection wrapper.
    */
@@ -43,7 +43,7 @@ export class SqlModelManagerTest implements Test {
 
   public constructor(dbConnection: Knex, dbAlias: string) {
     this._dbConnection = dbConnection;
-    this._declareName = SqlModelManagerTest.name + '/' + dbAlias;
+    this._declareName = AntSqlPrimaryModelManagerTest.name + '/' + dbAlias;
     this._redis = new RedisWrapper();
   }
 
@@ -83,7 +83,7 @@ export class SqlModelManagerTest implements Test {
         const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
         const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
         const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
-          keyof ISqlSecondaryEntityManager<any>
+          keyof SecondaryEntityManager<any>
         >;
 
         for (const methodToTest of methodsToTest) {
@@ -125,7 +125,7 @@ export class SqlModelManagerTest implements Test {
         const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
 
         const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
-          keyof ISqlSecondaryEntityManager<any>
+          keyof SecondaryEntityManager<any>
         >;
 
         for (const methodToTest of methodsToTest) {

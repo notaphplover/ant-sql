@@ -1,4 +1,4 @@
-import { KnexDriver } from '../../persistence/secondary/KnexDriver';
+import { KnexDriver } from '../../persistence/secondary/knex-driver';
 import { DBConnectionWrapper } from '../persistence/secondary/DBConnectionWrapper';
 import { DBTestManager } from '../persistence/secondary/DBTestManager';
 import { IDbTestConnection } from '../persistence/secondary/IDbTestConnection';

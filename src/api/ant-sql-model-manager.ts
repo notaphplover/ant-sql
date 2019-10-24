@@ -7,8 +7,8 @@ import { AntSqlPrimaryModelManager } from '../persistence/primary/ant-sql-primar
 import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
 import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
 import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
-import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
-import { KnexDriver } from '../persistence/secondary/KnexDriver';
+import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
+import { KnexDriver } from '../persistence/secondary/knex-driver';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { QueryConfigFactory } from './config/query-config-factory';
 import { ApiSqlModelManager } from './api-sql-model-manager';
@@ -98,7 +98,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
   protected _generateSecondaryEntityManager(
     model: SqlModel,
     config: ApiSqlModelConfig,
-  ): ISqlSecondaryEntityManager<TEntity> {
+  ): SecondaryEntityManager<TEntity> {
     const knex = config.knex;
 
     switch (knex.client.driverName) {
