@@ -1,17 +1,17 @@
 import { Entity } from '@antjs/ant-js';
 import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
 import { SqlModel } from '../model/sql-model';
-import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
-import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
 import { AntSqlPrimaryModelManager } from '../persistence/primary/ant-sql-primary-model-manager';
-import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
-import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
-import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
-import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
+import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
+import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
 import { KnexDriver } from '../persistence/secondary/knex-driver';
+import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
+import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
+import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
+import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
+import { ApiSqlModelManager } from './api-sql-model-manager';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { QueryConfigFactory } from './config/query-config-factory';
-import { ApiSqlModelManager } from './api-sql-model-manager';
 
 export class AntSqlModelManager<TEntity extends Entity>
   extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel, SqlPrimaryModelManager<TEntity>>

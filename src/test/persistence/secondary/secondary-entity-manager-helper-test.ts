@@ -1,7 +1,7 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
-import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
+import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { SecondaryEntityManagerHelper } from '../../../persistence/secondary/seconday-entity-manager-helper';
 import { dbServerAwaiterManager } from '../../await/db-server-awaiter-manager';
 import { modelGenerator } from '../../model/ant-sql-model-generator';

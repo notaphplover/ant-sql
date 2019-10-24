@@ -1,11 +1,11 @@
 import { Entity } from '@antjs/ant-js';
 import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
 import { SecondaryEntityManager } from '../secondary/secondary-entity-manager';
-import { SqlPrimaryModelManager } from './sql-primary-model-manager';
 import { AntSqlDeleteOptions } from './options/ant-sql-delete-options';
 import { AntSqlUpdateOptions } from './options/ant-sql-update-options';
 import { SqlDeleteOptions } from './options/sql-delete-options';
 import { SqlUpdateOptions } from './options/sql-update-options';
+import { SqlPrimaryModelManager } from './sql-primary-model-manager';
 
 export class AntSqlPrimaryModelManager<TEntity extends Entity>
   extends AntPrimaryModelManager<TEntity, SecondaryEntityManager<TEntity>>
@@ -42,10 +42,7 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
    * @param options persistency options.
    * @returns Promise of entities deleted.
    */
-  public async mDelete(
-    ids: number[] | string[],
-    options: SqlDeleteOptions = new AntSqlDeleteOptions(),
-  ): Promise<any> {
+  public async mDelete(ids: number[] | string[], options: SqlDeleteOptions = new AntSqlDeleteOptions()): Promise<any> {
     if (options.persist) {
       await this._successor.mDelete(ids);
     }

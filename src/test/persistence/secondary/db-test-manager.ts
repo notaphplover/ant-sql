@@ -1,11 +1,11 @@
 import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
 import { SqlModel } from '../../../model/sql-model';
-import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
-import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
-import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
-import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
+import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
+import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
+import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
 
 export class DBTestManager {
   /**

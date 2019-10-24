@@ -5,12 +5,12 @@ import { AntSqlModelManagerTest } from './api/ant-sql-model-manager-test';
 import { QueryConfigFactoryTest } from './api/query-config-factory-test';
 import { dbServerAwaiterManager } from './await/db-server-awaiter-manager';
 import { AntSqlModelTest } from './model/ant-sql-model-test';
-import { RedisWrapper } from './persistence/primary/redis-wrapper';
 import { AntSqlPrimaryModelManagerTest } from './persistence/primary/ant-sql-primary-model-manager-test';
-import { SqlSecondaryEntityManagerTest } from './persistence/secondary/sql-secondary-entity-manager-test';
+import { RedisWrapper } from './persistence/primary/redis-wrapper';
 import { DBConnectionWrapper } from './persistence/secondary/db-connection-wrapper';
 import { DBTestManager } from './persistence/secondary/db-test-manager';
 import { SecondaryEntityManagerHelperTest } from './persistence/secondary/secondary-entity-manager-helper-test';
+import { SqlSecondaryEntityManagerTest } from './persistence/secondary/sql-secondary-entity-manager-test';
 
 export class AllTest implements Test {
   /**

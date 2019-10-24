@@ -5,11 +5,11 @@ import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/ant-sql-model';
 import { SqlModel } from '../../../model/sql-model';
+import { AntSqlPrimaryModelManager } from '../../../persistence/primary/ant-sql-primary-model-manager';
 import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delete-options';
 import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
-import { AntSqlPrimaryModelManager } from '../../../persistence/primary/ant-sql-primary-model-manager';
-import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 import { RedisWrapper } from './redis-wrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;

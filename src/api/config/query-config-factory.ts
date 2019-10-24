@@ -173,9 +173,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(
-    column: SqlColumn,
-  ): TQuery<TQueryResult[]> {
+  private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(column: SqlColumn): TQuery<TQueryResult[]> {
     return (params: any[]) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -263,9 +261,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param columns Columns to filter.
    * @returns Ids by fields query.
    */
-  private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(
-    columns: SqlColumn[],
-  ): TQuery<TQueryResult> {
+  private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(columns: SqlColumn[]): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -305,9 +301,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param column AntSql column.
    * @returns query built.
    */
-  private _buildIdsByUniqueFieldQuery<TQueryResult extends SingleQueryResult>(
-    column: SqlColumn,
-  ): TQuery<TQueryResult> {
+  private _buildIdsByUniqueFieldQuery<TQueryResult extends SingleQueryResult>(column: SqlColumn): TQuery<TQueryResult> {
     return (params: any) => {
       if (!params) {
         throw new Error('Expected params!');

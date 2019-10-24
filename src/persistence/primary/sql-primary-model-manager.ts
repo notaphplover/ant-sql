@@ -1,8 +1,8 @@
 import { Entity } from '@antjs/ant-js';
 import { PrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/primary-model-manager';
-import { SqlInsertable } from './sql-insertable';
 import { SqlDeleteOptions } from './options/sql-delete-options';
 import { SqlUpdateOptions } from './options/sql-update-options';
+import { SqlInsertable } from './sql-insertable';
 
 export interface SqlPrimaryModelManager<TEntity extends Entity>
   extends PrimaryModelManager<TEntity>,
