@@ -1,6 +1,6 @@
 import * as Knex from 'knex';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
-import { IDbTestConnection } from './IDbTestConnection';
+import { DbTestConnection } from './db-test-connection';
 
 const fakeConnection = Knex({
   client: KnexDriver.PG,
@@ -13,7 +13,7 @@ const fakeConnection = Knex({
   version: '11.2',
 });
 
-const msSqlConnectionTestConfig: IDbTestConnection = {
+const msSqlConnectionTestConfig: DbTestConnection = {
   connection: Knex({
     client: KnexDriver.MSSQL,
     connection: {
@@ -36,7 +36,7 @@ const msSqlConnectionTestConfig: IDbTestConnection = {
   },
 };
 
-const mySqlDbConnectionTestConfig: IDbTestConnection = {
+const mySqlDbConnectionTestConfig: DbTestConnection = {
   connection: Knex({
     client: KnexDriver.MYSQL,
     connection: {
@@ -49,7 +49,7 @@ const mySqlDbConnectionTestConfig: IDbTestConnection = {
   }),
 };
 
-const mySql2DbConnectionTestConfig: IDbTestConnection = {
+const mySql2DbConnectionTestConfig: DbTestConnection = {
   connection: Knex({
     client: KnexDriver.MYSQL2,
     connection: {
@@ -62,7 +62,7 @@ const mySql2DbConnectionTestConfig: IDbTestConnection = {
   }),
 };
 
-const postgreDbConnectionTestConfig: IDbTestConnection = {
+const postgreDbConnectionTestConfig: DbTestConnection = {
   connection: Knex({
     client: KnexDriver.PG,
     connection: {
@@ -75,7 +75,7 @@ const postgreDbConnectionTestConfig: IDbTestConnection = {
   }),
 };
 
-const sqliteDbConnectionTestConfig: IDbTestConnection = {
+const sqliteDbConnectionTestConfig: DbTestConnection = {
   connection: Knex({
     client: KnexDriver.SQLITE3,
     connection: {
@@ -92,23 +92,23 @@ export class DBConnectionWrapper {
   /**
    * MS SQL DB connection
    */
-  protected _msSqlDbConnectionConfig: IDbTestConnection;
+  protected _msSqlDbConnectionConfig: DbTestConnection;
   /**
    * MySQL DB connection.
    */
-  protected _mySqlDbConnectionConfig: IDbTestConnection;
+  protected _mySqlDbConnectionConfig: DbTestConnection;
   /**
    * MySQL DB connection.
    */
-  protected _mySql2DbConnectionConfig: IDbTestConnection;
+  protected _mySql2DbConnectionConfig: DbTestConnection;
   /**
    * PostgreSQL DB connection.
    */
-  protected _postgreDbConnectionConfig: IDbTestConnection;
+  protected _postgreDbConnectionConfig: DbTestConnection;
   /**
    * SQLite DB Connection.
    */
-  protected _sqliteDbConnectionTestConfig: IDbTestConnection;
+  protected _sqliteDbConnectionTestConfig: DbTestConnection;
 
   /**
    * Creates a new database connection wrapper.
@@ -126,7 +126,7 @@ export class DBConnectionWrapper {
    * Database connections.
    * @returns Database connections.
    */
-  public get config(): IDbTestConnection[] {
+  public get config(): DbTestConnection[] {
     return [
       this._msSqlDbConnectionConfig,
       this._mySqlDbConnectionConfig,
@@ -146,35 +146,35 @@ export class DBConnectionWrapper {
   /**
    * mssql test connection config
    */
-  public get msConfig(): IDbTestConnection {
+  public get msConfig(): DbTestConnection {
     return this._msSqlDbConnectionConfig;
   }
 
   /**
    * mysql test connection config
    */
-  public get mySqlConfig(): IDbTestConnection {
+  public get mySqlConfig(): DbTestConnection {
     return this._mySqlDbConnectionConfig;
   }
 
   /**
    * mysql2 test connection config
    */
-  public get mySql2Config(): IDbTestConnection {
+  public get mySql2Config(): DbTestConnection {
     return this._mySql2DbConnectionConfig;
   }
 
   /**
    * pg test connection config
    */
-  public get pgConfig(): IDbTestConnection {
+  public get pgConfig(): DbTestConnection {
     return this._postgreDbConnectionConfig;
   }
 
   /**
    * sqlite3 test connection config
    */
-  public get sqliteConfig(): IDbTestConnection {
+  public get sqliteConfig(): DbTestConnection {
     return this._sqliteDbConnectionTestConfig;
   }
 }

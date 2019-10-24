@@ -1,8 +1,8 @@
 import { KnexDriver } from '../../persistence/secondary/knex-driver';
-import { DBConnectionWrapper } from '../persistence/secondary/DBConnectionWrapper';
-import { DBTestManager } from '../persistence/secondary/DBTestManager';
-import { IDbTestConnection } from '../persistence/secondary/IDbTestConnection';
-import { DbServerAwaiter } from './DbServerAwaiter';
+import { DBConnectionWrapper } from '../persistence/secondary/db-connection-wrapper';
+import { DBTestManager } from '../persistence/secondary/db-test-manager';
+import { DbTestConnection } from '../persistence/secondary/db-test-connection';
+import { DbServerAwaiter } from './db-server-awaiter';
 
 class DbServerAwaiterManager {
   /**
@@ -53,7 +53,7 @@ class DbServerAwaiterManager {
    * @returns Promise of db ready for connections with the target database created.
    */
   private _createDBReadyPromise(
-    config: IDbTestConnection,
+    config: DbTestConnection,
     dbServerAwaiter: DbServerAwaiter,
     testManager: DBTestManager,
   ): Promise<any> {

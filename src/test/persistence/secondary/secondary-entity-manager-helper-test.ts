@@ -3,10 +3,10 @@ import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
 import { SecondaryEntityManagerHelper } from '../../../persistence/secondary/seconday-entity-manager-helper';
-import { dbServerAwaiterManager } from '../../await/DbServerAwaiterManager';
-import { modelGenerator } from '../../model/AntSqlModelGenerator';
-import { DBConnectionWrapper } from './DBConnectionWrapper';
-import { DBTestManager } from './DBTestManager';
+import { dbServerAwaiterManager } from '../../await/db-server-awaiter-manager';
+import { modelGenerator } from '../../model/ant-sql-model-generator';
+import { DBConnectionWrapper } from './db-connection-wrapper';
+import { DBTestManager } from './db-test-manager';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 

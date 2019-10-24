@@ -1,6 +1,6 @@
 import * as Knex from 'knex';
 
-export interface IDbTestConnection {
+export interface DbTestConnection {
   /**
    * Knex connection.
    */

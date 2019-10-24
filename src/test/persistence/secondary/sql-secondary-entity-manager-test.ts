@@ -3,8 +3,8 @@ import { Test } from '@antjs/ant-js/src/testapi/api/test';
 import * as Knex from 'knex';
 import { SqlModel } from '../../../model/sql-model';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
-import { modelGenerator } from '../../model/AntSqlModelGenerator';
-import { DBTestManager } from './DBTestManager';
+import { modelGenerator } from '../../model/ant-sql-model-generator';
+import { DBTestManager } from './db-test-manager';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
