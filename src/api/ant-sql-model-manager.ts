@@ -1,12 +1,12 @@
 import { Entity } from '@antjs/ant-js';
 import { AntModelManager } from '@antjs/ant-js/src/api/ant-model-manager';
 import { SqlModel } from '../model/sql-model';
-import { ISqlModelManager } from '../persistence/primary/ISqlModelManager';
-import { IAntSqlUpdateOptions } from '../persistence/primary/options/IAntSqlUpdateOptions';
-import { SqlModelManager } from '../persistence/primary/SqlModelManager';
-import { AntMySqlSecondaryEntityManager } from '../persistence/secondary/AntMySqlSecondaryEntityManager';
-import { AntSQLiteSecondaryEntityManager } from '../persistence/secondary/AntSQLiteSecondaryEntityManager';
-import { AntSqlSecondaryEntityManager } from '../persistence/secondary/AntSqlSecondaryEntityManager';
+import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
+import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
+import { AntSqlPrimaryModelManager } from '../persistence/primary/ant-sql-primary-model-manager';
+import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
+import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
+import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
 import { ISqlSecondaryEntityManager } from '../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../persistence/secondary/KnexDriver';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
@@ -14,7 +14,7 @@ import { QueryConfigFactory } from './config/query-config-factory';
 import { ApiSqlModelManager } from './api-sql-model-manager';
 
 export class AntSqlModelManager<TEntity extends Entity>
-  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel, ISqlModelManager<TEntity>>
+  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel, SqlPrimaryModelManager<TEntity>>
   implements ApiSqlModelManager<TEntity> {
   /**
    * Query config factory.
@@ -60,7 +60,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param options Persistency options.
    * @returns Promise of entity inserted.
    */
-  public insert(entity: TEntity, options?: IAntSqlUpdateOptions): Promise<any> {
+  public insert(entity: TEntity, options?: SqlUpdateOptions): Promise<any> {
     return this.modelManager.insert(entity, options);
   }
 
@@ -70,7 +70,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param options Persistency options.
    * @returns Promise of entities inserted.
    */
-  public mInsert(entities: TEntity[], options?: IAntSqlUpdateOptions): Promise<any> {
+  public mInsert(entities: TEntity[], options?: SqlUpdateOptions): Promise<any> {
     return this.modelManager.mInsert(entities, options);
   }
 
@@ -80,8 +80,8 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(model: SqlModel, config: ApiSqlModelConfig): ISqlModelManager<TEntity> {
-    return new SqlModelManager<TEntity>(
+  protected _generateModelManager(model: SqlModel, config: ApiSqlModelConfig): SqlPrimaryModelManager<TEntity> {
+    return new AntSqlPrimaryModelManager<TEntity>(
       model,
       config.redis,
       config.negativeCache || true,
@@ -104,11 +104,11 @@ This is probably caused by the absence of a config instance. Ensure that config 
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
-        return new AntMySqlSecondaryEntityManager(model, knex);
+        return new MySqlSecondaryEntityManager(model, knex);
       case KnexDriver.SQLITE3:
-        return new AntSQLiteSecondaryEntityManager(model, knex);
+        return new SqLiteSecondaryEntityManager(model, knex);
       default:
-        return new AntSqlSecondaryEntityManager(model, knex);
+        return new SqlSecondaryEntityManager(model, knex);
     }
   }
 }

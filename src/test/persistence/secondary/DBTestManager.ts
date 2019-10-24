@@ -1,9 +1,9 @@
 import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
 import { SqlModel } from '../../../model/sql-model';
-import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
-import { AntSQLiteSecondaryEntityManager } from '../../../persistence/secondary/AntSQLiteSecondaryEntityManager';
-import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
+import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
 import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 
@@ -95,11 +95,11 @@ END`;
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
-        return (model, knex) => new AntMySqlSecondaryEntityManager(model, knex);
+        return (model, knex) => new MySqlSecondaryEntityManager(model, knex);
       case KnexDriver.SQLITE3:
-        return (model, knex) => new AntSQLiteSecondaryEntityManager(model, knex);
+        return (model, knex) => new SqLiteSecondaryEntityManager(model, knex);
       default:
-        return (model, knex) => new AntSqlSecondaryEntityManager(model, knex);
+        return (model, knex) => new SqlSecondaryEntityManager(model, knex);
     }
   }
 

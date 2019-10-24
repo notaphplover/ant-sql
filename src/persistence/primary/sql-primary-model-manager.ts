@@ -1,19 +1,19 @@
 import { Entity } from '@antjs/ant-js';
 import { PrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/primary-model-manager';
-import { ISqlInsertable } from './ISqlInsertable';
-import { IAntSqlDeleteOptions } from './options/IAntSqlDeleteOptions';
-import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
+import { SqlInsertable } from './sql-insertable';
+import { SqlDeleteOptions } from './options/sql-delete-options';
+import { SqlUpdateOptions } from './options/sql-update-options';
 
-export interface ISqlModelManager<TEntity extends Entity>
+export interface SqlPrimaryModelManager<TEntity extends Entity>
   extends PrimaryModelManager<TEntity>,
-    ISqlInsertable<TEntity> {
+    SqlInsertable<TEntity> {
   /**
    * Deletes an entity from the cache layer.
    * @param id id of the entity to delete.
    * @param options persistency options.
    * @returns Promise of entity deleted.
    */
-  delete(id: number | string, options?: IAntSqlDeleteOptions): Promise<any>;
+  delete(id: number | string, options?: SqlDeleteOptions): Promise<any>;
 
   /**
    * Deletes entitis from their ids.
@@ -21,7 +21,7 @@ export interface ISqlModelManager<TEntity extends Entity>
    * @param options persistency options.
    * @returns Promise of entities deleted.
    */
-  mDelete(ids: number[] | string[], options?: IAntSqlDeleteOptions): Promise<any>;
+  mDelete(ids: number[] | string[], options?: SqlDeleteOptions): Promise<any>;
 
   /**
    * Updates multiple entities.
@@ -29,7 +29,7 @@ export interface ISqlModelManager<TEntity extends Entity>
    * @param options persistency options.
    * @returns Promise of entities updated.
    */
-  mUpdate(entities: TEntity[], options?: IAntSqlUpdateOptions): Promise<any>;
+  mUpdate(entities: TEntity[], options?: SqlUpdateOptions): Promise<any>;
 
   /**
    * Updates an entity.
@@ -37,5 +37,5 @@ export interface ISqlModelManager<TEntity extends Entity>
    * @param options persistency options.
    * @returns Promise of entity deleted.
    */
-  update(entity: TEntity, options?: IAntSqlUpdateOptions): Promise<any>;
+  update(entity: TEntity, options?: SqlUpdateOptions): Promise<any>;
 }

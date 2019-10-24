@@ -4,8 +4,8 @@ import * as Knex from 'knex';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { QueryConfigFactory } from '../../api/config/query-config-factory';
 import { AntSqlModel } from '../../model/ant-sql-model';
-import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
-import { AntSqlSecondaryEntityManager } from '../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-model-manager';
+import { SqlSecondaryEntityManager } from '../../persistence/secondary/sql-secondary-entity-manager';
 import { RedisWrapper } from '../persistence/primary/RedisWrapper';
 import { AntSqlModelManagerForTest } from './AntSqlModelManagerForTest';
 
@@ -72,7 +72,7 @@ export class AntSqlModelManagerTest implements Test {
         });
         const modelManager = antModelManager.modelManager;
 
-        const methodsToTest = ['insert', 'mInsert'] as Array<keyof ISqlModelManager<any>>;
+        const methodsToTest = ['insert', 'mInsert'] as Array<keyof SqlPrimaryModelManager<any>>;
 
         for (const methodToTest of methodsToTest) {
           spyOn(modelManager, methodToTest as any).and.returnValue(methodToTest as any);
@@ -134,7 +134,7 @@ export class AntSqlModelManagerTest implements Test {
         };
         const antModelManager = new AntSqlModelManagerForTest(model);
         const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
-        expect(secondaryEntityManager instanceof AntSqlSecondaryEntityManager).toBe(true);
+        expect(secondaryEntityManager instanceof SqlSecondaryEntityManager).toBe(true);
         done();
       },
       MAX_SAFE_TIMEOUT,

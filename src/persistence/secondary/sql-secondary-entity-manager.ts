@@ -4,7 +4,7 @@ import { SqlModel } from '../../model/sql-model';
 import { ISqlSecondaryEntityManager } from './ISqlSecondaryEntityManager';
 import { SecondaryEntityManagerHelper } from './SecondayEntityManagerHelper';
 
-export class AntSqlSecondaryEntityManager<TEntity extends Entity> implements ISqlSecondaryEntityManager<TEntity> {
+export class SqlSecondaryEntityManager<TEntity extends Entity> implements ISqlSecondaryEntityManager<TEntity> {
   /**
    * Secondary entity manager helper.
    */

@@ -5,10 +5,10 @@ import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/ant-sql-model';
 import { SqlModel } from '../../../model/sql-model';
-import { IAntSqlDeleteOptions } from '../../../persistence/primary/options/IAntSqlDeleteOptions';
-import { IAntSqlUpdateOptions } from '../../../persistence/primary/options/IAntSqlUpdateOptions';
-import { SqlModelManager } from '../../../persistence/primary/SqlModelManager';
-import { AntSqlSecondaryEntityManager } from '../../../persistence/secondary/AntSqlSecondaryEntityManager';
+import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delete-options';
+import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
+import { AntSqlPrimaryModelManager } from '../../../persistence/primary/ant-sql-primary-model-manager';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 import { ISqlSecondaryEntityManager } from '../../../persistence/secondary/ISqlSecondaryEntityManager';
 import { RedisWrapper } from './RedisWrapper';
 
@@ -62,10 +62,10 @@ export class SqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelGenerator({ prefix: prefix });
-        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
         expect(() => {
           // tslint:disable-next-line:no-unused-expression
-          new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
+          new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
         }).not.toThrowError();
         done();
       },
@@ -80,8 +80,8 @@ export class SqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelGenerator({ prefix: prefix });
-        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
-        const sqlModelManager = new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
+        const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
         const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
           keyof ISqlSecondaryEntityManager<any>
         >;
@@ -121,8 +121,8 @@ export class SqlModelManagerTest implements Test {
       itsName,
       async (done) => {
         const model = modelGenerator({ prefix: prefix });
-        const secondaryEntityManager = new AntSqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
-        const sqlModelManager = new SqlModelManager(model, this._redis.redis, true, secondaryEntityManager);
+        const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
+        const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
 
         const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
           keyof ISqlSecondaryEntityManager<any>
@@ -135,11 +135,11 @@ export class SqlModelManagerTest implements Test {
         }
 
         const entity: EntityTest = { id: 0 };
-        const deleteOptions: IAntSqlDeleteOptions = {
+        const deleteOptions: SqlDeleteOptions = {
           negativeCache: true,
           persist: false,
         };
-        const updateOptions: IAntSqlUpdateOptions = {
+        const updateOptions: SqlUpdateOptions = {
           cacheMode: CacheMode.CacheAndOverwrite,
           persist: false,
           ttl: null,

@@ -1,14 +1,14 @@
 import { Entity } from '@antjs/ant-js';
-import { IAntSqlUpdateOptions } from './options/IAntSqlUpdateOptions';
+import { SqlUpdateOptions } from './options/sql-update-options';
 
-export interface ISqlInsertable<TEntity extends Entity> {
+export interface SqlInsertable<TEntity extends Entity> {
   /**
    * Inserts an entity.
    * @param entity Entity to be inserted.
    * @param options persistency options.
    * @returns Promise of entity inserted.
    */
-  insert(entity: TEntity, options?: IAntSqlUpdateOptions): Promise<any>;
+  insert(entity: TEntity, options?: SqlUpdateOptions): Promise<any>;
 
   /**
    * Inserts multiple entities.
@@ -16,5 +16,5 @@ export interface ISqlInsertable<TEntity extends Entity> {
    * @param options persistency options.
    * @returns Promise of entities inserted.
    */
-  mInsert(entities: TEntity[], options?: IAntSqlUpdateOptions): Promise<any>;
+  mInsert(entities: TEntity[], options?: SqlUpdateOptions): Promise<any>;
 }

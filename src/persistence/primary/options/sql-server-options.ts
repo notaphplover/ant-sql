@@ -1,4 +1,4 @@
-export interface ISqlServerOptions {
+export interface SqlServerOptions {
   /**
    * True to persist the changes.
    */

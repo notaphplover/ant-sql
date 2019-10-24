@@ -1,6 +1,6 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { Test } from '@antjs/ant-js/src/testapi/api/test';
-import { AntMySqlSecondaryEntityManager } from '../../../persistence/secondary/AntMySqlSecondaryEntityManager';
+import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { KnexDriver } from '../../../persistence/secondary/KnexDriver';
 import { SecondaryEntityManagerHelper } from '../../../persistence/secondary/SecondayEntityManagerHelper';
 import { dbServerAwaiterManager } from '../../await/DbServerAwaiterManager';
@@ -71,7 +71,7 @@ export class SecondaryEntityManagerHelperTest implements Test {
           tableGeneratorOtherColumns,
         );
 
-        const secondaryEntityManager = new AntMySqlSecondaryEntityManager<NamedEntityTest>(
+        const secondaryEntityManager = new MySqlSecondaryEntityManager<NamedEntityTest>(
           model,
           this._dbConnectionWrapper.mySqlConfig.connection,
         );

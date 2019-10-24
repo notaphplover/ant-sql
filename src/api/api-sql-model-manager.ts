@@ -1,12 +1,12 @@
 import { Entity } from '@antjs/ant-js';
 import { ApiModelManager } from '@antjs/ant-js/src/api/api-model-manager';
-import { ISqlInsertable } from '../persistence/primary/ISqlInsertable';
+import { SqlInsertable } from '../persistence/primary/sql-insertable';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { QueryConfigFactory } from './config/query-config-factory';
 
 export interface ApiSqlModelManager<TEntity extends Entity>
   extends ApiModelManager<TEntity, ApiSqlModelConfig>,
-    ISqlInsertable<TEntity> {
+    SqlInsertable<TEntity> {
   /**
    * Gets the query config factory.
    * @returns query config factory.

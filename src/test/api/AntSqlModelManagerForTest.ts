@@ -4,13 +4,13 @@ import { SecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/
 import { AntSqlModelManager } from '../../api/ant-sql-model-manager';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { SqlModel } from '../../model/sql-model';
-import { ISqlModelManager } from '../../persistence/primary/ISqlModelManager';
+import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-model-manager';
 
 export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlModelManager<TEntity> {
   /**
    * Gets the inner model manager.
    */
-  public get modelManager(): ISqlModelManager<TEntity> {
+  public get modelManager(): SqlPrimaryModelManager<TEntity> {
     return super.modelManager;
   }
 
