@@ -11,14 +11,11 @@ Now, the idea is to inject the queries into the manager. It could be a good idea
 
 __src/provider/IQueryInjector.ts__
 ```typescript
-import { IAntModelManager } from '@antjs/ant-js/src/api/IAntModelManager';
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelConfig } from '@antjs/ant-sql/src/api/config/IAntSqlModelConfig';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import { ApiQueryManager, Entity } from '@antjs/ant-js';
+import { ApiSqlModelConfig, ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 
-export interface IQueryInjector<TEntity extends IEntity> {
+export interface IQueryInjector<TEntity extends Entity> {
 
   /**
    * Injects queries in an AntJS model manager.
@@ -28,9 +25,9 @@ export interface IQueryInjector<TEntity extends IEntity> {
    */
   injectQueries(
     knex: Knex,
-    antModelManager: IAntModelManager<TEntity, IAntSqlModelConfig>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<TEntity> };
+    antModelManager: ApiSqlModelManager<TEntity, ApiSqlModelConfig>,
+    model: SqlModel,
+  ): { [key: string]: ApiQueryManager<TEntity> };
 }
 
 ```
@@ -39,10 +36,8 @@ Now, let's create our query injector:
 
 __src/provider/UserQueriesProvider.ts__
 ```typescript
-import { IAntModelManager } from '@antjs/ant-js/src/api/IAntModelManager';
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelConfig } from '@antjs/ant-sql/src/api/config/IAntSqlModelConfig';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import { ApiQueryManager } from '@antjs/ant-js';
+import { ApiSqlModelConfig, ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 import { IUser } from '../entity/IUser';
 import { IQueryInjector } from './IQueryInjector';
@@ -51,9 +46,9 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
 
   public injectQueries(
     knex: Knex,
-    antModelManager: IAntModelManager<IUser, IAntSqlModelConfig>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<IUser>; } {
+    antModelManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    model: SqlModel,
+  ): { [key: string]: ApiQueryManager<IUser>; } {
     return {
       usersByUsernameQuery: this._addUsersByUsernameQuery(
         knex, antModelManager, model,
@@ -66,9 +61,9 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
 
   private _addUsersByUsernameQuery(
     knex: Knex,
-    userManager: IAntModelManager<IUser, IAntSqlModelConfig>,
-    userModel: IAntSqlModel,
-  ): IPrimaryQueryManager<IUser> {
+    userManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    userModel: SqlModel,
+  ): ApiQueryManager<IUser> {
     const usersByUsername = (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -92,14 +87,14 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
       query: usersByUsername,
       queryKeyGen: (params: any) => 'user/name::' + params.letter,
       reverseHashKey: 'user/name/reverse',
-    }) as IPrimaryQueryManager<IUser>;
+    }) as ApiQueryManager<IUser>;
   }
 
   private _addUsersStartingByLetterQuery(
     knex: Knex,
-    userManager: IAntModelManager<IUser, IAntSqlModelConfig>,
-    userModel: IAntSqlModel,
-  ): IPrimaryQueryManager<IUser> {
+    userManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    userModel: SqlModel,
+  ): ApiQueryManager<IUser> {
     const usersStaringByLetterDBQuery = (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -121,7 +116,7 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
       query: usersStaringByLetterDBQuery,
       queryKeyGen: (params: any) => 'user/name-start::' + params.letter,
       reverseHashKey: 'user/name-start/reverse',
-    }) as IPrimaryQueryManager<IUser>;
+    }) as ApiQueryManager<IUser>;
   }
 }
 
