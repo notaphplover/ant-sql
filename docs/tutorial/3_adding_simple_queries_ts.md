@@ -25,13 +25,11 @@ The idea is to inject the queries into the manager. It could be a good idea to p
 
 __src/provider/UserQueriesProvider.ts__
 ```typescript
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import { ApiQueryManager, Entity } from '@antjs/ant-js';
+import { ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 
-export interface IQueryInjector<TEntity extends IEntity> {
+export interface IQueryInjector<TEntity extends Entity> {
 
   /**
    * Injects queries in an AntJS model manager.
@@ -41,9 +39,9 @@ export interface IQueryInjector<TEntity extends IEntity> {
    */
   injectQueries(
     knex: Knex,
-    antModelManager: IAntSqlModelManager<TEntity>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<TEntity> };
+    antModelManager: ApiSqlModelManager<TEntity>,
+    model: SqlModel,
+  ): { [key: string]: ApiQueryManager<TEntity> };
 }
 
 ```
@@ -51,9 +49,8 @@ export interface IQueryInjector<TEntity extends IEntity> {
 Now, let's create our query injector:
 
 ```typescript
-import { IPrimaryQueryManager } from '@antjs/ant-js/src/persistence/primary/query/IPrimaryQueryManager';
-import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
-import { IAntSqlModel } from '@antjs/ant-sql/src/model/IAntSqlModel';
+import { ApiQueryManager } from '@antjs/ant-js';
+import { ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 import { IUser } from '../entity/IUser';
 import { IQueryInjector } from './IQueryInjector';
@@ -62,9 +59,9 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
 
   public injectQueries(
     _: Knex,
-    antModelManager: IAntSqlModelManager<IUser>,
-    model: IAntSqlModel,
-  ): { [key: string]: IPrimaryQueryManager<IUser>; } {
+    antModelManager: ApiSqlModelManager<IUser>,
+    model: SqlModel,
+  ): { [key: string]: ApiQueryManager<IUser>; } {
     return {
       userByUsernameQuery: this._addUserByUsernameQuery(
         antModelManager, model,
@@ -73,12 +70,12 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
   }
 
   private _addUserByUsernameQuery(
-    userManager: IAntSqlModelManager<IUser>,
-    userModel: IAntSqlModel,
-  ): IPrimaryQueryManager<IUser> {
+    userManager: ApiSqlModelManager<IUser>,
+    userModel: SqlModel,
+  ): ApiQueryManager<IUser> {
     return userManager.query<number>(
       userManager.cfgGen.byUniqueField<number>(userModel.getColumn('username')),
-    ) as IPrimaryQueryManager<IUser>;
+    ) as ApiQueryManager<IUser>;
   }
 }
 

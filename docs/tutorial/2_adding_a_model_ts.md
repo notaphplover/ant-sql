@@ -10,7 +10,7 @@ The code for our provider could be the following one:
 
 __src/provider/ModelProvider.ts__
 ```ts
-import { AntSqlModel } from '@antjs/ant-sql/src/model/AntSqlModel';
+import { AntSqlModel } from '@antjs/ant-sql';
 
 const userModel = new AntSqlModel(
   'id',
@@ -40,9 +40,9 @@ We will be working with entities of the model, but we have no type defined for o
 
 __src/entity/IUser__
 ```ts
-import { IEntity } from '@antjs/ant-js/src/model/IEntity';
+import { Entity } from '@antjs/ant-js';
 
-export interface IUser extends IEntity {
+export interface IUser extends Entity {
   /**
    * User id.
    */
@@ -104,8 +104,7 @@ The code could be the following one:
 
 __src/provider/AntSqlProvider.ts__
 ```typescript
-import { AntSqlManager } from '@antjs/ant-sql';
-import { IAntSqlModelManager } from '@antjs/ant-sql/src/api/IAntSqlModelManager';
+import { AntSqlManager, ApiSqlModelManager } from '@antjs/ant-sql';
 import { IUser } from '../entity/IUser';
 import { knex } from './DBProvider';
 import { userModel } from './ModelProvider';
@@ -119,7 +118,7 @@ manager.config({
   },
 });
 
-const userManager = manager.get(userModel) as IAntSqlModelManager<IUser>;
+const userManager = manager.get(userModel) as ApiSqlModelManager<IUser>;
 
 export {
   manager,
