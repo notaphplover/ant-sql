@@ -1,26 +1,29 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "1.0.0-beta.9",
+  "version": "1.0.0-beta.10",
   "description": "SQL extension for AntJS",
-  "main": "src/ant.js",
+  "main": "build/ant.js",
   "scripts": {
-    "build": "./node_modules/typescript/bin/tsc --build src.tsconfig.commonjs.json",
+    "build": "tsc --build src.tsconfig.commonjs.dev.json",
+    "build-prod": "rm -rf ./build && tsc --build src.tsconfig.commonjs.prod.json",
     "build-and-test": "npm run build && npm run test-only",
-    "build-and-test-and-coverage": "npm run build-and-test && npm run report-coverage",
     "build-and-test-debug": "npm run build && npm run test-debug-only",
+    "ci": "npm run build && npm run linter && npm run format-check && npm run test-only && npm run report-coverage",
+    "ci-docker": "sh scripts/prepare-env.sh && docker-compose -f docker-compose.test.ci.yml up --abort-on-container-exit --exit-code-from ant_lib",
     "clear-js": "node ./scripts/clear-compiled.js",
-    "linter": "./node_modules/tslint/bin/tslint -c ./tslint.json -p ./src.tsconfig.commonjs.json",
-    "publish-npm": "npm run clear-js && npm run test && npm publish --access public",
-    "publish-npm-beta": "npm run clear-js && npm run test && npm publish --access public --tag beta",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format-check": "prettier --check \"src/**/*.ts\"",
+    "linter": "tslint -c ./tslint.json -p ./src.tsconfig.commonjs.dev.json",
+    "linter-fix": "tslint --fix -c ./tslint.json -p ./src.tsconfig.commonjs.dev.json",
+    "publish-npm": "npm run clear-js && npm run test && npm run build-prod && npm publish --access public",
+    "publish-npm-beta": "npm run clear-js && npm run test && npm run build-prod && npm publish --access public --tag beta",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "test": "npm run test-docker",
-    "test-coverage": "npm run test-docker-coverage",
     "test-debug": "npm run test-docker-debug",
-    "test-debug-only": "node --inspect-brk=0.0.0.0:${NODE_DEBUG_PORT_INNER} ./node_modules/jasmine/bin/jasmine.js ./src/test/main.test.js",
+    "test-debug-only": "node --inspect-brk=0.0.0.0:${NODE_DEBUG_PORT_INNER} ./node_modules/jasmine/bin/jasmine.js ./build/test/main.test.js",
     "test-docker": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from ant_lib",
-    "test-docker-coverage": "sh scripts/prepare-env.sh && docker-compose -f docker-compose.test.coverage.yml up --abort-on-container-exit --exit-code-from ant_lib",
     "test-docker-debug": "docker-compose -f docker-compose.test.debug.yml up --abort-on-container-exit --exit-code-from ant_lib",
-    "test-only": "node_modules/nyc/bin/nyc.js --reporter=lcov node ./node_modules/jasmine/bin/jasmine.js ./src/test/main.test.js"
+    "test-only": "nyc --reporter=lcov node ./node_modules/jasmine/bin/jasmine.js ./build/test/main.test.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +32,7 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^1.0.0-beta.9",
+    "@antjs/ant-js": "^1.0.0-beta.13",
     "knex": "^0.19.5"
   },
   "devDependencies": {
@@ -46,6 +49,7 @@
     "mysql2": "^1.7.0",
     "nyc": "^14.1.1",
     "pg": "^7.12.1",
+    "prettier": "^1.18.2",
     "sqlite3": "^4.1.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.4"

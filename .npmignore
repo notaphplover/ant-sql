@@ -1,19 +1,21 @@
-# Javascript source maps.
-src/**/*.js.map
+# Source maps.
+build/**/*.js.map
+build/**/*.ts.map
+
 # Typescript source code
-src/**/*.ts
-src/**/*.ts.map
-!src/**/*.d.ts
+/src
 
 # npm dependencies
 /node_modules
 
 # npm build
 src.tsconfig.commonjs.json
+src.tsconfig.commonjs.dev.json
+src.tsconfig.commonjs.prod.json
 
 # npm docker builds
 docker-compose.test.yml
-docker-compose.test.coverage.yml
+docker-compose.test.ci.yml
 docker-compose.test.debug.yml
 Dockerfile
 .dockerignore
@@ -46,7 +48,11 @@ _config.yml
 .nycrc
 
 # AntSQL Tests
-/src/test
+/build/test
+
+# Prettier config
+.prettierignore
+.prettierrc
 
 # Travis build
 .travis.yml
