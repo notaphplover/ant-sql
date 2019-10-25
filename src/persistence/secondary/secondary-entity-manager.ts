@@ -1,5 +1,5 @@
 import { Entity } from '@antjs/ant-js';
-import { SecondaryEntityManager as AntJsSecondaryEntityManager } from '@antjs/ant-js/src/persistence/secondary/secondary-entity-manager';
+import { SecondaryEntityManager as AntJsSecondaryEntityManager } from '@antjs/ant-js/build/persistence/secondary/secondary-entity-manager';
 
 export interface SecondaryEntityManager<TEntity extends Entity> extends AntJsSecondaryEntityManager<TEntity> {
   /**

@@ -1,5 +1,5 @@
 import { KeyGenParams } from '@antjs/ant-js';
-import { AntModel } from '@antjs/ant-js/src/model/ant-model';
+import { AntModel } from '@antjs/ant-js/build/model/ant-model';
 import { SqlColumn } from './sql-column';
 import { SqlModel } from './sql-model';
 

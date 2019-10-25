@@ -1,5 +1,5 @@
-import { AntPrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/ant-primary-model-manager';
-import { Test } from '@antjs/ant-js/src/testapi/api/test';
+import { AntPrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/ant-primary-model-manager';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import * as Knex from 'knex';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { QueryConfigFactory } from '../../api/config/query-config-factory';

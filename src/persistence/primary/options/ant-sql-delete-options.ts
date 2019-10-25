@@ -1,4 +1,4 @@
-import { AntJsDeleteOptions } from '@antjs/ant-js/src/persistence/primary/options/antjs-delete-options';
+import { AntJsDeleteOptions } from '@antjs/ant-js/build/persistence/primary/options/antjs-delete-options';
 import { SqlDeleteOptions } from './sql-delete-options';
 
 export class AntSqlDeleteOptions extends AntJsDeleteOptions implements SqlDeleteOptions {

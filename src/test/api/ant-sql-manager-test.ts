@@ -1,4 +1,4 @@
-import { Test } from '@antjs/ant-js/src/testapi/api/test';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import { AntSqlManager } from '../../api/ant-sql-manager';
 import { AntSqlModelManager } from '../../api/ant-sql-model-manager';
 import { AntSqlModel } from '../../model/ant-sql-model';
