@@ -1,6 +1,6 @@
 {
     "exclude": [
-      "src/test/**"
+      "build/test/**"
     ],
     "exclude-after-remap": false,
     "sourceMap": true,
