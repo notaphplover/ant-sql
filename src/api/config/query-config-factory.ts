@@ -3,7 +3,7 @@ import {
   MultipleQueryResult,
   SingleQueryResult,
   TQuery,
-} from '@antjs/ant-js/src/persistence/primary/query/ant-primary-query-manager';
+} from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import * as Knex from 'knex';
 import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';

@@ -1,5 +1,5 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
-import { Test } from '@antjs/ant-js/src/testapi/api/test';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import * as Knex from 'knex';
 import { SqlModel } from '../../../model/sql-model';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';

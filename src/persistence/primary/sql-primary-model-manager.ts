@@ -1,5 +1,5 @@
 import { Entity } from '@antjs/ant-js';
-import { PrimaryModelManager } from '@antjs/ant-js/src/persistence/primary/primary-model-manager';
+import { PrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/primary-model-manager';
 import { SqlDeleteOptions } from './options/sql-delete-options';
 import { SqlUpdateOptions } from './options/sql-update-options';
 import { SqlInsertable } from './sql-insertable';

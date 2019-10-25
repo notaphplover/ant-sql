@@ -1,6 +1,6 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
-import { CacheMode } from '@antjs/ant-js/src/persistence/primary/options/cache-mode';
-import { Test } from '@antjs/ant-js/src/testapi/api/test';
+import { CacheMode } from '@antjs/ant-js/build/persistence/primary/options/cache-mode';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import * as crypto from 'crypto';
 import * as Knex from 'knex';
 import { AntSqlModel } from '../../../model/ant-sql-model';

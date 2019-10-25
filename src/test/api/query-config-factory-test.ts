@@ -1,5 +1,5 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
-import { Test } from '@antjs/ant-js/src/testapi/api/test';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import * as Knex from 'knex';
 import { AntSqlManager } from '../../api/ant-sql-manager';
 import { QueryConfigFactory } from '../../api/config/query-config-factory';
