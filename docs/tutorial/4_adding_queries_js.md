@@ -17,9 +17,9 @@ class UserQueriesProvider {
 
   /**
    * Injects queries in the user manager and returns the query managers generated.
-   * @param { import('knex') } _ Knex instance.
+   * @param { import('knex') } knex Knex instance.
    * @param { import('@antjs/ant-sql').ApiSqlModelManager } antModelManager User manager
-   * @param { import('@antjs/ant-sql').SqlModel } model User model
+   * @param { import('@antjs/ant-sql').AntSqlModel } model User model
    * @returns { object } Queries object.
    */
   injectQueries(
@@ -41,7 +41,7 @@ class UserQueriesProvider {
    * Adds a "users by username" query.
    * @param { import('knex') } knex Knex instance.
    * @param { import('@antjs/ant-sql').ApiSqlModelManager } userManager User manager
-   * @param { import('@antjs/ant-sql').SqlModel } userModel User model
+   * @param { import('@antjs/ant-sql').AntSqlModel } userModel User model
    * @returns { import('@antjs/ant-js').ApiSingleResultQueryManager } Query manager created.
    */
   _addUsersByUsernameQuery(
@@ -82,10 +82,10 @@ class UserQueriesProvider {
   }
 
   /**
-   * Adds a "users by username" query.
+   * Adds a "users starting with letter" query.
    * @param { import('knex') } knex Knex instance.
    * @param { import('@antjs/ant-sql').ApiSqlModelManager } userManager User manager
-   * @param { import('@antjs/ant-sql').SqlModel } userModel User model
+   * @param { import('@antjs/ant-sql').AntSqlModel } userModel User model
    * @returns { import('@antjs/ant-js').ApiMultipleResultQueryManager } Query manager created.
    */
   _addUsersStartingByLetterQuery(

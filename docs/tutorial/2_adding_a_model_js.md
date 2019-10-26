@@ -12,7 +12,7 @@ __src/provider/ModelProvider.js__
 ```js
 'use strict';
 
-const AntSqlModel = require('@antjs/ant-sql');
+const { AntSqlModel } = require('@antjs/ant-sql');
 
 const userModel = new AntSqlModel(
   'id',

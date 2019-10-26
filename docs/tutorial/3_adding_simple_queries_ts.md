@@ -23,9 +23,9 @@ Let's put this on practise. In this tutorial we are implementing to search users
 
 The idea is to inject the queries into the manager. It could be a good idea to provide an interface for injecting queries and then coding a class that implements the interface:
 
-__src/provider/UserQueriesProvider.ts__
+__src/provider/IQueryInjector.ts__
 ```typescript
-import { ApiQueryManager, Entity } from '@antjs/ant-js';
+import { ApiMultipleResultQueryManager, ApiSingleResultQueryManager, Entity } from '@antjs/ant-js';
 import { ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 
@@ -41,15 +41,16 @@ export interface IQueryInjector<TEntity extends Entity> {
     knex: Knex,
     antModelManager: ApiSqlModelManager<TEntity>,
     model: SqlModel,
-  ): { [key: string]: ApiQueryManager<TEntity> };
+  ): { [key: string]: ApiMultipleResultQueryManager<TEntity> | ApiSingleResultQueryManager<TEntity> };
 }
 
 ```
 
 Now, let's create our query injector:
 
+__src/provider/UserQueriesProvider.ts__
 ```typescript
-import { ApiQueryManager } from '@antjs/ant-js';
+import { ApiMultipleResultQueryManager, ApiSingleResultQueryManager } from '@antjs/ant-js';
 import { ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 import { IUser } from '../entity/IUser';
@@ -61,7 +62,7 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
     _: Knex,
     antModelManager: ApiSqlModelManager<IUser>,
     model: SqlModel,
-  ): { [key: string]: ApiQueryManager<IUser>; } {
+  ): { [key: string]: ApiMultipleResultQueryManager<IUser> | ApiSingleResultQueryManager<IUser>; } {
     return {
       userByUsernameQuery: this._addUserByUsernameQuery(
         antModelManager, model,
@@ -72,10 +73,10 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
   private _addUserByUsernameQuery(
     userManager: ApiSqlModelManager<IUser>,
     userModel: SqlModel,
-  ): ApiQueryManager<IUser> {
+  ): ApiSingleResultQueryManager<IUser> {
     return userManager.query<number>(
       userManager.cfgGen.byUniqueField<number>(userModel.getColumn('username')),
-    ) as ApiQueryManager<IUser>;
+    );
   }
 }
 
