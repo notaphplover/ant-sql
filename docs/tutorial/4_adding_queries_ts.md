@@ -11,8 +11,8 @@ Now, the idea is to inject the queries into the manager. It could be a good idea
 
 __src/provider/IQueryInjector.ts__
 ```typescript
-import { ApiQueryManager, Entity } from '@antjs/ant-js';
-import { ApiSqlModelConfig, ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
+import { ApiMultipleResultQueryManager, ApiSingleResultQueryManager, Entity } from '@antjs/ant-js';
+import { ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 
 export interface IQueryInjector<TEntity extends Entity> {
@@ -25,9 +25,9 @@ export interface IQueryInjector<TEntity extends Entity> {
    */
   injectQueries(
     knex: Knex,
-    antModelManager: ApiSqlModelManager<TEntity, ApiSqlModelConfig>,
+    antModelManager: ApiSqlModelManager<TEntity>,
     model: SqlModel,
-  ): { [key: string]: ApiQueryManager<TEntity> };
+  ): { [key: string]: ApiMultipleResultQueryManager<TEntity> | ApiSingleResultQueryManager<TEntity> };
 }
 
 ```
@@ -36,7 +36,7 @@ Now, let's create our query injector:
 
 __src/provider/UserQueriesProvider.ts__
 ```typescript
-import { ApiQueryManager } from '@antjs/ant-js';
+import { ApiMultipleResultQueryManager, ApiSingleResultQueryManager } from '@antjs/ant-js';
 import { ApiSqlModelConfig, ApiSqlModelManager, SqlModel } from '@antjs/ant-sql';
 import * as Knex from 'knex';
 import { IUser } from '../entity/IUser';
@@ -46,9 +46,9 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
 
   public injectQueries(
     knex: Knex,
-    antModelManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    antModelManager: ApiSqlModelManager<IUser>,
     model: SqlModel,
-  ): { [key: string]: ApiQueryManager<IUser>; } {
+  ): { [key: string]: ApiMultipleResultQueryManager<IUser> | ApiSingleResultQueryManager<IUser>; } {
     return {
       usersByUsernameQuery: this._addUsersByUsernameQuery(
         knex, antModelManager, model,
@@ -61,9 +61,9 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
 
   private _addUsersByUsernameQuery(
     knex: Knex,
-    userManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    userManager: ApiSqlModelManager<IUser>,
     userModel: SqlModel,
-  ): ApiQueryManager<IUser> {
+  ): ApiSingleResultQueryManager<IUser> {
     const usersByUsername = (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -87,14 +87,14 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
       query: usersByUsername,
       queryKeyGen: (params: any) => 'user/name::' + params.letter,
       reverseHashKey: 'user/name/reverse',
-    }) as ApiQueryManager<IUser>;
+    });
   }
 
   private _addUsersStartingByLetterQuery(
     knex: Knex,
-    userManager: ApiSqlModelManager<IUser, ApiSqlModelConfig>,
+    userManager: ApiSqlModelManager<IUser>,
     userModel: SqlModel,
-  ): ApiQueryManager<IUser> {
+  ): ApiMultipleResultQueryManager<IUser> {
     const usersStaringByLetterDBQuery = (params: any) => {
       if (!params) {
         throw new Error('Expected params!');
@@ -116,7 +116,7 @@ export class UserQueriesProvider implements IQueryInjector<IUser> {
       query: usersStaringByLetterDBQuery,
       queryKeyGen: (params: any) => 'user/name-start::' + params.letter,
       reverseHashKey: 'user/name-start/reverse',
-    }) as ApiQueryManager<IUser>;
+    });
   }
 }
 
