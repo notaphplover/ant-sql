@@ -198,7 +198,9 @@ export class SqlSecondaryEntityManagerTest implements Test {
         await this._beforeAllPromise;
 
         const model: SqlModel = modelGenerator({ prefix: prefix }, { name: 'sqlName' });
-        await this._dbTestManager.createTable(this._dbConnection, model.tableName, tableGeneratorColumnId, { sqlName: 'string' });
+        await this._dbTestManager.createTable(this._dbConnection, model.tableName, tableGeneratorColumnId, {
+          sqlName: 'string',
+        });
         const entity = { id: 2, name: 'Just a name' };
         const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
         await manager.insert(entity);
@@ -298,7 +300,9 @@ export class SqlSecondaryEntityManagerTest implements Test {
         await this._beforeAllPromise;
 
         const model: SqlModel = modelGenerator({ prefix: prefix }, { name: 'sqlName' });
-        await this._dbTestManager.createTable(this._dbConnection, model.tableName, tableGeneratorColumnId, { sqlName: 'string' });
+        await this._dbTestManager.createTable(this._dbConnection, model.tableName, tableGeneratorColumnId, {
+          sqlName: 'string',
+        });
         const entity = { id: 2, name: 'Just a name' };
         const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
         await manager.insert(entity);
