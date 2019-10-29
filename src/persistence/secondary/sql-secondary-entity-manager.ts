@@ -56,19 +56,11 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @returns Entity found
    */
   public getById(id: string | number): Promise<TEntity> {
-    return new Promise<TEntity>((resolve, reject) => {
-      this._dbConnection
-        .from(this.model.tableName)
-        .where(this.model.id, id)
-        .then((results: any[]) => {
-          if (0 === results.length) {
-            resolve(null);
-          } else {
-            resolve(results[0]);
-          }
-        })
-        .catch(reject);
-    });
+    return this._dbConnection
+      .from(this.model.tableName)
+      .where(this.model.id, id)
+      .first()
+      .then((result: any) => null == result ? null : this._sqlObjectToEntity(result));
   }
   /**
    * Finds a collection of entities by its ids.
@@ -76,13 +68,10 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @returns Entities found.
    */
   public getByIds(ids: number[] | string[]): Promise<TEntity[]> {
-    return new Promise<TEntity[]>((resolve, reject) => {
-      this._dbConnection
-        .from(this.model.tableName)
-        .whereIn(this.model.id, ids)
-        .then(resolve)
-        .catch(reject);
-    });
+    return this._dbConnection
+      .from(this.model.tableName)
+      .whereIn(this.model.id, ids)
+      .then((results: any[]) => results.map((result) => this._sqlObjectToEntity(result)));
   }
 
   /**
@@ -92,14 +81,10 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    */
   public getByIdsOrderedAsc(ids: number[] | string[]): Promise<TEntity[]> {
     const ascOrder = 'ASC';
-    return new Promise<TEntity[]>((resolve, reject) => {
-      this._dbConnection
-        .from(this.model.tableName)
-        .whereIn(this.model.id, ids)
-        .orderBy(this.model.id, ascOrder)
-        .then(resolve)
-        .catch(reject);
-    });
+    return this._dbConnection
+      .from(this.model.tableName)
+      .whereIn(this.model.id, ids)
+      .orderBy(this.model.id, ascOrder);
   }
 
   /**
@@ -201,5 +186,18 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
     return this._dbConnection(this.model.tableName)
       .where(this.model.id, entity[this.model.id])
       .update(this._helper.buildKnexObject(this.model, entity));
+  }
+
+  /**
+   * Parses a SQL object.
+   * @param sqlObject SQL object to parse.
+   * @returns entity parsed.
+   */
+  protected _sqlObjectToEntity(sqlObject: any): TEntity {
+    const entity: { [key: string]: any } = {};
+    for (const column of this.model.columns) {
+      entity[column.entityAlias] = sqlObject[column.sqlName];
+    }
+    return entity as TEntity;
   }
 }
