@@ -70,6 +70,7 @@ export class SqlSecondaryEntityManagerTest implements Test {
       this._itMustGetAnUnexistingElementById();
       this._itMustGetMultipleElementsByIds();
       this._itMustGetMultipleElementsByIdsOrderedAsc();
+      this._itMustGetMultipleElementsByIdsOrderedAscWithMappings();
       this._itMustGetMultipleElementsByIdsWithMappings();
       this._itMustInsertAnEntity();
       this._itMustInsertAnEntityWithAutoIncrementStrategy();
@@ -284,6 +285,31 @@ export class SqlSecondaryEntityManagerTest implements Test {
         const entitiesFoundAsObjects = entitiesFound.map((entity) => ({ ...entity }));
 
         expect(entitiesFoundAsObjects).toEqual([entity1, entity2]);
+
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
+  }
+
+  private _itMustGetMultipleElementsByIdsOrderedAscWithMappings(): void {
+    const itsName = 'mustGetMultipleElementsByIdsOrderedAscWithMappings';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(
+      itsName,
+      async (done) => {
+        await this._beforeAllPromise;
+
+        const model: SqlModel = modelGenerator({ prefix: prefix }, { name: 'sqlName' });
+        await this._dbTestManager.createTable(this._dbConnection, model.tableName, tableGeneratorColumnId, {
+          sqlName: 'string',
+        });
+        const entity = { id: 2, name: 'Just a name' };
+        const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
+        await manager.insert(entity);
+
+        const entitiesFound = await manager.getByIdsOrderedAsc([entity.id]);
+        expect(entitiesFound).toContain(entity);
 
         done();
       },

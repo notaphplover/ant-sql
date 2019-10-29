@@ -6,6 +6,10 @@ import { SecondaryEntityManagerHelper } from './seconday-entity-manager-helper';
 
 export class SqlSecondaryEntityManager<TEntity extends Entity> implements SecondaryEntityManager<TEntity> {
   /**
+   * Columns to select when performing a select query.
+   */
+  protected _columnsToSelect: string[];
+  /**
    * Secondary entity manager helper.
    */
   protected _helper: SecondaryEntityManagerHelper<TEntity>;
@@ -26,6 +30,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @param dbConnection SQL knex connection.
    */
   public constructor(model: SqlModel, dbConnection: Knex) {
+    this._columnsToSelect = this._getColumnsToSelect(model);
     this._dbConnection = dbConnection;
     this._helper = new SecondaryEntityManagerHelper(model, dbConnection);
     this._model = model;
@@ -57,6 +62,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    */
   public getById(id: string | number): Promise<TEntity> {
     return this._dbConnection
+      .select(this._columnsToSelect)
       .from(this.model.tableName)
       .where(this.model.id, id)
       .first()
@@ -69,6 +75,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    */
   public getByIds(ids: number[] | string[]): Promise<TEntity[]> {
     return this._dbConnection
+      .select(this._columnsToSelect)
       .from(this.model.tableName)
       .whereIn(this.model.id, ids)
       .then((results: any[]) => results.map((result) => this._sqlObjectToEntity(result)));
@@ -82,9 +89,11 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
   public getByIdsOrderedAsc(ids: number[] | string[]): Promise<TEntity[]> {
     const ascOrder = 'ASC';
     return this._dbConnection
+      .select(this._columnsToSelect)
       .from(this.model.tableName)
       .whereIn(this.model.id, ids)
-      .orderBy(this.model.id, ascOrder);
+      .orderBy(this.model.id, ascOrder)
+      .then((results: any[]) => results.map((result) => this._sqlObjectToEntity(result)));
   }
 
   /**
@@ -186,6 +195,19 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
     return this._dbConnection(this.model.tableName)
       .where(this.model.id, entity[this.model.id])
       .update(this._helper.buildKnexObject(this.model, entity));
+  }
+
+  /**
+   * Gets the columns to select when performing select queries.
+   * @param model Model to process.
+   * @returns Columns to select.
+   */
+  protected _getColumnsToSelect(model: SqlModel): string[] {
+    const columnsToSelect = new Array<string>();
+    for (const column of model.columns) {
+      columnsToSelect.push(column.sqlName);
+    }
+    return columnsToSelect;
   }
 
   /**
