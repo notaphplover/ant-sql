@@ -2,6 +2,7 @@ import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import { AntSqlManager } from '../../api/ant-sql-manager';
 import { AntSqlModelManager } from '../../api/ant-sql-model-manager';
 import { AntSqlModel } from '../../model/ant-sql-model';
+import { SqlType } from '../../model/sql-type';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
@@ -13,6 +14,7 @@ const modelTestGen = (prefix: string) =>
       {
         entityAlias: 'id',
         sqlName: 'id',
+        type: SqlType.Integer,
       },
     ],
     prefix.replace(/\//g, '_'),

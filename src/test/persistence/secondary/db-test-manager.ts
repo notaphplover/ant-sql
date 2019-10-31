@@ -91,7 +91,7 @@ END`;
    */
   public getSecondaryEntityManagerGenerator<TEntity extends Entity>(
     knex: Knex,
-  ): (model: SqlModel, knex: Knex) => SecondaryEntityManager<TEntity> {
+  ): (model: SqlModel<TEntity>, knex: Knex) => SecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:

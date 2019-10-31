@@ -11,14 +11,14 @@ export class SecondaryEntityManagerHelper<TEntity extends Entity> {
   /**
    * Model to manage.
    */
-  protected _model: SqlModel;
+  protected _model: SqlModel<TEntity>;
 
   /**
    * Creates a new secondary entity manager helper.
    * @param model Model to manage.
    * @param dbConnection Knex DB Connection.
    */
-  public constructor(model: SqlModel, dbConnection: Knex) {
+  public constructor(model: SqlModel<TEntity>, dbConnection: Knex) {
     this._dbConnection = dbConnection;
     this._model = model;
   }
@@ -28,7 +28,7 @@ export class SecondaryEntityManagerHelper<TEntity extends Entity> {
    * @param model Model of the entity to process.
    * @param entity Entity to use in the build.
    */
-  public buildKnexObject(model: SqlModel, entity: TEntity): { [key: string]: any } {
+  public buildKnexObject(model: SqlModel<TEntity>, entity: TEntity): { [key: string]: any } {
     const updateObject: { [key: string]: any } = {};
     for (const columnData of model.columns) {
       const entityValue = entity[columnData.entityAlias];

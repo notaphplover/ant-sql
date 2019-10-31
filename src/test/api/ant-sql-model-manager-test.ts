@@ -4,6 +4,7 @@ import * as Knex from 'knex';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { QueryConfigFactory } from '../../api/config/query-config-factory';
 import { AntSqlModel } from '../../model/ant-sql-model';
+import { SqlType } from '../../model/sql-type';
 import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-model-manager';
 import { SqlSecondaryEntityManager } from '../../persistence/secondary/sql-secondary-entity-manager';
 import { RedisWrapper } from '../persistence/primary/redis-wrapper';
@@ -19,6 +20,7 @@ const modelTestGen = (prefix: string) =>
       {
         entityAlias: 'id',
         sqlName: 'id',
+        type: SqlType.Integer,
       },
     ],
     prefix.replace(/\//g, '_'),

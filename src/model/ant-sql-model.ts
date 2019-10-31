@@ -1,9 +1,9 @@
-import { KeyGenParams } from '@antjs/ant-js';
+import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { AntModel } from '@antjs/ant-js/build/model/ant-model';
 import { SqlColumn } from './sql-column';
 import { SqlModel } from './sql-model';
 
-export class AntSqlModel extends AntModel implements SqlModel {
+export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> implements SqlModel<TEntity> {
   /**
    * Auto generated column.
    */
