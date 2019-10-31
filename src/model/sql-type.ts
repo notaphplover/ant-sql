@@ -1,4 +1,4 @@
-export const enum SqlType {
+export enum SqlType {
   Date,
   Integer,
   String,
