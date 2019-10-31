@@ -20,7 +20,7 @@ export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlMod
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  public generateModelManager(model: SqlModel, config: ApiSqlModelConfig): PrimaryModelManager<TEntity> {
+  public generateModelManager(model: SqlModel<TEntity>, config: ApiSqlModelConfig): PrimaryModelManager<TEntity> {
     return this._generateModelManager(model, config);
   }
 
@@ -31,7 +31,7 @@ export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlMod
    * @returns Secondary model manager generated.
    */
   public generateSecondaryEntityManager(
-    model: SqlModel,
+    model: SqlModel<TEntity>,
     config: ApiSqlModelConfig,
   ): AntJsSecondaryEntityManager<TEntity> {
     return this._generateSecondaryEntityManager(model, config);

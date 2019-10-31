@@ -14,7 +14,7 @@ import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { QueryConfigFactory } from './config/query-config-factory';
 
 export class AntSqlModelManager<TEntity extends Entity>
-  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel, SqlPrimaryModelManager<TEntity>>
+  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel<TEntity>, SqlPrimaryModelManager<TEntity>>
   implements ApiSqlModelManager<TEntity> {
   /**
    * Query config factory.
@@ -80,7 +80,10 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(model: SqlModel, config: ApiSqlModelConfig): SqlPrimaryModelManager<TEntity> {
+  protected _generateModelManager(
+    model: SqlModel<TEntity>,
+    config: ApiSqlModelConfig,
+  ): SqlPrimaryModelManager<TEntity> {
     return new AntSqlPrimaryModelManager<TEntity>(
       model,
       config.redis,
@@ -96,7 +99,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @returns Secondary model manager generated.
    */
   protected _generateSecondaryEntityManager(
-    model: SqlModel,
+    model: SqlModel<TEntity>,
     config: ApiSqlModelConfig,
   ): SecondaryEntityManager<TEntity> {
     const knex = config.knex;
