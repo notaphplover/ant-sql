@@ -204,6 +204,7 @@ export class AntSqlPrimaryModelManagerTest implements Test {
     it(
       itsName,
       async (done) => {
+        await this._beforeAllPromise;
         type EntityWithDateField = Entity & { id: number; field: Date; field2: Date };
         const model = new AntSqlModel<EntityWithDateField>(
           'id',
