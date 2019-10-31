@@ -1,6 +1,6 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "1.0.0-beta.11",
+  "version": "1.0.0-beta.12",
   "description": "SQL extension for AntJS",
   "main": "build/ant.js",
   "scripts": {
@@ -32,7 +32,7 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^1.0.0-beta.13",
+    "@antjs/ant-js": "^1.0.0-beta.14",
     "knex": "^0.19.5"
   },
   "devDependencies": {

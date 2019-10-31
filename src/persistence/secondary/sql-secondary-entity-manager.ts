@@ -17,7 +17,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
   /**
    * Model to manage.
    */
-  protected _model: SqlModel;
+  protected _model: SqlModel<TEntity>;
 
   /**
    * Query Builder.
@@ -29,7 +29,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @param model Model to manage.
    * @param dbConnection SQL knex connection.
    */
-  public constructor(model: SqlModel, dbConnection: Knex) {
+  public constructor(model: SqlModel<TEntity>, dbConnection: Knex) {
     this._columnsToSelect = this._getColumnsToSelect(model);
     this._dbConnection = dbConnection;
     this._helper = new SecondaryEntityManagerHelper(model, dbConnection);
@@ -39,7 +39,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
   /**
    * Model to manage.
    */
-  public get model(): SqlModel {
+  public get model(): SqlModel<TEntity> {
     return this._model;
   }
 
@@ -202,7 +202,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @param model Model to process.
    * @returns Columns to select.
    */
-  protected _getColumnsToSelect(model: SqlModel): string[] {
+  protected _getColumnsToSelect(model: SqlModel<TEntity>): string[] {
     const columnsToSelect = new Array<string>();
     for (const column of model.columns) {
       columnsToSelect.push(column.sqlName);

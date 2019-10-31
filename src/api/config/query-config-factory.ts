@@ -17,14 +17,14 @@ export class QueryConfigFactory<TEntity extends Entity> {
   /**
    * Model to manage.
    */
-  protected _model: SqlModel;
+  protected _model: SqlModel<TEntity>;
 
   /**
    * Creates a query config factory.
    * @param knex Knex connection.
    * @param model Queries model.
    */
-  public constructor(knex: Knex, model: SqlModel) {
+  public constructor(knex: Knex, model: SqlModel<TEntity>) {
     this._knex = knex;
     this._model = model;
   }

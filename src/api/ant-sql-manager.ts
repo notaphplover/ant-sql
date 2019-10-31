@@ -1,12 +1,13 @@
 import { Entity } from '@antjs/ant-js';
 import { AntManager } from '@antjs/ant-js/build/api/ant-manager';
 import { AntSqlModelManager } from '../api/ant-sql-model-manager';
-import { SqlModel } from '../model/sql-model';
+import { AntSqlModel } from '../model/ant-sql-model';
 import { ApiSqlGeneralManager } from './api-sql-general-manager';
+import { ApiSqlModel } from './api-sql-model';
 import { ApiSqlModelManager } from './api-sql-model-manager';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
 
-export class AntSqlManager extends AntManager<ApiSqlModelConfig, SqlModel, ApiSqlModelManager<Entity>>
+export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, ApiSqlModelManager<Entity>>
   implements ApiSqlGeneralManager {
   /**
    * Creates a new AntSqlManager.
@@ -18,7 +19,7 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, SqlModel, ApiSq
   /**
    * @inheritdoc
    */
-  public get<TEntity extends Entity>(model: SqlModel): ApiSqlModelManager<TEntity> {
+  public get<TEntity extends Entity>(model: ApiSqlModel): ApiSqlModelManager<TEntity> {
     return super.get(model) as ApiSqlModelManager<TEntity>;
   }
 
@@ -27,7 +28,7 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, SqlModel, ApiSq
    * @param model Model to manage.
    * @returns model manager created.
    */
-  protected _createModelManager<TEntity extends Entity>(model: SqlModel): ApiSqlModelManager<TEntity> {
-    return new AntSqlModelManager<TEntity>(model);
+  protected _createModelManager<TEntity extends Entity>(model: ApiSqlModel): ApiSqlModelManager<TEntity> {
+    return new AntSqlModelManager<TEntity>(new AntSqlModel(model.id, model.keyGen, model.columns, model.tableName));
   }
 }
