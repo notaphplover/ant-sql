@@ -20,15 +20,17 @@ export class DBTestManager {
     dbConnection: Knex,
     name: string,
     primaryKeyColumn: { name: string; type: 'number' | 'string' | 'increments' },
-    otherColumns: { [key: string]: 'number' | 'string' } = {},
+    otherColumns: { [key: string]: 'datetime' | 'number' | 'string' } = {},
   ): Promise<string> {
     const tableExists = await dbConnection.schema.hasTable(name);
     if (tableExists) {
       throw new Error(`Table ${name} already exists.`);
     }
     await dbConnection.schema.createTable(name, (table) => {
-      const addColumn = (name: string, type: 'number' | 'string' | 'increments') => {
-        if ('number' === type) {
+      const addColumn = (name: string, type: 'datetime' | 'number' | 'string' | 'increments') => {
+        if ('datetime' === type) {
+          table.dateTime(name);
+        } else if ('number' === type) {
           table.integer(name);
         } else if ('string' === type) {
           table.string(name);

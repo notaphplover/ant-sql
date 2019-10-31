@@ -36,7 +36,6 @@ export class AllTest implements Test {
     const dBConnectionWrapper = new DBConnectionWrapper();
 
     const fakeConnection = dBConnectionWrapper.fakeConnection;
-    new AntSqlPrimaryModelManagerTest(fakeConnection, 'fake').performTests();
 
     for (const config of dBConnectionWrapper.config) {
       const connection = config.connection;
@@ -47,6 +46,13 @@ export class AllTest implements Test {
       new AntSqlModelManagerTest(connection, connection.client.driverName).performTests();
 
       new SqlSecondaryEntityManagerTest(
+        deleteAllTablesPromise,
+        connection,
+        connection.client.driverName,
+        this._testManager.getSecondaryEntityManagerGenerator(config.connection),
+      ).performTests();
+
+      new AntSqlPrimaryModelManagerTest(
         deleteAllTablesPromise,
         connection,
         connection.client.driverName,

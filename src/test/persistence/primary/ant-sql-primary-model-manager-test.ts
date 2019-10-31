@@ -11,6 +11,7 @@ import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delet
 import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
+import { DBTestManager } from '../secondary/db-test-manager';
 import { RedisWrapper } from './redis-wrapper';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
@@ -35,9 +36,17 @@ type EntityTest = { id: number } & Entity;
 
 export class AntSqlPrimaryModelManagerTest implements Test {
   /**
+   * Before all task performed promise.
+   */
+  protected _beforeAllPromise: Promise<any>;
+  /**
    * Database connection wrapper.
    */
   protected _dbConnection: Knex;
+  /**
+   * Database test manager.
+   */
+  protected _dbTestManager: DBTestManager;
   /**
    * Declare name for the test
    */
@@ -46,11 +55,29 @@ export class AntSqlPrimaryModelManagerTest implements Test {
    * Redis Wrapper
    */
   protected _redis: RedisWrapper;
+  /**
+   * Secondary entity manager generator.
+   */
+  protected _secondaryEntityManagerGenerator: <TEntity extends Entity>(
+    model: SqlModel<TEntity>,
+    knex: Knex,
+  ) => SecondaryEntityManager<TEntity>;
 
-  public constructor(dbConnection: Knex, dbAlias: string) {
+  public constructor(
+    beforeAllPromise: Promise<any>,
+    dbConnection: Knex,
+    dbAlias: string,
+    secondaryEntityManagerGenerator: <TEntity extends Entity>(
+      model: SqlModel<TEntity>,
+      knex: Knex,
+    ) => SecondaryEntityManager<TEntity>,
+  ) {
+    this._beforeAllPromise = beforeAllPromise;
     this._dbConnection = dbConnection;
+    this._dbTestManager = new DBTestManager();
     this._declareName = AntSqlPrimaryModelManagerTest.name + '/' + dbAlias;
     this._redis = new RedisWrapper();
+    this._secondaryEntityManagerGenerator = secondaryEntityManagerGenerator;
   }
 
   public performTests(): void {
@@ -58,6 +85,7 @@ export class AntSqlPrimaryModelManagerTest implements Test {
       this._itMustBeInitializable();
       this._itMustCallSecondaryEntityManagerMethods();
       this._itMustNotCallSecondaryLayerIfNoPersist();
+      this._itMustParseAnEntityWithDateColumnsOnCacheHit();
     });
   }
 
@@ -164,6 +192,60 @@ export class AntSqlPrimaryModelManagerTest implements Test {
           expect(secondaryEntityManager[methodToTest]).not.toHaveBeenCalled();
         }
 
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
+  }
+
+  private _itMustParseAnEntityWithDateColumnsOnCacheHit(): void {
+    const itsName = 'mustParseAnEntityWithDateColumnsOnCacheHit';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(
+      itsName,
+      async (done) => {
+        type EntityWithDateField = Entity & { id: number; field: Date; field2: Date };
+        const model = new AntSqlModel<EntityWithDateField>(
+          'id',
+          { prefix: prefix },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: 'field',
+              sqlName: 'field',
+              type: SqlType.Date,
+            },
+            {
+              entityAlias: 'field2',
+              sqlName: 'field2',
+              type: SqlType.Date,
+            },
+          ],
+          tableNameGenerator(prefix),
+        );
+        await this._dbTestManager.createTable(
+          this._dbConnection,
+          model.tableName,
+          { name: 'id', type: 'number' },
+          { field: 'datetime', field2: 'datetime' },
+        );
+        const secondaryEntityManager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
+        const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
+
+        const entity: EntityWithDateField = {
+          field: new Date(),
+          field2: new Date(),
+          id: 0,
+        };
+
+        await sqlModelManager.insert(entity);
+        const entityFound = await sqlModelManager.get(entity.id);
+
+        expect(entityFound).toEqual(entity);
         done();
       },
       MAX_SAFE_TIMEOUT,
