@@ -83,7 +83,7 @@ END`;
       default:
         throw new Error(`Driver "${knex.client.driverName}" not supported`);
     }
-    return knex.raw<any>(query) as unknown as Promise<any>;
+    return (knex.raw<any>(query) as unknown) as Promise<any>;
   }
 
   /**
@@ -116,32 +116,32 @@ END`;
     let knexQuery: Promise<any[]>;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('table_name')
           .where('TABLE_TYPE', 'BASE TABLE')
-          .andWhere('table_catalog', knex.client.database()) as unknown as Promise<any>;
+          .andWhere('table_catalog', knex.client.database()) as unknown) as Promise<any>;
         break;
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('TABLE_NAME as table_name')
-          .where('table_schema', knex.client.database()) as unknown as Promise<any>;
+          .where('table_schema', knex.client.database()) as unknown) as Promise<any>;
         break;
       case KnexDriver.ORACLE:
       case KnexDriver.ORACLEDB:
-        knexQuery = knex('user_tables').select('table_name') as unknown as Promise<any>;
+        knexQuery = (knex('user_tables').select('table_name') as unknown) as Promise<any>;
         break;
       case KnexDriver.PG:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('table_name')
           .where('table_schema', knex.raw('current_schema()'))
-          .andWhere('table_catalog', knex.client.database()) as unknown as Promise<any>;
+          .andWhere('table_catalog', knex.client.database()) as unknown) as Promise<any>;
         break;
       case KnexDriver.SQLITE3:
-        knexQuery = knex('sqlite_master')
+        knexQuery = (knex('sqlite_master')
           .select('name as table_name')
           .where('type', 'table')
-          .andWhereNot('table_name', 'like', 'sqlite_%') as unknown as Promise<any>;
+          .andWhereNot('table_name', 'like', 'sqlite_%') as unknown) as Promise<any>;
         break;
       default:
         throw new Error(`Driver "${knex.client.driverName}" not supported`);
@@ -161,32 +161,32 @@ END`;
     const limitResultsSize = 1;
     switch (knex.client.driverName) {
       case KnexDriver.MSSQL:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('table_name')
           .where('table_schema', 'public')
-          .limit(limitResultsSize) as unknown as Promise<any>;
+          .limit(limitResultsSize) as unknown) as Promise<any>;
         break;
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('TABLE_NAME as table_name')
-          .limit(limitResultsSize) as unknown as Promise<any>;
+          .limit(limitResultsSize) as unknown) as Promise<any>;
         break;
       case KnexDriver.ORACLE:
       case KnexDriver.ORACLEDB:
-        knexQuery = knex('user_tables')
+        knexQuery = (knex('user_tables')
           .select('table_name')
-          .limit(limitResultsSize) as unknown as Promise<any>;
+          .limit(limitResultsSize) as unknown) as Promise<any>;
         break;
       case KnexDriver.PG:
-        knexQuery = knex('information_schema.tables')
+        knexQuery = (knex('information_schema.tables')
           .select('table_name')
-          .limit(limitResultsSize) as unknown as Promise<any>;
+          .limit(limitResultsSize) as unknown) as Promise<any>;
         break;
       case KnexDriver.SQLITE3:
-        knexQuery = knex('sqlite_master')
+        knexQuery = (knex('sqlite_master')
           .select('name as table_name')
-          .limit(limitResultsSize) as unknown as Promise<any>;
+          .limit(limitResultsSize) as unknown) as Promise<any>;
         break;
       default:
         throw new Error(`Driver "${knex.client.driverName}" not supported`);
