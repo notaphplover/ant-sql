@@ -104,7 +104,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @returns Promise of entity inserted.
    */
   public insert(entity: TEntity): Promise<any> {
-    let insertionQueryBuilder: Knex.QueryBuilder = this._dbConnection
+    const insertionQueryBuilder: Knex.QueryBuilder = this._dbConnection
       .insert([this._helper.buildKnexObject(this.model, entity)])
       .into(this.model.tableName);
 
