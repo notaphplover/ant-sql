@@ -30,6 +30,8 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
    * @param dbConnection SQL knex connection.
    */
   public constructor(model: SqlModel<TEntity>, dbConnection: Knex) {
+    this._checkValidModel(model);
+
     this._columnsToSelect = this._getColumnsToSelect(model);
     this._dbConnection = dbConnection;
     this._helper = new SecondaryEntityManagerHelper(model, dbConnection);
@@ -224,5 +226,18 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
       entity[column.entityAlias] = sqlObject[column.sqlName];
     }
     return entity as TEntity;
+  }
+
+  /**
+   * Checks if a model id valid and throws an exception in case it's not valid.
+   */
+  private _checkValidModel(model: SqlModel<TEntity>): void {
+    if (undefined === model.columnByAlias(model.id)) {
+      throw new Error(
+        `Invalid model. A model must have a column matching with the id field.
+
+The model defines an id field "${model.id}, but the model has no column with that alias."`,
+      );
+    }
   }
 }
