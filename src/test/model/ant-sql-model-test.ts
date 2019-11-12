@@ -246,8 +246,8 @@ export class AntSqlModelTest implements Test {
           tableName,
         );
         const primary = {
-          id: 0,
           date: '2019-01-01',
+          id: 0,
         };
         const [entity] = model.mPrimaryToEntity([primary]);
         expect(entity.id).toBe(primary.id);
@@ -282,8 +282,8 @@ export class AntSqlModelTest implements Test {
           tableName,
         );
         const primary = {
-          id: 0,
           date: '2019-01-01',
+          id: 0,
         };
         const entity = model.primaryToEntity(primary);
         expect(entity.id).toBe(primary.id);
