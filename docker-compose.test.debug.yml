@@ -4,6 +4,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-CTP3.0-ubuntu
     environment:
       ACCEPT_EULA: ${MS_ACCEPT_EULA}
+      MSSQL_PID: ${MS_PID}
       SA_PASSWORD: "${MS_SA_PASSWORD}"
     networks:
       - ant
