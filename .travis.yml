@@ -3,10 +3,8 @@ before_script:
   # Why the fuck would mysql be up by default?!
   # See https://github.com/travis-ci/travis-ci/issues/7008#issuecomment-269126128
   - sudo /etc/init.d/mysql stop
-language: node_js
-node_js:
-  - "node"
+language: minimal
 services:
   - docker
-script: npm run ci-docker
+script: sh scripts/run-ci.sh
 sudo: required

@@ -9,7 +9,6 @@
     "build-and-test": "npm run build && npm run test-only",
     "build-and-test-debug": "npm run build && npm run test-debug-only",
     "ci": "npm run build && npm run linter && npm run format-check && npm run test-only && npm run report-coverage",
-    "ci-docker": "sh scripts/prepare-env.sh && docker-compose -f docker-compose.test.ci.yml up --abort-on-container-exit --exit-code-from ant_lib",
     "clear-js": "node ./scripts/clear-compiled.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "format-check": "prettier --check \"src/**/*.ts\"",
