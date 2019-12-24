@@ -16,7 +16,7 @@ export class DbServerAwaiter {
    * @param connection Connection to the db server to await
    */
   public awaitServer(connection: Knex): Promise<any> {
-    const innerAwait = (connection: Knex, resolve: (value?: unknown) => void) => {
+    const innerAwait = (connection: Knex, resolve: (value?: unknown) => void): void => {
       this._dbTestManager
         .ping(connection)
         .then(resolve)

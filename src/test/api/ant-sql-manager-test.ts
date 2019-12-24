@@ -1,8 +1,8 @@
-import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import { AntSqlManager } from '../../api/ant-sql-manager';
 import { AntSqlModelManager } from '../../api/ant-sql-model-manager';
 import { ApiSqlModel } from '../../api/api-sql-model';
 import { SqlType } from '../../model/sql-type';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
@@ -16,7 +16,7 @@ const modelTestGen = (prefix: string): ApiSqlModel => {
       },
     ],
     id: 'id',
-    keyGen: { prefix: prefix },
+    keyGen: { prefix },
     tableName: prefix.replace(/\//g, '_'),
   };
 };

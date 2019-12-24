@@ -1,11 +1,11 @@
-import { Entity } from '@antjs/ant-js';
 import { AntManager } from '@antjs/ant-js/build/api/ant-manager';
-import { AntSqlModelManager } from '../api/ant-sql-model-manager';
 import { AntSqlModel } from '../model/ant-sql-model';
+import { AntSqlModelManager } from '../api/ant-sql-model-manager';
 import { ApiSqlGeneralManager } from './api-sql-general-manager';
 import { ApiSqlModel } from './api-sql-model';
-import { ApiSqlModelManager } from './api-sql-model-manager';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
+import { ApiSqlModelManager } from './api-sql-model-manager';
+import { Entity } from '@antjs/ant-js';
 
 export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, ApiSqlModelManager<Entity>>
   implements ApiSqlGeneralManager {
