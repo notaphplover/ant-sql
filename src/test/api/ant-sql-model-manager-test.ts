@@ -1,21 +1,22 @@
-import { AntPrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/ant-primary-model-manager';
-import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import * as Knex from 'knex';
-import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
-import { QueryConfigFactory } from '../../api/config/query-config-factory';
+import { AntPrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/ant-primary-model-manager';
 import { AntSqlModel } from '../../model/ant-sql-model';
-import { SqlType } from '../../model/sql-type';
+import { AntSqlModelManagerForTest } from './ant-sql-model-manager-for-test';
+import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
+import { Entity } from '@antjs/ant-js';
+import { QueryConfigFactory } from '../../api/config/query-config-factory';
+import { RedisWrapper } from '../persistence/primary/redis-wrapper';
 import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-model-manager';
 import { SqlSecondaryEntityManager } from '../../persistence/secondary/sql-secondary-entity-manager';
-import { RedisWrapper } from '../persistence/primary/redis-wrapper';
-import { AntSqlModelManagerForTest } from './ant-sql-model-manager-for-test';
+import { SqlType } from '../../model/sql-type';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
-const modelTestGen = (prefix: string) =>
+const modelTestGen = (prefix: string): AntSqlModel<Entity> =>
   new AntSqlModel(
     'id',
-    { prefix: prefix },
+    { prefix },
     [
       {
         entityAlias: 'id',

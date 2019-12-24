@@ -1,8 +1,8 @@
-import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
-import { SqlModel } from '../../model/sql-model';
+import { Entity } from '@antjs/ant-js';
 import { SecondaryEntityManager } from './secondary-entity-manager';
 import { SecondaryEntityManagerHelper } from './seconday-entity-manager-helper';
+import { SqlModel } from '../../model/sql-model';
 
 export class SqlSecondaryEntityManager<TEntity extends Entity> implements SecondaryEntityManager<TEntity> {
   /**

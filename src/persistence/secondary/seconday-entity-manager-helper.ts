@@ -1,5 +1,5 @@
-import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
+import { Entity } from '@antjs/ant-js';
 import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';
 
