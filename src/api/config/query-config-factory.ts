@@ -38,7 +38,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'all/';
-    options = this._processCfgGenOptions(options, () => this._model.keyGen.prefix + queryAlias, queryAlias);
+    const keyGen = (): string => this._model.keyGen.prefix + queryAlias;
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
 
     return {
       entityKeyGen: options.entityKeyGen,
@@ -60,17 +61,14 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'f_' + column.entityAlias + '/';
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
-      queryAlias,
-    );
+    const keyGen = (params: any): string => this._model.keyGen.prefix + queryAlias + params[column.entityAlias];
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       mQuery: this._buildIdsByFieldMQuery<TQueryResult>(column),
       query: this._buildIdsByFieldQuery<TQueryResult>(column),
-      queryKeyGen: options.entityKeyGen,
+      queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
   }
@@ -87,17 +85,19 @@ export class QueryConfigFactory<TEntity extends Entity> {
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'mf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
+    const keyGen = (params: any): string =>
+      columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
     options = this._processCfgGenOptions(
       options,
-      (params: any) =>
-        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
       queryAlias,
+      keyGen,
+      keyGen,
     );
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       query: this._buildIdsByFieldsQuery<TQueryResult>(columns),
-      queryKeyGen: options.entityKeyGen,
+      queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
   }
@@ -113,11 +113,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'uf_' + column.entityAlias + '/';
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
-      queryAlias,
-    );
+    const keyGen = (params: any): string => this._model.keyGen.prefix + queryAlias + params[column.entityAlias];
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: false,
@@ -140,12 +137,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'umf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) =>
-        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
-      queryAlias,
-    );
+    const keyGen = (params: any): string =>
+    columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
 
     return {
       entityKeyGen: options.entityKeyGen,
@@ -395,8 +389,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
    */
   private _processCfgGenOptions(
     options: ApiCfgGenOptions<TEntity>,
-    defaultQueryKeyGen: (params: any) => string,
     queryName: string,
+    defaultEntityKeyGen: (params: any) => string,
+    defaultQueryKeyGen: (params: any) => string,
   ): ApiCfgGenOptions<TEntity> {
     if (!options) {
       options = {};
@@ -405,7 +400,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
       options.queryKeyGen = defaultQueryKeyGen;
     }
     if (!options.entityKeyGen) {
-      options.entityKeyGen = options.queryKeyGen;
+      options.entityKeyGen = defaultEntityKeyGen;
     }
     if (!options.reverseHashKey) {
       options.reverseHashKey = this._model.keyGen.prefix + queryName + '/reverse';
