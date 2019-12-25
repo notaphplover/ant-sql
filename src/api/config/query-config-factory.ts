@@ -8,6 +8,7 @@ import {
 import { ApiCfgGenOptions } from './api-config-generation-options';
 import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';
+import { SqlType } from '../../model/sql-type';
 
 export class QueryConfigFactory<TEntity extends Entity> {
   /**
@@ -87,16 +88,48 @@ export class QueryConfigFactory<TEntity extends Entity> {
     const queryAlias = 'mf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
     const keyGen = (params: any): string =>
       columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
-    options = this._processCfgGenOptions(
-      options,
-      queryAlias,
-      keyGen,
-      keyGen,
-    );
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       query: this._buildIdsByFieldsQuery<TQueryResult>(columns),
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities with a field value in a certain range.
+   * @param column Column used as search discriminator.
+   * @param rangeOptions Range options
+   * @param options Query options
+   * @returns Created query.
+   */
+  public byNumericRange<TQueryResult extends MultipleQueryResult>(
+    column: SqlColumn,
+    rangeOptions: {
+      blockSize: number;
+      minValueField: string;
+    },
+    options?: ApiCfgGenOptions<TEntity>,
+  ): ApiQueryConfig<TEntity, TQueryResult> {
+    if (column.type !== SqlType.Integer) {
+      throw new Error('A numeric column is expected!');
+    }
+    const queryAlias = 'r_' + column.entityAlias + '/';
+    const entityKeyGen = (params: any): string =>
+      this._model.keyGen.prefix + queryAlias + Math.floor(params[column.entityAlias] / rangeOptions.blockSize);
+    const queryKeyGen = (params: any): string =>
+      this._model.keyGen.prefix + queryAlias + params[rangeOptions.minValueField] / rangeOptions.blockSize;
+    options = this._processCfgGenOptions(options, queryAlias, entityKeyGen, queryKeyGen);
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: true,
+      query: this._buildIdsByNumericRangeQuery<TQueryResult>(
+        rangeOptions.blockSize,
+        column,
+        rangeOptions.minValueField,
+      ),
       queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
@@ -138,7 +171,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
     const separator = '/';
     const queryAlias = 'umf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
     const keyGen = (params: any): string =>
-    columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
+      columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
     options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
 
     return {
@@ -267,6 +300,28 @@ export class QueryConfigFactory<TEntity extends Entity> {
   }
 
   /**
+   * Creates a query of entities by a range of values.
+   * @param blockSize Block size of the ranges.
+   * @param column Column used as search discriminator.
+   * @param minValueField Minimun value field alias.
+   * @returns Query generated.
+   */
+  private _buildIdsByNumericRangeQuery<TQueryResult extends MultipleQueryResult>(
+    blockSize: number,
+    column: SqlColumn,
+    minValueField: string,
+  ): TQuery<TQueryResult> {
+    return (params: any): Promise<TQueryResult> => {
+      if (!params || null == params[minValueField]) {
+        throw new Error('Expected params!');
+      }
+      return this._createEntitiesByRangeQuery(blockSize, column, minValueField, params).then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+      );
+    };
+  }
+
+  /**
    * Creates an ids by unique field query.
    * @param column AntSql column.
    * @returns query built.
@@ -378,6 +433,25 @@ export class QueryConfigFactory<TEntity extends Entity> {
       (previous, next) => previous.andWhere(next.sqlName, params[next.entityAlias]),
       this._createAllEntitiesIdsQuery(),
     );
+  }
+
+  /**
+   * Creates a query of entities by a range of values.
+   * @param blockSize Block size of the ranges.
+   * @param column Column used as search discriminator.
+   * @param minValueField Minimun value field alias.
+   * @param params Search parameters
+   * @returns Query generated.
+   */
+  private _createEntitiesByRangeQuery(
+    blockSize: number,
+    column: SqlColumn,
+    minValueField: string,
+    params: any,
+  ): Knex.QueryBuilder {
+    return this._createAllEntitiesIdsQuery()
+      .andWhere(column.sqlName, '>=', params[minValueField])
+      .andWhere(column.sqlName, '<', params[minValueField] + blockSize);
   }
 
   /**
