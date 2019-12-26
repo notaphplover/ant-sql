@@ -1,6 +1,7 @@
 import * as Knex from 'knex';
 import { Entity } from '@antjs/ant-js';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
+import { MSSqlSecondaryEntityManager } from '../../../persistence/secondary/mssql-secondary-entity-manager';
 import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
@@ -95,6 +96,8 @@ END`;
     knex: Knex,
   ): (model: SqlModel<TEntity>, knex: Knex) => SecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
+      case KnexDriver.MSSQL:
+        return (model, knex): SecondaryEntityManager<TEntity> => new MSSqlSecondaryEntityManager(model, knex);
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
         return (model, knex): SecondaryEntityManager<TEntity> => new MySqlSecondaryEntityManager(model, knex);
