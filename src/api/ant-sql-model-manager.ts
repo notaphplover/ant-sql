@@ -4,6 +4,7 @@ import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { ApiSqlModelManager } from './api-sql-model-manager';
 import { Entity } from '@antjs/ant-js';
 import { KnexDriver } from '../persistence/secondary/knex-driver';
+import { MSSqlSecondaryEntityManager } from '../persistence/secondary/mssql-secondary-entity-manager';
 import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
 import { QueryConfigFactory } from './config/query-config-factory';
 import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
@@ -105,6 +106,8 @@ This is probably caused by the absence of a config instance. Ensure that config 
     const knex = config.knex;
 
     switch (knex.client.driverName) {
+      case KnexDriver.MSSQL:
+        return new MSSqlSecondaryEntityManager(model, knex);
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
         return new MySqlSecondaryEntityManager(model, knex);

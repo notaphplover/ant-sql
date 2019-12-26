@@ -6,7 +6,7 @@ import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';
 import { SqlType } from '../../model/sql-type';
 
-const tableNameGenerator = (baseAlias: string): string =>
+export const tableNameGenerator = (baseAlias: string): string =>
   't_' +
   crypto
     .createHash('md5')

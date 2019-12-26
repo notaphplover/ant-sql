@@ -414,7 +414,9 @@ export class SqlSecondaryEntityManagerTest implements Test {
         await this._beforeAllPromise;
 
         const model = namedModelGenerator({ prefix });
-        const entity: NamedEntityTest = { id: 0, name: 'name' };
+        const entity1: NamedEntityTest = { id: 0, name: 'name' };
+        const entity2: NamedEntityTest = { id: 1, name: 'name' };
+
         await this._dbTestManager.createTable(
           this._dbConnection,
           model.tableName,
@@ -425,9 +427,13 @@ export class SqlSecondaryEntityManagerTest implements Test {
           model,
           this._dbConnection,
         );
-        await secondaryEntityManager.mInsert([entity]);
-        const insertedEntity = await secondaryEntityManager.getById(entity.id);
-        expect({ ...insertedEntity }).toEqual(entity);
+        await secondaryEntityManager.mInsert([entity1, entity2]);
+
+        const insertedEntity1 = await secondaryEntityManager.getById(entity1.id);
+        const insertedEntity2 = await secondaryEntityManager.getById(entity2.id);
+
+        expect(insertedEntity1).toEqual(entity1);
+        expect(insertedEntity2).toEqual(entity2);
 
         done();
       },
@@ -568,22 +574,29 @@ export class SqlSecondaryEntityManagerTest implements Test {
         await this._beforeAllPromise;
 
         const model = namedModelGenerator({ prefix });
-        const entity: NamedEntityTest = { id: 0, name: 'name' };
-        const entityAfter: NamedEntityTest = { id: 0, name: 'nameAfter' };
+        const entity1: NamedEntityTest = { id: 0, name: 'name' };
+        const entity1After: NamedEntityTest = { id: 0, name: 'nameAfter' };
+        const entity2: NamedEntityTest = { id: 1, name: 'name' };
+        const entity2After: NamedEntityTest = { id: 1, name: 'nameAfter' };
         await this._dbTestManager.createTable(
           this._dbConnection,
           model.tableName,
           tableGeneratorColumnId,
           tableGeneratorOtherColumns,
         );
-        await this._dbTestManager.insert(this._dbConnection, model.tableName, entity);
+        await this._dbTestManager.insert(this._dbConnection, model.tableName, entity1);
+        await this._dbTestManager.insert(this._dbConnection, model.tableName, entity2);
         const secondaryEntityManager = this._secondaryEntityManagerGenerator<NamedEntityTest>(
           model,
           this._dbConnection,
         );
-        await secondaryEntityManager.mUpdate([entityAfter]);
-        const updatedEntity = await secondaryEntityManager.getById(entity.id);
-        expect({ ...updatedEntity }).toEqual(entityAfter);
+        await secondaryEntityManager.mUpdate([entity1After, entity2After]);
+
+        const updatedEntity1 = await secondaryEntityManager.getById(entity1.id);
+        const updatedEntity2 = await secondaryEntityManager.getById(entity2.id);
+
+        expect(updatedEntity1).toEqual(entity1After);
+        expect(updatedEntity2).toEqual(entity2After);
 
         done();
       },
