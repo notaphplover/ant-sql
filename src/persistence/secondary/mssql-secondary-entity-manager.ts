@@ -2,7 +2,6 @@ import { Entity } from '@antjs/ant-js';
 import { SqlSecondaryEntityManager } from './sql-secondary-entity-manager';
 
 export class MSSqlSecondaryEntityManager<TEntity extends Entity> extends SqlSecondaryEntityManager<TEntity> {
-
   /**
    * @inheritdoc
    */
