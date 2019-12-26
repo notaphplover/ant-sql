@@ -414,7 +414,9 @@ export class SqlSecondaryEntityManagerTest implements Test {
         await this._beforeAllPromise;
 
         const model = namedModelGenerator({ prefix });
-        const entity: NamedEntityTest = { id: 0, name: 'name' };
+        const entity1: NamedEntityTest = { id: 0, name: 'name' };
+        const entity2: NamedEntityTest = { id: 1, name: 'name' };
+
         await this._dbTestManager.createTable(
           this._dbConnection,
           model.tableName,
@@ -425,9 +427,13 @@ export class SqlSecondaryEntityManagerTest implements Test {
           model,
           this._dbConnection,
         );
-        await secondaryEntityManager.mInsert([entity]);
-        const insertedEntity = await secondaryEntityManager.getById(entity.id);
-        expect({ ...insertedEntity }).toEqual(entity);
+        await secondaryEntityManager.mInsert([entity1, entity2]);
+
+        const insertedEntity1 = await secondaryEntityManager.getById(entity1.id);
+        const insertedEntity2 = await secondaryEntityManager.getById(entity2.id);
+
+        expect(insertedEntity1).toEqual(entity1);
+        expect(insertedEntity2).toEqual(entity2);
 
         done();
       },
