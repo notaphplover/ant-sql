@@ -29,7 +29,7 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^1.0.0",
+    "@antjs/ant-js": "^1.0.1",
     "knex": "^0.20.4"
   },
   "devDependencies": {
@@ -37,8 +37,8 @@
     "@types/ioredis": "^4.14.3",
     "@types/jasmine": "^3.5.0",
     "@types/node": "^12.12.21",
-    "@typescript-eslint/eslint-plugin": "^2.13.0",
-    "@typescript-eslint/parser": "^2.13.0",
+    "@typescript-eslint/eslint-plugin": "^2.14.0",
+    "@typescript-eslint/parser": "^2.14.0",
     "coveralls": "^3.0.9",
     "eslint": "^6.8.0",
     "ioredis": "^4.14.1",
