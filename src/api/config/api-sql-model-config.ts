@@ -5,5 +5,5 @@ export interface ApiSqlModelConfig extends ApiModelConfig {
   /**
    * Knex instance.
    */
-  knex: Knex;
+  readonly knex: Knex;
 }

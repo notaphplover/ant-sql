@@ -11,5 +11,5 @@ export interface ApiSqlModelManager<TEntity extends Entity>
    * Gets the query config factory.
    * @returns query config factory.
    */
-  cfgGen: QueryConfigFactory<TEntity>;
+  readonly cfgGen: QueryConfigFactory<TEntity>;
 }

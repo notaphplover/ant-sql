@@ -7,9 +7,9 @@ export interface BaseSqlModel extends BaseModel {
    * The key of the map is the alias of the column in the entities managed.
    * The value of the map is the column info.
    */
-  columns: Iterable<SqlColumn>;
+  readonly columns: Iterable<SqlColumn>;
   /**
    * SQL table name.
    */
-  tableName: string;
+  readonly tableName: string;
 }
