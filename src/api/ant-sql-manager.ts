@@ -9,7 +9,6 @@ import { Entity } from '@antjs/ant-js';
 
 export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, ApiSqlModelManager<Entity>>
   implements ApiSqlGeneralManager {
-
   /**
    * @inheritdoc
    */
