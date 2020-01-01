@@ -19,9 +19,10 @@ export class MSSqlSecondaryEntityManager<TEntity extends Entity> extends SqlSeco
     return this._dbConnection.transaction(async (transaction) => {
       try {
         for (const entity of entities) {
+          const secondary = this.model.entityToSecondary(entity);
           await this._dbConnection(this.model.tableName)
             .where(this.model.id, entity[this.model.id])
-            .update(this._helper.buildKnexObject(this.model, entity))
+            .update(secondary)
             .transacting(transaction);
         }
         await transaction.commit();

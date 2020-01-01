@@ -1,5 +1,6 @@
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { AntModel } from '@antjs/ant-js/build/model/ant-model';
+import { AntSqlReference } from './ref/ant-sql-reference';
 import { ApiSqlColumn } from '../api/api-sql-column';
 import { SqlColumn } from './sql-column';
 import { SqlModel } from './sql-model';
@@ -25,12 +26,15 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
    */
   protected _columnsByType: Map<SqlType, SqlColumn[]>;
   /**
+   * Referenced columns collection.
+   */
+  protected _referenceColumns: SqlColumn[];
+  /**
    * Map of table colunms, including the id.
    * The key of the map is the alias of the column in the SQL table.
    * The value of the map is the column info.
    */
   protected _sqlColumns: Map<string, SqlColumn>;
-
   /**
    * SQL table name.
    */
@@ -96,6 +100,73 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
   }
 
   /**
+   * Transforms an entity into a primary
+   * @param entity Entity to process
+   * @returns Primary object generated.
+   */
+  public entityToPrimary(entity: TEntity): any {
+    const primary: any = {};
+    for (const column of this.columns) {
+      if (null == column.refAlias) {
+        primary[column.entityAlias] = entity[column.entityAlias];
+      } else {
+        primary[column.entityAlias] = (entity[column.entityAlias] as AntSqlReference<Entity, number | string>).id;
+      }
+    }
+    return primary;
+  }
+
+  /**
+   * Transforms an entity into a secondary object.
+   * @param entity Entity to process.
+   * @returns Secondary object
+   */
+  public entityToSecondary(entity: TEntity): any {
+    const secondary: { [key: string]: any } = {};
+    for (const columnData of this.columns) {
+      const entityValue = entity[columnData.entityAlias];
+      if (undefined !== entityValue) {
+        if (null == columnData.refAlias) {
+          secondary[columnData.sqlName] = entityValue;
+        } else {
+          secondary[columnData.sqlName] = (entityValue as AntSqlReference<TEntity, number | string>).id;
+        }
+      }
+    }
+    return secondary;
+  }
+
+  /**
+   * Transforms multiple entities into primary objects.
+   * @param entities Entities to process.
+   * @returns Primary objects generated.
+   */
+  public mEntityToPrimary(entities: TEntity[]): any[] {
+    const primaries = new Array();
+
+    for (const entity of entities) {
+      primaries.push(this.entityToPrimary(entity));
+    }
+
+    return primaries;
+  }
+
+  /**
+   * Transforms multiple entities into primary objects.
+   * @param entities Entities to process.
+   * @returns Secondary objects generated.
+   */
+  public mEntityToSecondary(entities: TEntity[]): any[] {
+    const secondaries = new Array();
+
+    for (const entity of entities) {
+      secondaries.push(this.entityToSecondary(entity));
+    }
+
+    return secondaries;
+  }
+
+  /**
    * Gets the auto generated column of the model.
    * @returns Auto generated column of the model or null if no column is auto generated.
    */
@@ -115,7 +186,27 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
         }
       }
     }
+    for (const column of this._referenceColumns) {
+      for (const primary of primaries) {
+        primary[column.entityAlias] = new AntSqlReference(primary[column.entityAlias], column.refModel);
+      }
+    }
     return primaries;
+  }
+
+  /**
+   * Process secondary objects and generates entities from them.
+   * @param secondaries Secondary objects to process.
+   * @returns Entities generated.
+   */
+  public mSecondaryToEntity(secondaries: any[]): TEntity[] {
+    const entities = new Array<TEntity>()
+
+    for (const secondary of secondaries) {
+      entities.push(this.secondaryToEntity(secondary));
+    }
+
+    return entities;
   }
 
   /**
@@ -127,8 +218,29 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
       for (const column of dateColumns) {
         primary[column.entityAlias] = new Date(primary[column.entityAlias]);
       }
+      for (const column of this._referenceColumns) {
+        primary[column.entityAlias] = new AntSqlReference(primary[column.entityAlias], column.refModel);
+      }
     }
+
     return primary;
+  }
+
+  /**
+   * Creates an entity from a secondary object.
+   * @param secondary Secondary entity to transform
+   * @returns Entity generated.
+   */
+  public secondaryToEntity(secondary: any): TEntity {
+    const entity: { [key: string]: any } = {};
+    for (const column of this.columns) {
+      if (null == column.refAlias) {
+        entity[column.entityAlias] = secondary[column.sqlName];
+      } else {
+        entity[column.entityAlias] = new AntSqlReference(secondary[column.sqlName], column.refModel);
+      }
+    }
+    return entity as TEntity;
   }
 
   /**
@@ -153,16 +265,22 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
     this._autoGeneratedColumn = null;
     this._columns = new Map();
     this._columnsByType = new Map();
+    this._referenceColumns = new Array();
     this._sqlColumns = new Map();
     for (const column of columns) {
       const modelColumn: SqlColumn = this._apiColumnToColumn(column);
-      this._initializeColumnsSetInitialColumn(modelColumn);
+      this._initializeColumnsSetAutoGeneratedColumn(modelColumn);
       this._columns.set(modelColumn.entityAlias, modelColumn);
       this._sqlColumns.set(modelColumn.sqlName, modelColumn);
       this._initializeColumnsSetColumnsOfType(modelColumn);
+      this._initializeColumnsSetReferenceColumn(column);
     }
   }
 
+  /**
+   * Process a column adding an entry to the columns by type map.
+   * @param column Column to process.
+   */
   private _initializeColumnsSetColumnsOfType(column: SqlColumn): void {
     let columnsOfType = this._columnsByType.get(column.type);
     if (undefined === columnsOfType) {
@@ -172,13 +290,27 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
     columnsOfType.push(column);
   }
 
-  private _initializeColumnsSetInitialColumn(column: SqlColumn): void {
+  /**
+   * Process a column establishing the autogenerated column.
+   * @param column Column to process.
+   */
+  private _initializeColumnsSetAutoGeneratedColumn(column: SqlColumn): void {
     if (null != column.autoGenerationStrategy) {
       if (null === this._autoGeneratedColumn) {
         this._autoGeneratedColumn = column;
       } else {
         throw new Error('Unexpected auto generated column. There is already an auto generated column in this model');
       }
+    }
+  }
+
+  /**
+   * Process a column adding it to the reference columns of the model (if necessary).
+   * @param column Column to process.
+   */
+  private _initializeColumnsSetReferenceColumn(column: SqlColumn): void {
+    if (null != column.refAlias) {
+      this._referenceColumns.push(column);
     }
   }
 }
