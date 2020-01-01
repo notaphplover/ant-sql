@@ -82,7 +82,7 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, Ap
    * @param column Column to process.
    */
   private _processModelColumn(column: SqlColumn): void {
-    if ('string' === typeof column.refAlias) {
+    if (null != column.refAlias) {
       const modelFound = this._aliasToModelMap.get(column.refAlias);
       if (undefined === modelFound) {
         let pendingRefs = this._pendingColumnReferencesMap.get(column.refAlias);
