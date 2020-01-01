@@ -2,7 +2,7 @@ import { Entity, Model } from '@antjs/ant-js';
 import { BaseSqlModel } from './base-sql-model';
 import { SqlColumn } from './sql-column';
 
-export interface SqlModel<TEntity extends Entity> extends BaseSqlModel, Model<TEntity> {
+export interface SqlModel<TEntity extends Entity> extends BaseSqlModel<SqlColumn>, Model<TEntity> {
   /**
    * Gets a column by its alias
    */
