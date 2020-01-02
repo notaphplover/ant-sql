@@ -11,15 +11,14 @@ import { SqlModel } from '../model/sql-model';
 
 export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, ApiSqlModelManager<Entity>>
   implements ApiSqlGeneralManager {
-
   /**
    * Model alias to model map.
    */
-  protected _aliasToModelMap: Map<string, SqlModel<Entity>>
+  protected _aliasToModelMap: Map<string, SqlModel<Entity>>;
   /**
    * Model alias to not injected columns map.
    */
-  protected _pendingColumnReferencesMap: Map<string, SqlColumn[]>
+  protected _pendingColumnReferencesMap: Map<string, SqlColumn[]>;
 
   /**
    * @inheritdoc
@@ -59,7 +58,7 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, Ap
       this._aliasToModelMap.set(model.alias, model);
       const pendingRefs = this._pendingColumnReferencesMap.get(model.alias);
       if (undefined !== pendingRefs) {
-        for(const pendingRef of pendingRefs) {
+        for (const pendingRef of pendingRefs) {
           pendingRef.refModel = model;
         }
       }

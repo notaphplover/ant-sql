@@ -64,7 +64,7 @@ export class SqlSecondaryEntityManager<TEntity extends Entity> implements Second
       .from(this.model.tableName)
       .where(this.model.id, id)
       .first()
-      .then((result: any) => null == result ? null : this.model.secondaryToEntity(result));
+      .then((result: any) => (null == result ? null : this.model.secondaryToEntity(result)));
   }
   /**
    * Finds a collection of entities by its ids.

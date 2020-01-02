@@ -5,7 +5,6 @@ import { SqlModel } from '../../model/sql-model';
 import { SqlSecondaryEntityManager } from './sql-secondary-entity-manager';
 
 export class SqLiteSecondaryEntityManager<TEntity extends Entity> extends SqlSecondaryEntityManager<TEntity> {
-
   /**
    * Secondary entity manager helper.
    */

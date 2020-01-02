@@ -200,7 +200,7 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
    * @returns Entities generated.
    */
   public mSecondaryToEntity(secondaries: any[]): TEntity[] {
-    const entities = new Array<TEntity>()
+    const entities = new Array<TEntity>();
 
     for (const secondary of secondaries) {
       entities.push(this.secondaryToEntity(secondary));
