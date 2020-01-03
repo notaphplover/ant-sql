@@ -2,6 +2,7 @@ import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { AntModel } from '@antjs/ant-js/build/model/ant-model';
 import { AntSqlReference } from './ref/ant-sql-reference';
 import { ApiSqlColumn } from '../api/api-sql-column';
+import { Reference } from './ref/reference';
 import { SqlColumn } from './sql-column';
 import { SqlModel } from './sql-model';
 import { SqlType } from './sql-type';
@@ -114,7 +115,7 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
       primary[column.entityAlias] = entity[column.entityAlias];
     }
     for (const column of this._referenceColumns) {
-      primary[column.entityAlias] = (entity[column.entityAlias] as AntSqlReference<Entity, number | string>).id;
+      primary[column.entityAlias] = (entity[column.entityAlias] as Reference<Entity, number | string>).id;
     }
     return primary;
   }
@@ -135,7 +136,7 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
     for (const column of this._referenceColumns) {
       const entityValue = entity[column.entityAlias];
       if (undefined !== entityValue) {
-        secondary[column.sqlName] = (entityValue as AntSqlReference<TEntity, number | string>).id;
+        secondary[column.sqlName] = (entityValue as Reference<TEntity, number | string>).id;
       }
     }
     return secondary;
