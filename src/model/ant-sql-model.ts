@@ -183,11 +183,10 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
    * @inheritdoc
    */
   public mPrimaryToEntity(primaries: any[]): TEntity[] {
-
     const entities = new Array<TEntity>(primaries.length);
 
     for (let i = 0; i < primaries.length; ++i) {
-      entities[i] = {...primaries[i]}
+      entities[i] = { ...primaries[i] };
     }
     const dateColumns = this._columnsByType.get(SqlType.Date);
     if (undefined !== dateColumns) {

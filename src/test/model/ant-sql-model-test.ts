@@ -286,60 +286,64 @@ export class AntSqlModelTest implements Test {
   }
 
   private _itMustTransformMultiplePrimaryIntoEntityWithReferenceField(): void {
-    it('must transform multiple primary with reference field into entity', async(done) => {
-      const refTableName = 'RefModelSqlTableName';
-      const tableName = 'ModelSqlTableName';
-      const refModel = new AntSqlModel(
-        'id',
-        { prefix: 'someRefPrefix' },
-        [
-          {
-            entityAlias: 'id',
-            sqlName: 'id',
-            type: SqlType.Integer,
-          },
-        ],
-        refTableName,
-        'ref-alias',
-      );
-      const referenceColumnAlias = 'reference';
-      const model = new AntSqlModel(
-        'id',
-        { prefix: 'somePrefix' },
-        [
-          {
-            entityAlias: 'id',
-            sqlName: 'id',
-            type: SqlType.Integer,
-          },
-          {
-            entityAlias: 'number',
-            sqlName: 'number',
-            type: SqlType.Integer,
-          },
-          {
-            entityAlias: referenceColumnAlias,
-            refAlias: refModel.alias,
-            sqlName: 'reference',
-            type: SqlType.Integer,
-          },
-        ],
-        tableName,
-      );
-      model.columnByAlias(referenceColumnAlias).refModel = refModel;
-      const primary = {
-        id: 0,
-        number: 0,
-        reference: 1,
-      };
-      const [entity] = model.mPrimaryToEntity([primary]);
+    it(
+      'must transform multiple primary with reference field into entity',
+      async (done) => {
+        const refTableName = 'RefModelSqlTableName';
+        const tableName = 'ModelSqlTableName';
+        const refModel = new AntSqlModel(
+          'id',
+          { prefix: 'someRefPrefix' },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+          ],
+          refTableName,
+          'ref-alias',
+        );
+        const referenceColumnAlias = 'reference';
+        const model = new AntSqlModel(
+          'id',
+          { prefix: 'somePrefix' },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: 'number',
+              sqlName: 'number',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: referenceColumnAlias,
+              refAlias: refModel.alias,
+              sqlName: 'reference',
+              type: SqlType.Integer,
+            },
+          ],
+          tableName,
+        );
+        model.columnByAlias(referenceColumnAlias).refModel = refModel;
+        const primary = {
+          id: 0,
+          number: 0,
+          reference: 1,
+        };
+        const [entity] = model.mPrimaryToEntity([primary]);
 
-      expect(entity.id).toBe(primary.id);
-      expect(entity.number).toBe(primary.number);
-      expect((entity.reference as Reference<Entity, number>).id).toBe(primary.reference);
+        expect(entity.id).toBe(primary.id);
+        expect(entity.number).toBe(primary.number);
+        expect((entity.reference as Reference<Entity, number>).id).toBe(primary.reference);
 
-      done();
-    }, MAX_SAFE_TIMEOUT);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 
   private _itMustTransformPrimaryIntoEntityWithDateField(): void {
@@ -379,59 +383,63 @@ export class AntSqlModelTest implements Test {
   }
 
   private _itMustTransformPrimaryIntoEntityWithReferenceField(): void {
-    it('must transform primary with reference field into entity', async(done) => {
-      const refTableName = 'RefModelSqlTableName';
-      const tableName = 'ModelSqlTableName';
-      const refModel = new AntSqlModel(
-        'id',
-        { prefix: 'someRefPrefix' },
-        [
-          {
-            entityAlias: 'id',
-            sqlName: 'id',
-            type: SqlType.Integer,
-          },
-        ],
-        refTableName,
-        'ref-alias',
-      );
-      const referenceColumnAlias = 'reference';
-      const model = new AntSqlModel(
-        'id',
-        { prefix: 'somePrefix' },
-        [
-          {
-            entityAlias: 'id',
-            sqlName: 'id',
-            type: SqlType.Integer,
-          },
-          {
-            entityAlias: 'number',
-            sqlName: 'number',
-            type: SqlType.Integer,
-          },
-          {
-            entityAlias: referenceColumnAlias,
-            refAlias: refModel.alias,
-            sqlName: 'reference',
-            type: SqlType.Integer,
-          },
-        ],
-        tableName,
-      );
-      model.columnByAlias(referenceColumnAlias).refModel = refModel;
-      const primary = {
-        id: 0,
-        number: 0,
-        reference: 1,
-      };
-      const entity = model.primaryToEntity(primary);
+    it(
+      'must transform primary with reference field into entity',
+      async (done) => {
+        const refTableName = 'RefModelSqlTableName';
+        const tableName = 'ModelSqlTableName';
+        const refModel = new AntSqlModel(
+          'id',
+          { prefix: 'someRefPrefix' },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+          ],
+          refTableName,
+          'ref-alias',
+        );
+        const referenceColumnAlias = 'reference';
+        const model = new AntSqlModel(
+          'id',
+          { prefix: 'somePrefix' },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: 'number',
+              sqlName: 'number',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: referenceColumnAlias,
+              refAlias: refModel.alias,
+              sqlName: 'reference',
+              type: SqlType.Integer,
+            },
+          ],
+          tableName,
+        );
+        model.columnByAlias(referenceColumnAlias).refModel = refModel;
+        const primary = {
+          id: 0,
+          number: 0,
+          reference: 1,
+        };
+        const entity = model.primaryToEntity(primary);
 
-      expect(entity.id).toBe(primary.id);
-      expect(entity.number).toBe(primary.number);
-      expect((entity.reference as Reference<Entity, number>).id).toBe(primary.reference);
+        expect(entity.id).toBe(primary.id);
+        expect(entity.number).toBe(primary.number);
+        expect((entity.reference as Reference<Entity, number>).id).toBe(primary.reference);
 
-      done();
-    }, MAX_SAFE_TIMEOUT);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
   }
 }
