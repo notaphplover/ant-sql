@@ -1,8 +1,9 @@
 import { Entity } from '@antjs/ant-js';
-import { Reference } from './reference';
 import { SqlModel } from '../sql-model';
+import { SqlReference } from './sql-reference';
 
-export class AntSqlReference<TEntity extends Entity, TId extends number | string> implements Reference<TEntity, TId> {
+export class AntSqlReference<TEntity extends Entity, TId extends number | string>
+  implements SqlReference<TEntity, TId> {
   /**
    * Entity referenced. If undefined, the entity may exists even if is's unknown.
    */
