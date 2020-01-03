@@ -38,15 +38,23 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, Ap
   }
 
   /**
+   * Creates an SQLModel from an API SQL model
+   * @param model Model to be created.
+   */
+  protected _createModel<TEntity extends Entity>(model: ApiSqlModel): SqlModel<TEntity> {
+    const antModel = new AntSqlModel<TEntity>(model.id, model.keyGen, model.columns, model.tableName, model.alias);
+    this._addModelToAvaiableModelRefs(antModel);
+    this._processModel(antModel);
+    return antModel;
+  }
+
+  /**
    * Creates a model manager.
    * @param model Model to manage.
    * @returns model manager created.
    */
   protected _createModelManager<TEntity extends Entity>(model: ApiSqlModel): ApiSqlModelManager<TEntity> {
-    const antModel = new AntSqlModel<TEntity>(model.id, model.keyGen, model.columns, model.tableName, model.alias);
-    this._addModelToAvaiableModelRefs(antModel);
-    this._processModel(antModel);
-    return new AntSqlModelManager<TEntity>(antModel);
+    return new AntSqlModelManager<TEntity>(this._createModel<TEntity>(model));
   }
 
   /**
@@ -55,6 +63,9 @@ export class AntSqlManager extends AntManager<ApiSqlModelConfig, ApiSqlModel, Ap
    */
   private _addModelToAvaiableModelRefs<TEntity extends Entity>(model: AntSqlModel<TEntity>): void {
     if (model.alias) {
+      if (this._aliasToModelMap.has(model.alias)) {
+        throw new Error('The alias provided is already registered!');
+      }
       this._aliasToModelMap.set(model.alias, model);
       const pendingRefs = this._pendingColumnReferencesMap.get(model.alias);
       if (undefined !== pendingRefs) {
