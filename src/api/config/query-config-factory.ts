@@ -230,7 +230,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
     valuesLength: number,
   ): (results: TEntity[]) => TQueryResult[] {
     return (results: TEntity[]): TQueryResult[] => {
-      const finalResults: TQueryResult[] = new Array();
+      const finalResults: TQueryResult[] = new Array(valuesLength);
       for (let i = 0; i < valuesLength; ++i) {
         finalResults[i] = new Array() as TQueryResult;
       }

@@ -24,8 +24,8 @@ export class AntSqlReference<TEntity extends Entity, TId extends number | string
    * @param model Referenced entity's model.
    */
   public constructor(id: TId, model: SqlModel<TEntity>) {
-    this._id = id;
     this._model = model;
+    this.id = id;
   }
 
   /**
@@ -39,8 +39,8 @@ export class AntSqlReference<TEntity extends Entity, TId extends number | string
    * Referenced entity's id.
    */
   public set id(id: TId) {
+    this._entity = null;
     this._id = id;
-    this._entity = undefined;
   }
 
   /**
