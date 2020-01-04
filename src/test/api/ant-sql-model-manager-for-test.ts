@@ -8,6 +8,13 @@ import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-mo
 
 export class AntSqlModelManagerForTest<TEntity extends Entity> extends AntSqlModelManager<TEntity> {
   /**
+   * Model used by the model manager.
+   */
+  public get model(): SqlModel<TEntity> {
+    return this._model;
+  }
+
+  /**
    * Gets the inner model manager.
    */
   public get modelManager(): SqlPrimaryModelManager<TEntity> {

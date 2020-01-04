@@ -2,6 +2,7 @@ import { AntSqlManagerTest } from './api/ant-sql-manager-test';
 import { AntSqlModelManagerTest } from './api/ant-sql-model-manager-test';
 import { AntSqlModelTest } from './model/ant-sql-model-test';
 import { AntSqlPrimaryModelManagerTest } from './persistence/primary/ant-sql-primary-model-manager-test';
+import { AntSqlReferenceTest } from './model/ref/ant-sql-reference-test';
 import { AntTest } from './ant-test';
 import { DBConnectionWrapper } from './persistence/secondary/db-connection-wrapper';
 import { DBTestManager } from './persistence/secondary/db-test-manager';
@@ -29,6 +30,7 @@ export class AllTest implements Test {
 
     new AntSqlManagerTest().performTests();
     new AntSqlModelTest().performTests();
+    new AntSqlReferenceTest().performTests();
     new AntTest().performTests();
 
     new SecondaryEntityManagerHelperTest().performTests();

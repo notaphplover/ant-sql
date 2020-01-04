@@ -1,6 +1,6 @@
 import { Entity } from '@antjs/ant-js';
 
-export interface Reference<TEntity extends Entity, TId extends number | string> {
+export interface SqlReference<TEntity extends Entity, TId extends number | string> {
   /**
    * Reference id
    */

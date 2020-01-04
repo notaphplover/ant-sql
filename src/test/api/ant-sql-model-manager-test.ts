@@ -55,6 +55,7 @@ export class AntSqlModelManagerTest implements Test {
     describe(this._declareName, () => {
       this._itMustCallModelManagerMethods();
       this._itMustGenerateAModelManager();
+      this._itMustGenerateAReference();
       this._itMustGenerateASecondaryEntityManager();
       this._itMustReturnQueryConfigFactoryIfConfigIsSet();
       this._itMustNotReturnQueryConfigFactoryIfConfigIsNotSet();
@@ -118,6 +119,25 @@ export class AntSqlModelManagerTest implements Test {
         const antModelManager = new AntSqlModelManagerForTest(model);
         const modelManager = antModelManager.generateModelManager(model, config);
         expect(modelManager instanceof AntPrimaryModelManager).toBe(true);
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
+  }
+
+  private _itMustGenerateAReference(): void {
+    const itsName = 'must generate an SQL reference';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(
+      itsName,
+      async (done) => {
+        const model = modelTestGen(prefix);
+        const antModelManager = new AntSqlModelManagerForTest(model);
+        const id = 3;
+        const reference = antModelManager.getReference(id);
+
+        expect(reference.id).toBe(id);
+        expect(reference.entity).toBeNull();
         done();
       },
       MAX_SAFE_TIMEOUT,
