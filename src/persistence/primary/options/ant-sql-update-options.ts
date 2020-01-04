@@ -1,5 +1,5 @@
-import { CacheMode } from '@antjs/ant-js';
 import { AntJsUpdateOptions } from '@antjs/ant-js/build/persistence/primary/options/antjs-update-options';
+import { CacheMode } from '@antjs/ant-js';
 import { SqlUpdateOptions } from './sql-update-options';
 
 export class AntSqlUpdateOptions extends AntJsUpdateOptions implements SqlUpdateOptions {
@@ -14,7 +14,7 @@ export class AntSqlUpdateOptions extends AntJsUpdateOptions implements SqlUpdate
    * @param ttl TTL of the entities to update.
    * @param persist True to persist changes in the sql server.
    */
-  public constructor(cacheMode?: CacheMode, ttl?: number, persist: boolean = true) {
+  public constructor(cacheMode?: CacheMode, ttl?: number, persist = true) {
     super(cacheMode, ttl);
 
     this._persist = persist;

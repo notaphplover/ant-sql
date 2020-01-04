@@ -1,22 +1,22 @@
-import { Entity, KeyGenParams } from '@antjs/ant-js';
-import { CacheMode } from '@antjs/ant-js/build/persistence/primary/options/cache-mode';
-import { Test } from '@antjs/ant-js/build/testapi/api/test';
-import * as crypto from 'crypto';
 import * as Knex from 'knex';
+import * as crypto from 'crypto';
+import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { AntSqlModel } from '../../../model/ant-sql-model';
-import { SqlModel } from '../../../model/sql-model';
-import { SqlType } from '../../../model/sql-type';
 import { AntSqlPrimaryModelManager } from '../../../persistence/primary/ant-sql-primary-model-manager';
-import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delete-options';
-import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
-import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
-import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
+import { CacheMode } from '@antjs/ant-js/build/persistence/primary/options/cache-mode';
 import { DBTestManager } from '../secondary/db-test-manager';
 import { RedisWrapper } from './redis-wrapper';
+import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
+import { SqlDeleteOptions } from '../../../persistence/primary/options/sql-delete-options';
+import { SqlModel } from '../../../model/sql-model';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
+import { SqlType } from '../../../model/sql-type';
+import { SqlUpdateOptions } from '../../../persistence/primary/options/sql-update-options';
+import { Test } from '@antjs/ant-js/build/testapi/api/test';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
-const tableNameGenerator = (baseAlias: string) =>
+const tableNameGenerator = (baseAlias: string): string =>
   't_' +
   crypto
     .createHash('md5')
@@ -95,10 +95,9 @@ export class AntSqlPrimaryModelManagerTest implements Test {
     it(
       itsName,
       async (done) => {
-        const model = modelGenerator({ prefix: prefix });
+        const model = modelGenerator({ prefix });
         const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
         expect(() => {
-          // tslint:disable-next-line:no-unused-expression
           new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
         }).not.toThrowError();
         done();
@@ -113,7 +112,7 @@ export class AntSqlPrimaryModelManagerTest implements Test {
     it(
       itsName,
       async (done) => {
-        const model = modelGenerator({ prefix: prefix });
+        const model = modelGenerator({ prefix });
         const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
         const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
         const methodsToTest = ['delete', 'insert', 'mDelete', 'mInsert', 'mUpdate', 'update'] as Array<
@@ -154,7 +153,7 @@ export class AntSqlPrimaryModelManagerTest implements Test {
     it(
       itsName,
       async (done) => {
-        const model = modelGenerator({ prefix: prefix });
+        const model = modelGenerator({ prefix });
         const secondaryEntityManager = new SqlSecondaryEntityManager<EntityTest>(model, this._dbConnection);
         const sqlModelManager = new AntSqlPrimaryModelManager(model, this._redis.redis, true, secondaryEntityManager);
 
@@ -208,7 +207,7 @@ export class AntSqlPrimaryModelManagerTest implements Test {
         type EntityWithDateField = Entity & { id: number; field: Date; field2: Date };
         const model = new AntSqlModel<EntityWithDateField>(
           'id',
-          { prefix: prefix },
+          { prefix },
           [
             {
               entityAlias: 'id',

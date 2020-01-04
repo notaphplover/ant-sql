@@ -1,17 +1,20 @@
-import { Entity } from '@antjs/ant-js';
 import { AntModelManager } from '@antjs/ant-js/build/api/ant-model-manager';
-import { SqlModel } from '../model/sql-model';
 import { AntSqlPrimaryModelManager } from '../persistence/primary/ant-sql-primary-model-manager';
-import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
-import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
-import { KnexDriver } from '../persistence/secondary/knex-driver';
-import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
-import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
-import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
-import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
-import { ApiSqlModelManager } from './api-sql-model-manager';
+import { AntSqlReference } from '../model/ref/ant-sql-reference';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
+import { ApiSqlModelManager } from './api-sql-model-manager';
+import { Entity } from '@antjs/ant-js';
+import { KnexDriver } from '../persistence/secondary/knex-driver';
+import { MSSqlSecondaryEntityManager } from '../persistence/secondary/mssql-secondary-entity-manager';
+import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
 import { QueryConfigFactory } from './config/query-config-factory';
+import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
+import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
+import { SqlModel } from '../model/sql-model';
+import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
+import { SqlReference } from '../ant';
+import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
+import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
 
 export class AntSqlModelManager<TEntity extends Entity>
   extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel<TEntity>, SqlPrimaryModelManager<TEntity>>
@@ -75,6 +78,14 @@ This is probably caused by the absence of a config instance. Ensure that config 
   }
 
   /**
+   * Creates a reference from an entity id.
+   * @param id Reference's id.
+   */
+  public getReference<TId extends number | string>(id: TId): SqlReference<TEntity, TId> {
+    return new AntSqlReference(id, this._model);
+  }
+
+  /**
    * Generates a model manager.
    * @param model Model to manage.
    * @param config AntSQL Model config.
@@ -105,6 +116,8 @@ This is probably caused by the absence of a config instance. Ensure that config 
     const knex = config.knex;
 
     switch (knex.client.driverName) {
+      case KnexDriver.MSSQL:
+        return new MSSqlSecondaryEntityManager(model, knex);
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
         return new MySqlSecondaryEntityManager(model, knex);

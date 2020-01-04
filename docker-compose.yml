@@ -1,0 +1,60 @@
+version: '3'
+services:
+  ant_db_mssql:
+    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+    environment:
+      ACCEPT_EULA: ${MS_ACCEPT_EULA}
+      MSSQL_PID: ${MS_PID}
+      SA_PASSWORD: "${MS_SA_PASSWORD}"
+    networks:
+      - ant
+    ports:
+      - "${MS_PORT_OUTER}:${MS_PORT_INNER}"
+  ant_db_mysql:
+    image: mysql:8.0.18
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - ant
+    ports:
+      - "${MYSQL_PORT_OUTER}:${MYSQL_PORT_INNER}"
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+      - ./docker/mysql/mysql.cnf:/etc/mysql/conf.d/sql_mode.cnf:ro
+  ant_db_postgres:
+    image: postgres:12.1-alpine
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+    networks:
+      - ant
+  ant_lib:
+    build: .
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER}
+      MS_DB: ${MS_DB}
+      MS_SA_PASSWORD: ${MS_SA_PASSWORD}
+      MS_SA_USER: ${MS_SA_USER}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_2_DB: ${MYSQL_2_DB}
+      PG_DB: ${PG_DB}
+    volumes:
+      - .:/app
+      - /app/node_modules/
+    depends_on:
+      - ant_db_mssql
+      - ant_db_mysql
+      - ant_db_postgres
+      - ant_redis
+    networks:
+      - ant
+  ant_redis:
+    image: redis:5.0.7-alpine
+    networks:
+      - ant
+networks:
+  ant:
+    driver: bridge

@@ -1,8 +1,8 @@
-import { KnexDriver } from '../../persistence/secondary/knex-driver';
 import { DBConnectionWrapper } from '../persistence/secondary/db-connection-wrapper';
-import { DbTestConnection } from '../persistence/secondary/db-test-connection';
 import { DBTestManager } from '../persistence/secondary/db-test-manager';
 import { DbServerAwaiter } from './db-server-awaiter';
+import { DbTestConnection } from '../persistence/secondary/db-test-connection';
+import { KnexDriver } from '../../persistence/secondary/knex-driver';
 
 class DbServerAwaiterManager {
   /**

@@ -12,7 +12,7 @@ export class AntSqlDeleteOptions extends AntJsDeleteOptions implements SqlDelete
    * @param negativeCache True to use negative cache
    * @param persist True to persist changes in the sql server.
    */
-  public constructor(negativeCache?: boolean, persist: boolean = true) {
+  public constructor(negativeCache?: boolean, persist = true) {
     super(negativeCache);
 
     this._persist = persist;

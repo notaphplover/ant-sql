@@ -1,6 +1,6 @@
 {
   "name": "@antjs/ant-sql",
-  "version": "1.0.0-beta.15",
+  "version": "1.0.0-beta.16",
   "description": "SQL extension for AntJS",
   "main": "build/ant.js",
   "scripts": {
@@ -9,20 +9,17 @@
     "build-and-test": "npm run build && npm run test-only",
     "build-and-test-debug": "npm run build && npm run test-debug-only",
     "ci": "npm run build && npm run linter && npm run format-check && npm run test-only && npm run report-coverage",
-    "ci-docker": "sh scripts/prepare-env.sh && docker-compose -f docker-compose.test.ci.yml up --abort-on-container-exit --exit-code-from ant_lib",
     "clear-js": "node ./scripts/clear-compiled.js",
     "format": "prettier --write \"src/**/*.ts\"",
     "format-check": "prettier --check \"src/**/*.ts\"",
-    "linter": "tslint -c ./tslint.json -p ./src.tsconfig.commonjs.dev.json",
-    "linter-fix": "tslint --fix -c ./tslint.json -p ./src.tsconfig.commonjs.dev.json",
+    "linter": "eslint 'src/**/*.ts'",
+    "linter-fix": "eslint --fix 'src/**/*.ts'",
     "publish-npm": "npm run clear-js && npm run test && npm run build-prod && npm publish --access public",
     "publish-npm-beta": "npm run clear-js && npm run test && npm run build-prod && npm publish --access public --tag beta",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "test": "npm run test-docker",
-    "test-debug": "npm run test-docker-debug",
+    "test": "sh scripts/run-test.sh",
+    "test-debug": "sh scripts/run-test-debug.sh",
     "test-debug-only": "node --inspect-brk=0.0.0.0:${NODE_DEBUG_PORT_INNER} ./node_modules/jasmine/bin/jasmine.js ./build/test/main.test.js",
-    "test-docker": "docker-compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from ant_lib",
-    "test-docker-debug": "docker-compose -f docker-compose.test.debug.yml up --abort-on-container-exit --exit-code-from ant_lib",
     "test-only": "nyc --reporter=lcov node ./node_modules/jasmine/bin/jasmine.js ./build/test/main.test.js"
   },
   "repository": {
@@ -32,26 +29,28 @@
   "author": "Roberto Pintos López",
   "license": "ISC",
   "dependencies": {
-    "@antjs/ant-js": "^1.0.0-beta.16",
-    "knex": "^0.20.1"
+    "@antjs/ant-js": "^1.0.1",
+    "knex": "^0.20.6"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.28",
-    "@types/ioredis": "^4.0.18",
-    "@types/jasmine": "^3.4.6",
-    "@types/node": "^12.12.6",
-    "coveralls": "^3.0.7",
+    "@types/bluebird": "^3.5.29",
+    "@types/ioredis": "^4.14.3",
+    "@types/jasmine": "^3.5.0",
+    "@types/node": "^12.12.21",
+    "@typescript-eslint/eslint-plugin": "^2.14.0",
+    "@typescript-eslint/parser": "^2.14.0",
+    "coveralls": "^3.0.9",
+    "eslint": "^6.8.0",
     "ioredis": "^4.14.1",
     "jasmine": "^3.5.0",
     "lodash": "^4.17.15",
-    "mssql": "^6.0.0",
+    "mssql": "^6.0.1",
     "mysql": "^2.17.1",
-    "mysql2": "^2.0.0",
-    "nyc": "^14.1.1",
-    "pg": "^7.12.1",
-    "prettier": "^1.18.2",
-    "sqlite3": "^4.1.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "mysql2": "^2.1.0",
+    "nyc": "^15.0.0",
+    "pg": "^7.17.0",
+    "prettier": "^1.19.1",
+    "sqlite3": "^4.1.1",
+    "typescript": "^3.7.4"
   }
 }

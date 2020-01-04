@@ -1,11 +1,12 @@
-import { Entity } from '@antjs/ant-js';
 import * as Knex from 'knex';
-import { SqlModel } from '../../../model/sql-model';
+import { Entity } from '@antjs/ant-js';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
+import { MSSqlSecondaryEntityManager } from '../../../persistence/secondary/mssql-secondary-entity-manager';
 import { MySqlSecondaryEntityManager } from '../../../persistence/secondary/mysql-secondary-entity-manager';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
-import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 import { SqLiteSecondaryEntityManager } from '../../../persistence/secondary/sqlite-secondary-entity-manager';
+import { SqlModel } from '../../../model/sql-model';
+import { SqlSecondaryEntityManager } from '../../../persistence/secondary/sql-secondary-entity-manager';
 
 export class DBTestManager {
   /**
@@ -27,7 +28,7 @@ export class DBTestManager {
       throw new Error(`Table ${name} already exists.`);
     }
     await dbConnection.schema.createTable(name, (table) => {
-      const addColumn = (name: string, type: 'datetime' | 'number' | 'string' | 'increments') => {
+      const addColumn = (name: string, type: 'datetime' | 'number' | 'string' | 'increments'): void => {
         if ('datetime' === type) {
           table.dateTime(name);
         } else if ('number' === type) {
@@ -95,13 +96,15 @@ END`;
     knex: Knex,
   ): (model: SqlModel<TEntity>, knex: Knex) => SecondaryEntityManager<TEntity> {
     switch (knex.client.driverName) {
+      case KnexDriver.MSSQL:
+        return (model, knex): SecondaryEntityManager<TEntity> => new MSSqlSecondaryEntityManager(model, knex);
       case KnexDriver.MYSQL:
       case KnexDriver.MYSQL2:
-        return (model, knex) => new MySqlSecondaryEntityManager(model, knex);
+        return (model, knex): SecondaryEntityManager<TEntity> => new MySqlSecondaryEntityManager(model, knex);
       case KnexDriver.SQLITE3:
-        return (model, knex) => new SqLiteSecondaryEntityManager(model, knex);
+        return (model, knex): SecondaryEntityManager<TEntity> => new SqLiteSecondaryEntityManager(model, knex);
       default:
-        return (model, knex) => new SqlSecondaryEntityManager(model, knex);
+        return (model, knex): SecondaryEntityManager<TEntity> => new SqlSecondaryEntityManager(model, knex);
     }
   }
 

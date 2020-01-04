@@ -1,13 +1,14 @@
+import * as Knex from 'knex';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import {
   MultipleQueryResult,
   SingleQueryResult,
   TQuery,
 } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
-import * as Knex from 'knex';
+import { ApiCfgGenOptions } from './api-config-generation-options';
 import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';
-import { ApiCfgGenOptions } from './api-config-generation-options';
+import { SqlType } from '../../model/sql-type';
 
 export class QueryConfigFactory<TEntity extends Entity> {
   /**
@@ -38,7 +39,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'all/';
-    options = this._processCfgGenOptions(options, () => this._model.keyGen.prefix + queryAlias, queryAlias);
+    const keyGen = (): string => this._model.keyGen.prefix + queryAlias;
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
 
     return {
       entityKeyGen: options.entityKeyGen,
@@ -60,17 +62,14 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'f_' + column.entityAlias + '/';
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
-      queryAlias,
-    );
+    const keyGen = (params: any): string => this._model.keyGen.prefix + queryAlias + params[column.entityAlias];
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       mQuery: this._buildIdsByFieldMQuery<TQueryResult>(column),
       query: this._buildIdsByFieldQuery<TQueryResult>(column),
-      queryKeyGen: options.entityKeyGen,
+      queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
   }
@@ -87,17 +86,51 @@ export class QueryConfigFactory<TEntity extends Entity> {
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'mf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) =>
-        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
-      queryAlias,
-    );
+    const keyGen = (params: any): string =>
+      columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: true,
       query: this._buildIdsByFieldsQuery<TQueryResult>(columns),
-      queryKeyGen: options.entityKeyGen,
+      queryKeyGen: options.queryKeyGen,
+      reverseHashKey: options.reverseHashKey,
+    };
+  }
+
+  /**
+   * Creates a query of entities with a field value in a certain range.
+   * @param column Column used as search discriminator.
+   * @param rangeOptions Range options
+   * @param options Query options
+   * @returns Created query.
+   */
+  public byNumericRange<TQueryResult extends MultipleQueryResult>(
+    column: SqlColumn,
+    rangeOptions: {
+      blockSize: number;
+      minValueField: string;
+    },
+    options?: ApiCfgGenOptions<TEntity>,
+  ): ApiQueryConfig<TEntity, TQueryResult> {
+    if (column.type !== SqlType.Integer) {
+      throw new Error('A numeric column is expected!');
+    }
+    const queryAlias = 'r_' + column.entityAlias + '/';
+    const entityKeyGen = (params: any): string =>
+      this._model.keyGen.prefix + queryAlias + Math.floor(params[column.entityAlias] / rangeOptions.blockSize);
+    const queryKeyGen = (params: any): string =>
+      this._model.keyGen.prefix + queryAlias + params[rangeOptions.minValueField] / rangeOptions.blockSize;
+    options = this._processCfgGenOptions(options, queryAlias, entityKeyGen, queryKeyGen);
+    return {
+      entityKeyGen: options.entityKeyGen,
+      isMultiple: true,
+      query: this._buildIdsByNumericRangeQuery<TQueryResult>(
+        rangeOptions.blockSize,
+        column,
+        rangeOptions.minValueField,
+      ),
+      queryKeyGen: options.queryKeyGen,
       reverseHashKey: options.reverseHashKey,
     };
   }
@@ -113,11 +146,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
     options?: ApiCfgGenOptions<TEntity>,
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const queryAlias = 'uf_' + column.entityAlias + '/';
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) => this._model.keyGen.prefix + queryAlias + params[column.entityAlias],
-      queryAlias,
-    );
+    const keyGen = (params: any): string => this._model.keyGen.prefix + queryAlias + params[column.entityAlias];
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
     return {
       entityKeyGen: options.entityKeyGen,
       isMultiple: false,
@@ -140,12 +170,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
   ): ApiQueryConfig<TEntity, TQueryResult> {
     const separator = '/';
     const queryAlias = 'umf_' + columns.reduce((previous, next) => previous + separator + next.entityAlias, '');
-    options = this._processCfgGenOptions(
-      options,
-      (params: any) =>
-        columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias),
-      queryAlias,
-    );
+    const keyGen = (params: any): string =>
+      columns.reduce((previous, next) => previous + params[next.entityAlias], this._model.keyGen.prefix + queryAlias);
+    options = this._processCfgGenOptions(options, queryAlias, keyGen, keyGen);
 
     return {
       entityKeyGen: options.entityKeyGen,
@@ -161,7 +188,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildAllIdsQuery<TQueryResult extends MultipleQueryResult>(): TQuery<TQueryResult> {
-    return () => {
+    return (): Promise<TQueryResult> => {
       return this._createAllEntitiesIdsQuery().then(
         (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
       );
@@ -174,7 +201,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByFieldMQuery<TQueryResult extends MultipleQueryResult>(column: SqlColumn): TQuery<TQueryResult[]> {
-    return (params: any[]) => {
+    return (params: any[]): Promise<TQueryResult[]> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -202,8 +229,8 @@ export class QueryConfigFactory<TEntity extends Entity> {
     valuesMap: Map<any, number[]>,
     valuesLength: number,
   ): (results: TEntity[]) => TQueryResult[] {
-    return (results: TEntity[]) => {
-      const finalResults: TQueryResult[] = new Array();
+    return (results: TEntity[]): TQueryResult[] => {
+      const finalResults: TQueryResult[] = new Array(valuesLength);
       for (let i = 0; i < valuesLength; ++i) {
         finalResults[i] = new Array() as TQueryResult;
       }
@@ -242,7 +269,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByFieldQuery<TQueryResult extends MultipleQueryResult>(column: SqlColumn): TQuery<TQueryResult> {
-    return (params: any) => {
+    return (params: any): Promise<TQueryResult> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -262,11 +289,33 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns Ids by fields query.
    */
   private _buildIdsByFieldsQuery<TQueryResult extends MultipleQueryResult>(columns: SqlColumn[]): TQuery<TQueryResult> {
-    return (params: any) => {
+    return (params: any): Promise<TQueryResult> => {
       if (!params) {
         throw new Error('Expected params!');
       }
       return this._createEntitiesByFieldsQuery(columns, params).then(
+        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+      );
+    };
+  }
+
+  /**
+   * Creates a query of entities by a range of values.
+   * @param blockSize Block size of the ranges.
+   * @param column Column used as search discriminator.
+   * @param minValueField Minimun value field alias.
+   * @returns Query generated.
+   */
+  private _buildIdsByNumericRangeQuery<TQueryResult extends MultipleQueryResult>(
+    blockSize: number,
+    column: SqlColumn,
+    minValueField: string,
+  ): TQuery<TQueryResult> {
+    return (params: any): Promise<TQueryResult> => {
+      if (!params || null == params[minValueField]) {
+        throw new Error('Expected params!');
+      }
+      return this._createEntitiesByRangeQuery(blockSize, column, minValueField, params).then(
         (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
       );
     };
@@ -280,7 +329,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
   private _buildIdsByUniqueFieldMQuery<TQueryResult extends SingleQueryResult>(
     column: SqlColumn,
   ): TQuery<TQueryResult[]> {
-    return (params: any) => {
+    return (params: any): Promise<TQueryResult[]> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -302,7 +351,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @returns query built.
    */
   private _buildIdsByUniqueFieldQuery<TQueryResult extends SingleQueryResult>(column: SqlColumn): TQuery<TQueryResult> {
-    return (params: any) => {
+    return (params: any): Promise<TQueryResult> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -324,7 +373,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
   private _buildIdsByUniqueFieldsQuery<TQueryResult extends SingleQueryResult>(
     columns: SqlColumn[],
   ): TQuery<TQueryResult> {
-    return (params: any) => {
+    return (params: any): Promise<TQueryResult> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -387,6 +436,25 @@ export class QueryConfigFactory<TEntity extends Entity> {
   }
 
   /**
+   * Creates a query of entities by a range of values.
+   * @param blockSize Block size of the ranges.
+   * @param column Column used as search discriminator.
+   * @param minValueField Minimun value field alias.
+   * @param params Search parameters
+   * @returns Query generated.
+   */
+  private _createEntitiesByRangeQuery(
+    blockSize: number,
+    column: SqlColumn,
+    minValueField: string,
+    params: any,
+  ): Knex.QueryBuilder {
+    return this._createAllEntitiesIdsQuery()
+      .andWhere(column.sqlName, '>=', params[minValueField])
+      .andWhere(column.sqlName, '<', params[minValueField] + blockSize);
+  }
+
+  /**
    * Process a config generation options.
    * @param options CfgGen options provided.
    * @param defaultQueryKeyGen Default query keyGen.
@@ -395,8 +463,9 @@ export class QueryConfigFactory<TEntity extends Entity> {
    */
   private _processCfgGenOptions(
     options: ApiCfgGenOptions<TEntity>,
-    defaultQueryKeyGen: (params: any) => string,
     queryName: string,
+    defaultEntityKeyGen: (params: any) => string,
+    defaultQueryKeyGen: (params: any) => string,
   ): ApiCfgGenOptions<TEntity> {
     if (!options) {
       options = {};
@@ -405,7 +474,7 @@ export class QueryConfigFactory<TEntity extends Entity> {
       options.queryKeyGen = defaultQueryKeyGen;
     }
     if (!options.entityKeyGen) {
-      options.entityKeyGen = options.queryKeyGen;
+      options.entityKeyGen = defaultEntityKeyGen;
     }
     if (!options.reverseHashKey) {
       options.reverseHashKey = this._model.keyGen.prefix + queryName + '/reverse';

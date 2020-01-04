@@ -4,9 +4,9 @@ export interface DbTestConnection {
   /**
    * Knex connection.
    */
-  connection: Knex;
+  readonly connection: Knex;
   /**
    * True if the database must be created.
    */
-  dbCreationOptions?: { connection: Knex; name: string };
+  readonly dbCreationOptions?: { connection: Knex; name: string };
 }
