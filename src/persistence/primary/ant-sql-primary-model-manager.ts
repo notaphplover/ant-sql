@@ -20,7 +20,7 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.delete(id);
     }
-    return super.delete(id);
+    return super.delete(id, options);
   }
 
   /**
@@ -46,7 +46,7 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.mDelete(ids);
     }
-    return super.mDelete(ids);
+    return super.mDelete(ids, options);
   }
 
   /**
