@@ -1,12 +1,11 @@
-import * as Knex from 'knex';
 import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { SingleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
-import { QueryConfigModule } from './query-config-module';
+import { QueryByFieldConfigModuleBase } from './query-by-field-config-module-base';
 import { SqlColumn } from '../../../model/sql-column';
 
-export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
+export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends QueryByFieldConfigModuleBase<TEntity> {
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.
@@ -48,9 +47,36 @@ export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends Quer
         });
       }
       const valuesArray = _.map(params, (params: any) => params[column.entityAlias]);
-      return this._createEntitiesByFieldMQuery(column, valuesArray).then(
-        (results: TEntity[]) => _.map(results, (result) => result[this._model.id]) as TQueryResult[],
+      const valuesMap = this._buildIdsByFieldMQueryBuildValuesMap(valuesArray);
+      return this._createEntitiesByFieldMQueryWithField(column, valuesArray).then(
+        this._buildIdsByUniqueFieldMQueryBuildPromiseCallback<TQueryResult>(column, valuesMap, valuesArray.length),
       );
+    };
+  }
+
+  /**
+   * Creates a promise callback to handle the results query response.
+   * @param column AntSql column.
+   * @param valuesMap Values map.
+   * @param valuesLength values length.
+   * @returns promise callback to handle the results query response.
+   */
+  private _buildIdsByUniqueFieldMQueryBuildPromiseCallback<TQueryResult extends SingleQueryResult>(
+    column: SqlColumn,
+    valuesMap: Map<any, number[]>,
+    valuesLength: number,
+  ): (results: TEntity[]) => TQueryResult[] {
+    return (results: TEntity[]): TQueryResult[] => {
+      const finalResults: TQueryResult[] = new Array(valuesLength);
+      for (const result of results) {
+        const id = result[this._model.id];
+        const value = result[column.sqlName];
+        const indexes = valuesMap.get(value);
+        for (const index of indexes) {
+          finalResults[index] = id;
+        }
+      }
+      return finalResults;
     };
   }
 
@@ -72,14 +98,5 @@ export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends Quer
         .first()
         .then((result: TEntity) => (result ? (result[this._model.id] as TQueryResult) : null));
     };
-  }
-
-  /**
-   * Creates a query by field value.
-   * @param column Query column.
-   * @param value Entity value.
-   */
-  private _createEntitiesByFieldMQuery(column: SqlColumn, values: any[]): Knex.QueryBuilder {
-    return this._createAllEntitiesIdsQuery().whereIn(column.sqlName, values);
   }
 }

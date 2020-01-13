@@ -1,12 +1,11 @@
-import * as Knex from 'knex';
 import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
-import { QueryConfigModule } from './query-config-module';
+import { QueryByFieldConfigModuleBase } from './query-by-field-config-module-base';
 import { SqlColumn } from '../../../model/sql-column';
 
-export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
+export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryByFieldConfigModuleBase<TEntity> {
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.
@@ -83,24 +82,6 @@ export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryConfi
   }
 
   /**
-   * Builds a values-to-indexes map from a values array.
-   * @param valuesArray Values array.
-   */
-  private _buildIdsByFieldMQueryBuildValuesMap(valuesArray: any[]): Map<any, number[]> {
-    const valuesMap = new Map<any, number[]>();
-    for (let i = 0; i < valuesArray.length; ++i) {
-      const value = valuesArray[i];
-      let entry = valuesMap.get(value);
-      if (undefined === entry) {
-        entry = new Array();
-        valuesMap.set(value, entry);
-      }
-      entry.push(i);
-    }
-    return valuesMap;
-  }
-
-  /**
    * Creates an ids by field query.
    * @param column AntSql column.
    * @returns query built.
@@ -118,17 +99,5 @@ export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryConfi
         (results: TEntity[]) => _.map(results, (result) => result[this._model.id]) as TQueryResult,
       );
     };
-  }
-
-  /**
-   * Creates a query by field value.
-   * @param column Query column.
-   * @param value Entity value.
-   */
-  private _createEntitiesByFieldMQueryWithField(column: SqlColumn, values: any[]): Knex.QueryBuilder {
-    return this._knex
-      .select(this._model.id, column.sqlName)
-      .from(this._model.tableName)
-      .whereIn(column.sqlName, values);
   }
 }

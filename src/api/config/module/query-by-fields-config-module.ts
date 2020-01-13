@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
-import { QueryConfigModule } from './query-config-module';
+import { QueryByFieldConfigModuleBase } from './query-by-field-config-module-base';
 import { SqlColumn } from '../../../model/sql-column';
 
-export class QueryByFieldsConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
+export class QueryByFieldsConfigModule<TEntity extends Entity> extends QueryByFieldConfigModuleBase<TEntity> {
   /**
    * Creates a query of entities by multiple fields.
    * @param columns columns to filter.
