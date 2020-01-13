@@ -1,4 +1,5 @@
 import * as Knex from 'knex';
+import * as _ from 'lodash';
 import { Entity, KeyGenParams } from '@antjs/ant-js';
 import { DBTestManager } from './db-test-manager';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
@@ -255,7 +256,7 @@ export class SqlSecondaryEntityManagerTest implements Test {
         const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
 
         const entitiesFound = await manager.getByIds([entity1.id, entity2.id]);
-        const entitiesFoundAsObjects = entitiesFound.map((entity) => ({ ...entity }));
+        const entitiesFoundAsObjects = _.map(entitiesFound, (entity) => ({ ...entity }));
 
         expect(entitiesFoundAsObjects).toContain(entity1);
         expect(entitiesFoundAsObjects).toContain(entity2);
@@ -283,7 +284,7 @@ export class SqlSecondaryEntityManagerTest implements Test {
         const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
 
         const entitiesFound = await manager.getByIdsOrderedAsc([entity1.id, entity2.id]);
-        const entitiesFoundAsObjects = entitiesFound.map((entity) => ({ ...entity }));
+        const entitiesFoundAsObjects = _.map(entitiesFound, (entity) => ({ ...entity }));
 
         expect(entitiesFoundAsObjects).toEqual([entity1, entity2]);
 
