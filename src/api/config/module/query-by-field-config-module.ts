@@ -1,4 +1,5 @@
 import * as Knex from 'knex';
+import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
@@ -44,7 +45,7 @@ export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryConfi
           resolve(new Array());
         });
       }
-      const valuesArray = params.map((params: any) => params[column.entityAlias]);
+      const valuesArray = _.map(params, (params: any) => params[column.entityAlias]);
       const valuesMap = this._buildIdsByFieldMQueryBuildValuesMap(valuesArray);
       return this._createEntitiesByFieldMQueryWithField(column, valuesArray).then(
         this._buildIdsByFieldMQueryBuildPromiseCallback<TQueryResult>(column, valuesMap, valuesArray.length),
@@ -114,7 +115,7 @@ export class QueryByFieldConfigModule<TEntity extends Entity> extends QueryConfi
         throw new Error('Expected a field value!');
       }
       return this._createEntitiesByFieldQuery(column, fieldValue).then(
-        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+        (results: TEntity[]) => _.map(results, (result) => result[this._model.id]) as TQueryResult,
       );
     };
   }

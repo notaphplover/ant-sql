@@ -1,4 +1,5 @@
 import * as Knex from 'knex';
+import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { SingleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
@@ -37,7 +38,7 @@ export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends Quer
   private _buildIdsByUniqueFieldMQuery<TQueryResult extends SingleQueryResult>(
     column: SqlColumn,
   ): TQuery<TQueryResult[]> {
-    return (params: any): Promise<TQueryResult[]> => {
+    return (params: any[]): Promise<TQueryResult[]> => {
       if (!params) {
         throw new Error('Expected params!');
       }
@@ -46,9 +47,9 @@ export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends Quer
           resolve(new Array());
         });
       }
-      const valuesArray = params.map((params: any) => params[column.entityAlias]);
+      const valuesArray = _.map(params, (params: any) => params[column.entityAlias]);
       return this._createEntitiesByFieldMQuery(column, valuesArray).then(
-        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult[],
+        (results: TEntity[]) => _.map(results, (result) => result[this._model.id]) as TQueryResult[],
       );
     };
   }

@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
@@ -32,7 +33,7 @@ export class QueryAllConfigModule<TEntity extends Entity> extends QueryConfigMod
   private _buildAllIdsQuery<TQueryResult extends MultipleQueryResult>(): TQuery<TQueryResult> {
     return (): Promise<TQueryResult> => {
       return this._createAllEntitiesIdsQuery().then(
-        (results: TEntity[]) => results.map((result) => result[this._model.id]) as TQueryResult,
+        (results: TEntity[]) => _.map(results, (result) => result[this._model.id]) as TQueryResult,
       );
     };
   }
