@@ -1,4 +1,5 @@
 import * as Knex from 'knex';
+import * as _ from 'lodash';
 import { Entity } from '@antjs/ant-js';
 import { KnexDriver } from '../../../persistence/secondary/knex-driver';
 import { MSSqlSecondaryEntityManager } from '../../../persistence/secondary/mssql-secondary-entity-manager';
@@ -55,7 +56,7 @@ export class DBTestManager {
    */
   public async deleteAllTables(dbConnection: Knex): Promise<any> {
     const tables = await this.listTables(dbConnection);
-    return Promise.all(tables.map((table) => dbConnection.schema.dropTable(table)));
+    return Promise.all(_.map(tables, (table) => dbConnection.schema.dropTable(table)));
   }
 
   /**
@@ -158,7 +159,7 @@ END`;
         throw new Error(`Driver "${knex.client.driverName}" not supported`);
     }
     return knexQuery.then((results) => {
-      return results.map((row: any) => row.table_name);
+      return _.map(results, (row: any) => row.table_name);
     });
   }
 
