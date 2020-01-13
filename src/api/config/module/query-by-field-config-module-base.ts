@@ -4,7 +4,6 @@ import { QueryConfigModule } from './query-config-module';
 import { SqlColumn } from '../../../model/sql-column';
 
 export abstract class QueryByFieldConfigModuleBase<TEntity extends Entity> extends QueryConfigModule<TEntity> {
-
   /**
    * Builds a values-to-indexes map from a values array.
    * @param valuesArray Values array.
