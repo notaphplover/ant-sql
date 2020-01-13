@@ -5,7 +5,6 @@ import { QueryConfigModule } from './query-config-module';
 import { SqlColumn } from '../../../model/sql-column';
 
 export class QueryByUniqueFieldsConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
-
   /**
    * Creates a query of entities by multiple fields.
    * @param columns columns to filter.

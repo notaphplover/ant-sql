@@ -1,12 +1,11 @@
 import * as Knex from 'knex';
-import { ApiQueryConfig, Entity} from '@antjs/ant-js';
+import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import { SingleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
 import { QueryConfigModule } from './query-config-module';
 import { SqlColumn } from '../../../model/sql-column';
 
 export class QueryByUniqueFieldConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
-
   /**
    * Creates a query of entities by a single field.
    * @param column Query column.

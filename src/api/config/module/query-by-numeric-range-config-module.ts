@@ -7,7 +7,6 @@ import { SqlColumn } from '../../../model/sql-column';
 import { SqlType } from '../../../model/sql-type';
 
 export class QueryByNumericRangeConfigModule<TEntity extends Entity> extends QueryConfigModule<TEntity> {
-
   /**
    * Creates a query of entities with a field value in a certain range.
    * @param column Column used as search discriminator.
