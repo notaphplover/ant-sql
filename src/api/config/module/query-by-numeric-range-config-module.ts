@@ -1,7 +1,7 @@
 import * as Knex from 'knex';
 import * as _ from 'lodash';
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
-import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
+import { MultipleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/query-types';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
 import { QueryConfigModule } from './query-config-module';
 import { SqlColumn } from '../../../model/sql-column';

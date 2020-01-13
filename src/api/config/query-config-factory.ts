@@ -3,7 +3,7 @@ import { ApiQueryConfig, Entity } from '@antjs/ant-js';
 import {
   MultipleQueryResult,
   SingleQueryResult,
-} from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
+} from '@antjs/ant-js/build/persistence/primary/query/query-types';
 import { ApiCfgGenOptions } from './api-config-generation-options';
 import { QueryAllConfigModule } from './module/query-all-config-module';
 import { QueryByFieldConfigModule } from './module/query-by-field-config-module';
@@ -15,14 +15,6 @@ import { SqlColumn } from '../../model/sql-column';
 import { SqlModel } from '../../model/sql-model';
 
 export class QueryConfigFactory<TEntity extends Entity> {
-  /**
-   * Knex connection.
-   */
-  protected _knex: Knex;
-  /**
-   * Model to manage.
-   */
-  protected _model: SqlModel<TEntity>;
   /**
    * All query config module
    */
@@ -54,8 +46,6 @@ export class QueryConfigFactory<TEntity extends Entity> {
    * @param model Queries model.
    */
   public constructor(knex: Knex, model: SqlModel<TEntity>) {
-    this._knex = knex;
-    this._model = model;
     this._queryAllConfigModule = new QueryAllConfigModule(knex, model);
     this._queryByFieldConfigModule = new QueryByFieldConfigModule(knex, model);
     this._queryByFieldsConfigModule = new QueryByFieldsConfigModule(knex, model);

@@ -1,5 +1,5 @@
 import { ApiQueryConfig, Entity } from '@antjs/ant-js';
-import { SingleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/ant-primary-query-manager';
+import { SingleQueryResult, TQuery } from '@antjs/ant-js/build/persistence/primary/query/query-types';
 import { ApiCfgGenOptions } from '../api-config-generation-options';
 import { QueryByFieldConfigModuleBase } from './query-by-field-config-module-base';
 import { SqlColumn } from '../../../model/sql-column';
