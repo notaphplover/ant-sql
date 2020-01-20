@@ -1,11 +1,13 @@
 import * as Knex from 'knex';
 import * as _ from 'lodash';
 import { Entity, KeyGenParams } from '@antjs/ant-js';
+import { modelGenerator, tableNameGenerator } from '../../model/ant-sql-model-generator';
+import { AntSqlModel } from '../../../model/ant-sql-model';
 import { DBTestManager } from './db-test-manager';
 import { SecondaryEntityManager } from '../../../persistence/secondary/secondary-entity-manager';
 import { SqlModel } from '../../../model/sql-model';
+import { SqlType } from '../../../model/sql-type';
 import { Test } from '@antjs/ant-js/build/testapi/api/test';
-import { modelGenerator } from '../../model/ant-sql-model-generator';
 
 const MAX_SAFE_TIMEOUT = Math.pow(2, 31) - 1;
 
@@ -69,6 +71,7 @@ export class SqlSecondaryEntityManagerTest implements Test {
       this._itMustGetAnElementById();
       this._itMustGetAnElementByIdWithMappings();
       this._itMustGetAnUnexistingElementById();
+      this._itMustGetAnEntityWithADateTimeField();
       this._itMustGetMultipleElementsByIds();
       this._itMustGetMultipleElementsByIdsOrderedAsc();
       this._itMustGetMultipleElementsByIdsOrderedAscWithMappings();
@@ -210,6 +213,68 @@ export class SqlSecondaryEntityManagerTest implements Test {
 
         const entityFound = await manager.getById(entity.id);
         expect(entityFound).toEqual(entity);
+
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
+  }
+
+  private _itMustGetAnEntityWithADateTimeField(): void {
+    const itsName = 'mustGetAnEntityWithADateTimeField';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(
+      itsName,
+      async (done) => {
+        await this._beforeAllPromise;
+
+        type EntityWithDateField = Entity & { id: number; field: Date; field2: Date };
+        const model = new AntSqlModel<EntityWithDateField>(
+          'id',
+          { prefix },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: 'field',
+              sqlName: 'field',
+              type: SqlType.Date,
+            },
+            {
+              entityAlias: 'field2',
+              sqlName: 'field2',
+              type: SqlType.Date,
+            },
+          ],
+          tableNameGenerator(prefix),
+        );
+        await this._dbTestManager.createTable(
+          this._dbConnection,
+          model.tableName,
+          { name: 'id', type: 'number' },
+          { field: 'datetime', field2: 'datetime' },
+        );
+        const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
+        const entity: EntityWithDateField = {
+          field: new Date(),
+          field2: new Date(),
+          id: 0,
+        };
+        await manager.insert(entity);
+        const entityFound = await manager.getById(entity.id);
+        expect(entityFound.id).toBe(entity.id);
+
+        // We expect a precission loss due to MSSQL DATETIME2 format (ty MS)
+        const maxLoss = 2;
+        expect(Math.abs((entityFound.field as Date).getTime() - (entity.field as Date).getTime())).toBeLessThanOrEqual(
+          maxLoss,
+        );
+        expect(
+          Math.abs((entityFound.field2 as Date).getTime() - (entity.field2 as Date).getTime()),
+        ).toBeLessThanOrEqual(maxLoss);
 
         done();
       },

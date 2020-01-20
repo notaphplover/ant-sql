@@ -31,7 +31,17 @@ export class DBTestManager {
     await dbConnection.schema.createTable(name, (table) => {
       const addColumn = (name: string, type: 'datetime' | 'number' | 'string' | 'increments'): void => {
         if ('datetime' === type) {
-          table.dateTime(name);
+          if (
+            KnexDriver.MYSQL === dbConnection.client.driverName ||
+            KnexDriver.MYSQL2 === dbConnection.client.driverName
+          ) {
+            table.specificType(name, 'DATETIME(6)');
+          } else if (KnexDriver.MSSQL === dbConnection.client.driverName) {
+            // Not enought to ensure a right conversion... Thank you Micro$oft
+            table.specificType(name, 'DATETIME2(7)');
+          } else {
+            table.dateTime(name);
+          }
         } else if ('number' === type) {
           table.integer(name);
         } else if ('string' === type) {
