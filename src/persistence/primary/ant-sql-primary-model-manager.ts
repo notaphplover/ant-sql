@@ -20,7 +20,11 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.delete(id);
     }
-    return super.delete(id, options);
+    if (options.ignoreCache) {
+      return Promise.resolve();
+    } else {
+      return super.delete(id, options);
+    }
   }
 
   /**
@@ -33,7 +37,11 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.insert(entity);
     }
-    return super.update(entity, options);
+    if (options.ignoreCache) {
+      return entity;
+    } else {
+      return super.update(entity, options);
+    }
   }
 
   /**
@@ -46,7 +54,11 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.mDelete(ids);
     }
-    return super.mDelete(ids, options);
+    if (options.ignoreCache) {
+      return Promise.resolve();
+    } else {
+      return super.mDelete(ids, options);
+    }
   }
 
   /**
@@ -59,7 +71,11 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.mInsert(entities);
     }
-    return super.mUpdate(entities, options);
+    if (options.ignoreCache) {
+      return entities;
+    } else {
+      return super.mUpdate(entities, options);
+    }
   }
 
   /**
@@ -72,7 +88,11 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.mUpdate(entities);
     }
-    return super.mUpdate(entities, options);
+    if (options.ignoreCache) {
+      return entities;
+    } else {
+      return super.mUpdate(entities, options);
+    }
   }
 
   /**
@@ -85,6 +105,10 @@ export class AntSqlPrimaryModelManager<TEntity extends Entity>
     if (options.persist) {
       await this._successor.update(entity);
     }
-    return super.update(entity, options);
+    if (options.ignoreCache) {
+      return entity;
+    } else {
+      return super.update(entity, options);
+    }
   }
 }

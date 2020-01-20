@@ -169,11 +169,13 @@ export class AntSqlPrimaryModelManagerTest implements Test {
 
         const entity: EntityTest = { id: 0 };
         const deleteOptions: SqlDeleteOptions = {
+          ignoreCache: false,
           negativeCache: true,
           persist: false,
         };
         const updateOptions: SqlUpdateOptions = {
           cacheMode: CacheMode.CacheAndOverwrite,
+          ignoreCache: false,
           persist: false,
           ttl: null,
         };
