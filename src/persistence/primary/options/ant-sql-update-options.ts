@@ -6,7 +6,7 @@ export class AntSqlUpdateOptions extends AntJsUpdateOptions implements SqlUpdate
   /**
    * True to ignore the cache system.
    */
-  protected _ignoreCache: boolean
+  protected _ignoreCache: boolean;
   /**
    * True to persist the changes.
    */
