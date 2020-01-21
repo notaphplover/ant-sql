@@ -6,11 +6,7 @@
     "outDir": "build",
     "removeComments": true,
     "rootDir": "src",
-    "target": "es2017",
-    "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules/knex/types"
-    ]
+    "target": "es2017"
   },
   "exclude" : [
 
