@@ -22,15 +22,17 @@ export class DBTestManager {
     dbConnection: Knex,
     name: string,
     primaryKeyColumn: { name: string; type: 'number' | 'string' | 'increments' },
-    otherColumns: { [key: string]: 'datetime' | 'number' | 'string' } = {},
+    otherColumns: { [key: string]: 'boolean' | 'datetime' | 'number' | 'string' } = {},
   ): Promise<string> {
     const tableExists = await dbConnection.schema.hasTable(name);
     if (tableExists) {
       throw new Error(`Table ${name} already exists.`);
     }
     await dbConnection.schema.createTable(name, (table) => {
-      const addColumn = (name: string, type: 'datetime' | 'number' | 'string' | 'increments'): void => {
-        if ('datetime' === type) {
+      const addColumn = (name: string, type: 'boolean' | 'datetime' | 'number' | 'string' | 'increments'): void => {
+        if ('boolean' === type) {
+          table.boolean(name);
+        } else if ('datetime' === type) {
           if (
             KnexDriver.MYSQL === dbConnection.client.driverName ||
             KnexDriver.MYSQL2 === dbConnection.client.driverName

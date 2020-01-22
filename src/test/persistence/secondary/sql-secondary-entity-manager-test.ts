@@ -71,6 +71,7 @@ export class SqlSecondaryEntityManagerTest implements Test {
       this._itMustGetAnElementById();
       this._itMustGetAnElementByIdWithMappings();
       this._itMustGetAnUnexistingElementById();
+      this._itMustGetAnEntityWithABooleanField();
       this._itMustGetAnEntityWithADateTimeField();
       this._itMustGetMultipleElementsByIds();
       this._itMustGetMultipleElementsByIdsOrderedAsc();
@@ -213,6 +214,58 @@ export class SqlSecondaryEntityManagerTest implements Test {
 
         const entityFound = await manager.getById(entity.id);
         expect(entityFound).toEqual(entity);
+
+        done();
+      },
+      MAX_SAFE_TIMEOUT,
+    );
+  }
+
+  private _itMustGetAnEntityWithABooleanField(): void {
+    const itsName = 'mustGetAnEntityWithABooleanField';
+    const prefix = this._declareName + '/' + itsName + '/';
+    it(
+      itsName,
+      async (done) => {
+        await this._beforeAllPromise;
+
+        type EntityWithBooleanField = Entity & { id: number; field: boolean };
+        const model = new AntSqlModel<EntityWithBooleanField>(
+          'id',
+          { prefix },
+          [
+            {
+              entityAlias: 'id',
+              sqlName: 'id',
+              type: SqlType.Integer,
+            },
+            {
+              entityAlias: 'field',
+              sqlName: 'field',
+              type: SqlType.Boolean,
+            },
+          ],
+          tableNameGenerator(prefix),
+        );
+        await this._dbTestManager.createTable(
+          this._dbConnection,
+          model.tableName,
+          { name: 'id', type: 'number' },
+          { field: 'boolean' },
+        );
+        const manager = this._secondaryEntityManagerGenerator(model, this._dbConnection);
+        const entity1: EntityWithBooleanField = {
+          field: true,
+          id: 0,
+        };
+        const entity2: EntityWithBooleanField = {
+          field: false,
+          id: 1,
+        };
+        await manager.mInsert([entity1, entity2]);
+        const entitiesFound = await manager.getByIds([entity1.id, entity2.id]);
+        expect(entitiesFound).toContain(entity1);
+        expect(entitiesFound).toContain(entity2);
 
         done();
       },
