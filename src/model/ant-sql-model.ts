@@ -254,6 +254,13 @@ export class AntSqlModel<TEntity extends Entity> extends AntModel<TEntity> imple
       entity[column.entityAlias] = new AntSqlReference(secondary[column.sqlName], column.refModel);
     }
 
+    const booleanColumns = this._columnsByType.get(SqlType.Boolean);
+    if (undefined !== booleanColumns) {
+      for (const column of booleanColumns) {
+        entity[column.entityAlias] = Boolean(entity[column.entityAlias]);
+      }
+    }
+
     const dateColumns = this._columnsByType.get(SqlType.Date);
     if (undefined !== dateColumns) {
       for (const column of dateColumns) {

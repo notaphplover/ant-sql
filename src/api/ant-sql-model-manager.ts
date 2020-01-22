@@ -98,7 +98,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
     return new AntSqlPrimaryModelManager<TEntity>(
       model,
       config.redis,
-      config.negativeCache || true,
+      config.negativeCache ?? true,
       this._generateSecondaryEntityManager(model, config),
     );
   }
