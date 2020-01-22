@@ -8,6 +8,7 @@ import { DBTestManager } from './persistence/secondary/db-test-manager';
 import { QueryConfigFactoryTest } from './api/query-config-factory-test';
 import { RedisWrapper } from './persistence/primary/redis-wrapper';
 import { SecondaryEntityManagerHelperTest } from './persistence/secondary/secondary-entity-manager-helper-test';
+import { SqlSchedulerModelManagerTest } from './persistence/scheduler/sql-scheduler-model-manager-test';
 import { SqlSecondaryEntityManagerTest } from './persistence/secondary/sql-secondary-entity-manager-test';
 import { Test } from '@antjs/ant-js/build/testapi/api/test';
 import { dbServerAwaiterManager } from './await/db-server-awaiter-manager';
@@ -33,6 +34,7 @@ export class AllTest implements Test {
     new AntTest().performTests();
 
     new SecondaryEntityManagerHelperTest().performTests();
+    new SqlSchedulerModelManagerTest().performTests();
 
     const dBConnectionWrapper = new DBConnectionWrapper();
 
