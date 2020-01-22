@@ -1,13 +1,12 @@
 import * as Knex from 'knex';
-import { AntPrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/ant-primary-model-manager';
 import { AntSqlModel } from '../../model/ant-sql-model';
 import { AntSqlModelManagerForTest } from './ant-sql-model-manager-for-test';
 import { ApiSqlModelConfig } from '../../api/config/api-sql-model-config';
 import { Entity } from '@antjs/ant-js';
 import { QueryConfigFactory } from '../../api/config/query-config-factory';
 import { RedisWrapper } from '../persistence/primary/redis-wrapper';
-import { SqlPrimaryModelManager } from '../../persistence/primary/sql-primary-model-manager';
-import { SqlSecondaryEntityManager } from '../../persistence/secondary/sql-secondary-entity-manager';
+import { SchedulerModelManager } from '../../persistence/scheduler/scheduler-model-manager';
+import { SqlSchedulerModelManager } from '../../persistence/scheduler/sql-scheduler-model-manager';
 import { SqlType } from '../../model/sql-type';
 import { Test } from '@antjs/ant-js/build/testapi/api/test';
 
@@ -54,9 +53,8 @@ export class AntSqlModelManagerTest implements Test {
   public performTests(): void {
     describe(this._declareName, () => {
       this._itMustCallModelManagerMethods();
-      this._itMustGenerateAModelManager();
+      this._itMustGenerateAnSchedulerManager();
       this._itMustGenerateAReference();
-      this._itMustGenerateASecondaryEntityManager();
       this._itMustReturnQueryConfigFactoryIfConfigIsSet();
       this._itMustNotReturnQueryConfigFactoryIfConfigIsNotSet();
     });
@@ -74,28 +72,32 @@ export class AntSqlModelManagerTest implements Test {
           knex: this._dbConnection,
           redis: this._redisWrapper.redis,
         });
-        const modelManager = antModelManager.modelManager;
+        const manager = antModelManager.scheduledManager;
 
-        const methodsToTest = ['insert', 'mInsert'] as Array<keyof SqlPrimaryModelManager<any>>;
+        const methodsToTest = ['insert', 'mInsert', 'mUpdate', 'update'] as Array<keyof SchedulerModelManager<any>>;
 
         for (const methodToTest of methodsToTest) {
-          spyOn(modelManager, methodToTest as any).and.returnValue(methodToTest as any);
+          spyOn(manager, methodToTest as any).and.returnValue(methodToTest as any);
         }
 
         const entity = { id: 0 };
 
-        const [insertResult, mInsertResult] = await Promise.all([
+        const [insertResult, mInsertResult, mUpdateResult, updateResult] = await Promise.all([
           antModelManager.insert(entity),
           antModelManager.mInsert([entity]),
+          antModelManager.mUpdate([entity]),
+          antModelManager.update(entity),
         ]);
 
         const results: { [key: string]: any } = {
           insert: insertResult,
           mInsert: mInsertResult,
+          mUpdate: mUpdateResult,
+          update: updateResult,
         };
 
         for (const methodToTest of methodsToTest) {
-          expect(modelManager[methodToTest]).toHaveBeenCalled();
+          expect(manager[methodToTest]).toHaveBeenCalled();
           expect(results[methodToTest]).toBe(methodToTest);
         }
 
@@ -105,8 +107,8 @@ export class AntSqlModelManagerTest implements Test {
     );
   }
 
-  private _itMustGenerateAModelManager(): void {
-    const itsName = 'mustGenerateAModelManager';
+  private _itMustGenerateAnSchedulerManager(): void {
+    const itsName = 'mustGenerateAnSchedulerManager';
     const prefix = this._declareName + '/' + itsName + '/';
     it(
       itsName,
@@ -117,8 +119,8 @@ export class AntSqlModelManagerTest implements Test {
           redis: this._redisWrapper.redis,
         };
         const antModelManager = new AntSqlModelManagerForTest(model);
-        const modelManager = antModelManager.generateModelManager(model, config);
-        expect(modelManager instanceof AntPrimaryModelManager).toBe(true);
+        const manager = antModelManager.generateSchedulerManager(model, config);
+        expect(manager instanceof SqlSchedulerModelManager).toBe(true);
         done();
       },
       MAX_SAFE_TIMEOUT,
@@ -138,26 +140,6 @@ export class AntSqlModelManagerTest implements Test {
 
         expect(reference.id).toBe(id);
         expect(reference.entity).toBeNull();
-        done();
-      },
-      MAX_SAFE_TIMEOUT,
-    );
-  }
-
-  private _itMustGenerateASecondaryEntityManager(): void {
-    const itsName = 'mustGenerateASecondaryEntityManager';
-    const prefix = this._declareName + '/' + itsName + '/';
-    it(
-      itsName,
-      async (done) => {
-        const model = modelTestGen(prefix);
-        const config: ApiSqlModelConfig = {
-          knex: this._dbConnection,
-          redis: this._redisWrapper.redis,
-        };
-        const antModelManager = new AntSqlModelManagerForTest(model);
-        const secondaryEntityManager = antModelManager.generateSecondaryEntityManager(model, config);
-        expect(secondaryEntityManager instanceof SqlSecondaryEntityManager).toBe(true);
         done();
       },
       MAX_SAFE_TIMEOUT,

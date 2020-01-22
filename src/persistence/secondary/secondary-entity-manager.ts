@@ -3,25 +3,11 @@ import { Entity } from '@antjs/ant-js';
 
 export interface SecondaryEntityManager<TEntity extends Entity> extends AntJsSecondaryEntityManager<TEntity> {
   /**
-   * Deletes an entity from its id.
-   * @param id Id of the entity to delete.
-   * @returns Promise of entity deleted.
-   */
-  delete(id: string | number): Promise<any>;
-
-  /**
    * Inserts an entity.
    * @param entity Entity to be inserted.
    * @returns Promise of entity inserted.
    */
   insert(entity: TEntity): Promise<any>;
-
-  /**
-   * Deletes entitis from their ids.
-   * @param ids Id of the entity to delete.
-   * @returns Promise of entities deleted.
-   */
-  mDelete(ids: string[] | number[]): Promise<any>;
 
   /**
    * Inserts multiple entities.
