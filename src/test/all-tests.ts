@@ -1,7 +1,6 @@
 import { AntSqlManagerTest } from './api/ant-sql-manager-test';
 import { AntSqlModelManagerTest } from './api/ant-sql-model-manager-test';
 import { AntSqlModelTest } from './model/ant-sql-model-test';
-import { AntSqlPrimaryModelManagerTest } from './persistence/primary/ant-sql-primary-model-manager-test';
 import { AntSqlReferenceTest } from './model/ref/ant-sql-reference-test';
 import { AntTest } from './ant-test';
 import { DBConnectionWrapper } from './persistence/secondary/db-connection-wrapper';
@@ -46,13 +45,6 @@ export class AllTest implements Test {
       new AntSqlModelManagerTest(connection, connection.client.driverName).performTests();
 
       new SqlSecondaryEntityManagerTest(
-        deleteAllTablesPromise,
-        connection,
-        connection.client.driverName,
-        this._testManager.getSecondaryEntityManagerGenerator(config.connection),
-      ).performTests();
-
-      new AntSqlPrimaryModelManagerTest(
         deleteAllTablesPromise,
         connection,
         connection.client.driverName,
