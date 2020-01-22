@@ -1,23 +1,24 @@
+import { Entity, PersistencyUpdateOptions } from '@antjs/ant-js';
 import { AntModelManager } from '@antjs/ant-js/build/api/ant-model-manager';
-import { AntSqlPrimaryModelManager } from '../persistence/primary/ant-sql-primary-model-manager';
+import { AntPrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/ant-primary-model-manager';
 import { AntSqlReference } from '../model/ref/ant-sql-reference';
 import { ApiSqlModelConfig } from './config/api-sql-model-config';
 import { ApiSqlModelManager } from './api-sql-model-manager';
-import { Entity } from '@antjs/ant-js';
 import { KnexDriver } from '../persistence/secondary/knex-driver';
 import { MSSqlSecondaryEntityManager } from '../persistence/secondary/mssql-secondary-entity-manager';
 import { MySqlSecondaryEntityManager } from '../persistence/secondary/mysql-secondary-entity-manager';
+import { PrimaryModelManager } from '@antjs/ant-js/build/persistence/primary/primary-model-manager';
 import { QueryConfigFactory } from './config/query-config-factory';
+import { SchedulerModelManager } from '../persistence/scheduler/scheduler-model-manager';
 import { SecondaryEntityManager } from '../persistence/secondary/secondary-entity-manager';
 import { SqLiteSecondaryEntityManager } from '../persistence/secondary/sqlite-secondary-entity-manager';
 import { SqlModel } from '../model/sql-model';
-import { SqlPrimaryModelManager } from '../persistence/primary/sql-primary-model-manager';
 import { SqlReference } from '../ant';
+import { SqlSchedulerModelManager } from '../persistence/scheduler/sql-scheduler-model-manager';
 import { SqlSecondaryEntityManager } from '../persistence/secondary/sql-secondary-entity-manager';
-import { SqlUpdateOptions } from '../persistence/primary/options/sql-update-options';
 
 export class AntSqlModelManager<TEntity extends Entity>
-  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel<TEntity>, SqlPrimaryModelManager<TEntity>>
+  extends AntModelManager<TEntity, ApiSqlModelConfig, SqlModel<TEntity>, SchedulerModelManager<TEntity>>
   implements ApiSqlModelManager<TEntity> {
   /**
    * Query config factory.
@@ -58,31 +59,38 @@ This is probably caused by the absence of a config instance. Ensure that config 
   }
 
   /**
-   * Inserts an entity.
-   * @param entity Entity to be inserted.
-   * @param options Persistency options.
-   * @returns Promise of entity inserted.
-   */
-  public insert(entity: TEntity, options?: SqlUpdateOptions): Promise<any> {
-    return this.modelManager.insert(entity, options);
-  }
-
-  /**
-   * Inserts multiple entities.
-   * @param entities Entities to be inserted.
-   * @param options Persistency options.
-   * @returns Promise of entities inserted.
-   */
-  public mInsert(entities: TEntity[], options?: SqlUpdateOptions): Promise<any> {
-    return this.modelManager.mInsert(entities, options);
-  }
-
-  /**
-   * Creates a reference from an entity id.
-   * @param id Reference's id.
+   * @inheritdoc
    */
   public getReference<TId extends number | string>(id: TId): SqlReference<TEntity, TId> {
     return new AntSqlReference(id, this._model);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public insert(entity: TEntity, options?: Partial<PersistencyUpdateOptions>): Promise<any> {
+    return this.scheduledManager.insert(entity, options);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public mInsert(entities: TEntity[], options?: Partial<PersistencyUpdateOptions>): Promise<any> {
+    return this.scheduledManager.mInsert(entities, options);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public mUpdate(entities: TEntity[], options?: Partial<PersistencyUpdateOptions>): Promise<any> {
+    return this.scheduledManager.mUpdate(entities, options);
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public update(entity: TEntity, options?: Partial<PersistencyUpdateOptions>): Promise<any> {
+    return this.scheduledManager.update(entity, options);
   }
 
   /**
@@ -91,16 +99,32 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL Model config.
    * @returns Model manager generated.
    */
-  protected _generateModelManager(
+  protected _generatePrimaryManager(
     model: SqlModel<TEntity>,
     config: ApiSqlModelConfig,
-  ): SqlPrimaryModelManager<TEntity> {
-    return new AntSqlPrimaryModelManager<TEntity>(
+    secondaryManager: SecondaryEntityManager<TEntity>,
+  ): PrimaryModelManager<TEntity> {
+    return new AntPrimaryModelManager<TEntity, SecondaryEntityManager<TEntity>>(
       model,
       config.redis,
       config.negativeCache ?? true,
-      this._generateSecondaryEntityManager(model, config),
+      secondaryManager,
     );
+  }
+
+  /**
+   * Generates a new scheduled manager.
+   * @param model Model of the manager.
+   * @param config Manager config.
+   * @returns Scheduled manager generated.
+   */
+  protected _generateScheduledManager(
+    model: SqlModel<TEntity>,
+    config: ApiSqlModelConfig,
+  ): SchedulerModelManager<TEntity> {
+    const secondaryManager = this._generateSecondaryManager(model, config);
+    const primaryManager = this._generatePrimaryManager(model, config, secondaryManager);
+    return new SqlSchedulerModelManager(model, primaryManager, secondaryManager);
   }
 
   /**
@@ -109,7 +133,7 @@ This is probably caused by the absence of a config instance. Ensure that config 
    * @param config AntSQL model config.
    * @returns Secondary model manager generated.
    */
-  protected _generateSecondaryEntityManager(
+  protected _generateSecondaryManager(
     model: SqlModel<TEntity>,
     config: ApiSqlModelConfig,
   ): SecondaryEntityManager<TEntity> {
